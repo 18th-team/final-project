@@ -1,16 +1,6 @@
-<!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="content" >
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>모락모락 | 회원가입</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body>
-<div class="container">
+<div class="container" th:fragment="content">
     <div class="profile-card">
         <h4 class="mb-5">회원가입</h4>
         <form>
@@ -41,22 +31,3 @@
         </form>
     </div>
 </div>
-
-<!--
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".btn-save").hover(
-            function () {
-                $(this).text("모락모락에 어서오세요😊");
-            },
-            function () {
-                $(this).text("가입하기");
-            }
-        );
-    });
-</script>
--->
-</body>
-
-</html>
