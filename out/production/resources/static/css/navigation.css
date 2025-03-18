@@ -1,0 +1,57 @@
+.navbar {
+    background-color: #fff;
+    padding: 1rem 2rem;
+}
+.navbar-nav {
+    min-width: 500px;
+    width: 100%;
+}
+.nav-link {
+    color: #000;
+    font-size: 24px;
+}
+.nav-link:hover {
+    color: #e36d1d;
+}
+
+/* 검색창 기본 스타일 */
+.navbar .search-bar {
+    margin-top: 30px;
+    border-radius: 28px;
+    background-color: #e36d1d;
+    height: 48px;
+    padding: 0 4px;
+    width: 250px; /* 기본 크기: lg 이상에서 고정 폭 */
+    transition: width 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+/* lg 이하 (992px 이하)에서 검색창 100%로 확장 */
+@media (max-width: 991.98px) {
+    .navbar .search-bar {
+        width: 100%; /* 토글 버튼 나타날 때 100% */
+        margin-top: 15px; /* 여백 조정, 필요 시 변경 */
+    }
+}
+
+.navbar .search-bar .form-control {
+    background: transparent;
+    border: none;
+    color: #f9f5ed;
+    font-size: 18px;
+    font-family: 'Pretendard-ExtraLight';
+}
+.navbar .search-bar .form-control::placeholder {
+    color: #f9f5ed;
+    font-family: 'Pretendard-ExtraLight';
+    font-size: 18px;
+}
+.navbar .search-bar .btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 48px;
+    height: 48px;
+}
+.navbar-toggler {
+    border: none;
+}
