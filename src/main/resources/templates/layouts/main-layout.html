@@ -10,8 +10,10 @@
 
 </head>
 <body>
-    <nav th:replace="~{fragments/navigation :: navigation}">Fallback: 네비게이션 못 찾음</nav>
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
     <div layout:fragment="content"></div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
     <th:block layout:fragment="script"></th:block>
 </body>
 </html>
