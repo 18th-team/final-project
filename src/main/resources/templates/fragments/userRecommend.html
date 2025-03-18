@@ -1,6 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="userRecommend">
- <body>
-  $END$
- </body>
+<body>
+<div class="container ">
+   <section class="recommended-meetings" aria-labelledby="recommended-title">
+           <h2 id="recommended-title" class="recommended-title">예은님이 좋아하실 만한 모임이에요 👀</h2>
+           <div class="row g-2 mt-4 meeting-card-container">
+               <div class="col-md-4">
+                   <article class="card meeting-card h-100">
+                       <img
+                           loading="lazy"
+                           src="https://cdn.builder.io/api/v1/image/assets/TEMP/c79ad30615395d05a6545500a4f298223386aadc6f947b3bb84dac9be517b453?placeholderIfAbsent=true&apiKey=4409ff4b6d9f431fb368db5b6f5cb91f"
+                           class="card-img-top meeting-image"
+                           alt="바베큐 불멍하기 모임 이미지"
+                       />
+                       <div class="card-body meeting-details">
+                           <p class="card-title meeting-location">경기도/평택시</p>
+                           <p class="card-text meeting-description">바베큐 불멍하기 딱좋아</p>
+                       </div>
+                   </article>
+               </div>
+               <div class="col-md-4">
+                   <article class="card meeting-card h-100">
+                       <img
+                           loading="lazy"
+                           src="https://cdn.builder.io/api/v1/image/assets/TEMP/e5535f4ee75c419bb668e61d5db0abf16afd123494abfb3f94c7a84f09d0ee69?placeholderIfAbsent=true&apiKey=4409ff4b6d9f431fb368db5b6f5cb91f"
+                           class="card-img-top meeting-image"
+                           alt="나와 잘맞는 사람 찾기 모임 이미지"
+                       />
+                       <div class="card-body meeting-details">
+                           <p class="card-title meeting-location">서울시</p>
+                           <p class="card-text meeting-description">나와 잘맞는 사람 찾기</p>
+                       </div>
+                   </article>
+               </div>
+               <div class="col-md-4">
+                   <article class="card meeting-card h-100">
+                       <img
+                           loading="lazy"
+                           src="https://cdn.builder.io/api/v1/image/assets/TEMP/5bdfd8e2357998f467855d6232a50c5ef17f26ee89e1a2eb0b6a99ef59f3f92c?placeholderIfAbsent=true&apiKey=4409ff4b6d9f431fb368db5b6f5cb91f"
+                           class="card-img-top meeting-image"
+                           alt="서울시 관악구 모임 이미지"
+                       />
+                       <div class="card-body meeting-details">
+                           <p class="card-title meeting-location">서울시/관악구</p>
+                           <p class="card-text long-description">
+                               ㅁㄴㅇㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㅇㅁㅁㄴㅇㅁㄴㅇㅁㄴㅇ
+                           </p>
+                       </div>
+                   </article>
+               </div>
+           </div>
+       </section>
+</div>
+</body>
 </html>
