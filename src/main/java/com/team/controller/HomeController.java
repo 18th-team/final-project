@@ -11,5 +11,15 @@ public class HomeController {
     }
 
     @GetMapping("/mobti")
-    public String test() { return "mobti_test"; }
+    public String mobtiTest() { return "mobti_test"; }
+
+    @GetMapping("/login")
+    public String login() { return "login"; }
+
+
+    @GetMapping("/signup")
+    public String signUP() {
+
+        return "signup";
+    }
 }
