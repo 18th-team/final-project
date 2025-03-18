@@ -29,7 +29,8 @@
     }
 }
 
-/* .category-icon: 이미지 스타일 유지 */
+
+    /* .category-icon: 이미지 스타일 유지 */
 .category-icon {
     aspect-ratio: 1.18;
     object-fit: cover;
