@@ -1,0 +1,31 @@
+
+/* .category-link: 부트스트랩 클래스 활용, 고유 스타일 유지 */
+.category-container .category-link {
+    border-radius: 30px;
+    background-color: var(--Warning-50, #fffaeb);
+    mix-blend-mode: multiply; /* 부트스트랩에 없으므로 유지 */
+    cursor: pointer;
+    pointer-events: auto;
+    text-decoration: none;
+    border: none;
+}
+.category-link :hover {
+   /*border: solid 2px red;*/
+    color:#e36d1d;
+}
+
+/* .category-title: 텍스트 스타일 유지 */
+.category-title {
+    color: #805c4c;
+    font-size: 20px;
+}
+
+
+    /* .category-icon: 이미지 스타일 유지 */
+.category-icon {
+    aspect-ratio: 1.18;
+    object-fit: cover;
+    object-position: center;
+width: 30px;
+    height: 30px;
+}

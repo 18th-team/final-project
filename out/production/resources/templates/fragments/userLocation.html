@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="userLocation">
+<body>
+<div class="container my-5">
+    <section class="nearby-meetings container" aria-labelledby="nearby-meetings-title">
+        <h2 id="nearby-meetings-title" class="section-title text-center text-md-start my-4">경기도/수원시에서 가장 가까운 모임</h2>
+        <div class="row content-wrapper">
+            <div class="col-lg-6 meetings-grid">
+                <div class="row g-3 meetings-row my-3">
+                    <div class="col-6 col-sm-6">
+                        <article class="card meeting-card h-100">
+                            <img th:src="@{/img/index_review04.jpg}" alt="소중히 여기는 감정을 다루는 시간 이미지" class="card-img-top" />
+                            <div class="card-body meeting-info">
+                                <h5 class="card-title meeting-location">경기도/수원시</h5>
+                                <p class="card-text meeting-title">소중히 여기는 감정을 다루는 시간</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-6 col-sm-6">
+                        <article class="card meeting-card h-100">
+                            <img th:src="@{/img/index_review03.jpg}" alt="[멘토와 돈 공부] 돈의 심리학 이미지" class="card-img-top" />
+                            <div class="card-body meeting-info">
+                                <h5 class="card-title meeting-location">경기도/수원시</h5>
+                                <p class="card-text meeting-title">[멘토와 돈 공부] 돈의 심리학 : 당신은</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="row g-3 meetings-row">
+                    <div class="col-6 col-sm-6">
+                        <article class="card meeting-card h-100">
+                            <img th:src="@{/img/index_review01.jpg}" alt="89즈 모여라! 이미지" class="card-img-top" />
+                            <div class="card-body meeting-info">
+                                <h5 class="card-title meeting-location">경기도/수원시</h5>
+                                <p class="card-text meeting-title">89즈 모여라! (90년~87년생까지)</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-6 col-sm-6">
+                        <article class="card meeting-card h-100">
+                            <img th:src="@{/img/index_review02.jpg}" alt="사주 원데이 클래스 이미지" class="card-img-top" />
+                            <div class="card-body meeting-info">
+                                <h5 class="card-title meeting-location">경기도/수원시</h5>
+                                <p class="card-text meeting-title">사주 원데이 클래스 (심화)_</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block border border-2 h-50 d-flex align-items-center">
+                <img th:src="@{/img/index_main05.jpg}" alt="Decorative image" class="img-fluid" aria-hidden="true" />
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
