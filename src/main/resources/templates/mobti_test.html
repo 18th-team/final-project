@@ -1,4 +1,4 @@
-<html layout:decorate="~{layout}">
+<html layout:decorate="~{layouts/main-layout}">
 <head>
     <title>모락모락 | 나의 MoBTI는?</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,13 +23,15 @@
     </div>
 
     <!-- 결과 페이지 -->
+    <!-- 결과 페이지 -->
     <div id="result-container" style="display: none;">
         <h2>당신의 소모임 성향은?</h2>
         <p id="result-text"></p>
-        <img id="result-img" width="350px" alt="result image">
+        <img id="result-img" width="350px" src="" alt="결과 이미지">
         <p id="result-description"></p>
         <button onclick="restartTest()">다시 테스트하기 🔄</button>
     </div>
+
 </div>
 
 <script layout:fragment="script">
@@ -74,6 +76,24 @@
         "FITD": "🏡 힐링 메이트"
     };
 
+    const mobtiImages = {
+        "LSAE": "/img/mobti/LSAE.png",
+        "LSAD": "/img/mobti/LSAD.png",
+        "LSTE": "/img/mobti/LSTE.png",
+        "LSTD": "/img/mobti/LSTD.png",
+        "LIAE": "/img/mobti/LIAE.png",
+        "LIAD": "/img/mobti/LIAD.png",
+        "LITE": "/img/mobti/LITE.png",
+        "LITD": "/img/mobti/LITD.png",
+        "FSAE": "/img/mobti/FSAE.png",
+        "FSAD": "/img/mobti/FSAD.png",
+        "FSTE": "/img/mobti/FSTE.png",
+        "FSTD": "/img/mobti/FSTD.png",
+        "FIAE": "/img/mobti/FIAE.png",
+        "FIAD": "/img/mobti/FIAD.png",
+        "FITE": "/img/mobti/FITE.png",
+        "FITD": "/img/mobti/FITD.png"
+    };
 
     let scores = { L: 0, F: 0, S: 0, I: 0, A: 0, T: 0, E: 0, D: 0 };
     let currentQuestionIndex = 0;
@@ -112,12 +132,16 @@
         // 유형 코드 생성 (하이픈 없이)
         let resultType = `${scores.L > scores.F ? "L" : "F"}${scores.S > scores.I ? "S" : "I"}${scores.A > scores.T ? "A" : "T"}${scores.E > scores.D ? "E" : "D"}`;
 
-        // 유형 코드에 해당하는 이름 찾기
+        // 유형 코드에 맞는 이름과 이미지 가져오기
         let resultName = mobtiTypes[resultType] || "알 수 없는 유형";
+        let resultImage = mobtiImages[resultType] || "/img/mobti/default.png"; // 기본 이미지 설정
 
         // 결과 출력
-        document.getElementById("result-text").innerText = `당신의 MoBTI 유형: ${resultName}`;
+        document.getElementById("result-text").innerText = `당신의 MoBTI 유형: ${resultType} (${resultName})`;
+        document.getElementById("result-img").src = resultImage; // 이미지 변경
+        document.getElementById("result-img").alt = resultName; // 이미지 설명 변경
     }
+
 
 
     function restartTest() {
