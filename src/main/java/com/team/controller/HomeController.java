@@ -9,4 +9,7 @@ public class HomeController {
     public String home() {
         return "index";
     }
+
+    @GetMapping("/mobti")
+    public String test() { return "mobti_test"; }
 }

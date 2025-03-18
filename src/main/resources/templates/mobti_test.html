@@ -1,0 +1,84 @@
+<html layout:decorate="~{layout}">
+    <div class="container" layout:fragment="content">
+        <!-- 테스트 시작 페이지 -->
+        <div id="start-container">
+            <h1>소모임 성향 테스트</h1>
+            <p>내 성향에 딱 맞는 소모임을 찾아보자! 🎯</p>
+            <img width="350px" th:src="@{/img/test_main.png}" alt="mobti test">
+            <button id="start-button" onclick="startTest()">테스트 시작하기 🚀</button>
+        </div>
+
+        <!-- 테스트 진행 페이지 -->
+        <div id="question-container">
+            <p id="question-text"></p>
+            <button class="option" onclick="selectOption(0)"></button>
+            <button class="option" onclick="selectOption(1)"></button>
+            <p id="progress"></p>
+        </div>
+
+        <!-- 결과 페이지 -->
+        <div id="result-container">
+            <h2>결과</h2>
+            <p id="result-text"></p>
+        </div>
+    </div>
+
+    <script layout:fragment="script">
+        const questions = [
+            { text: "심심한데… 소모임을 찾아볼까?", options: ["흠… 이거 내가 하면 더 잘 만들겠는데? 🤔", "이미 누가 잘 만들어놨겠지~ 🤭"] },
+            { text: "모임에 나오긴 했는데… 분위기가 생각이랑 다르다. 어떡하지?", options: ["“이건 좀 바꾸는게 어때요?” 솔직하게 말한다! ✋", "뭐, 좋은 게 좋은 거지~ 적당히 맞춰준다! 👌"] },
+            { text: "소모임에서 새로운 활동을 한다. 이 때 나는?", options: ["적극적으로 아이디어를 떠올려보자! 💡", "누가 알아서 해주겠지… 난 그냥 참여할래~ 💤"] },
+            { text: "이번 주말에는 뭐하지?", options: ["뭐라도 해야지! 일단 친구들한테 연락을 돌려볼까? 📞", "이불 밖은 위험해. 집에서 쉴래~ 🛏"] },
+            { text: "참여할 소모임을 골라보자. 내가 끌리는 소모임은…", options: ["나가서 몸 좀 써야 제맛이지! 🏃‍♀️", "가만~히 앉아서 하는게 좋아 🧎‍♀️"] },
+            { text: "오늘도 힘든 하루였다. 나의 힐링은…", options: ["얘들아 뭐해? 나와! 친구들과 먹고 마시며 스트레스를 푼다 🎉", "집에 가서 혼자 영화나 볼까? 조용히 스트레스를 푼다 📺"] },
+            { text: "소모임 첫 날! 모임 장소에 도착한 나는…", options: ["“안녕하세요! 저는 OOO인데~” 먼저 말 걸어야지! 😄", "“안녕하세요…” 일단 눈치 좀 보자… 🙄"] },
+            { text: "옆 사람이 말을 걸어온다! 어떻게 대답할까?", options: ["“오~ 이거 좋아하세요? 저돈데!” 적극적인 대화를 시작한다! 😉", "“아… 저도요…” 어색하게 대답해본다 😐"] },
+            { text: "집에 가는 길. 오늘은 이 때가 제일 재밌었지…", options: ["다 같이 떠들면서 웃고 먹고 마셨던 순간 🍻", "소수끼리 조용히 깊은 얘기를 나눴던 순간 ☕"] },
+            { text: "내가 소모임에서 가장 얻고 싶은 건…", options: ["새로운 경험! 새로운 사람들! 인맥과 추억을 만들자 🔥", "누역시 배움과 성장이 중요하지. 좋아하는 분야를 더 깊게 파보자 📚"] },
+            { text: "내가 취미를 정할 때 가장 중요하게 생각하는 것은…", options: ["음… 몰라! 일단 해보고 결정하지 뭐. 이것저것 시도해보자! 🎨", "나는 끝까지 간다. 하나를 제대로 배워서 마스터 할래! 🔬"] },
+            { text: "소모임 활동이 끝났다. 이제 나는…", options: ["자, 다음엔 또 뭘 해볼까? 또 다른 활동을 찾으러 간다 🏄‍♀️", "오늘의 활동을 곱씹으며… 얻은 경험과 지식을 정리한다 🤓"] }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userChoices = [];
+
+        // 테스트 시작하기
+        function startTest() {
+            document.getElementById("start-container").style.display = "none";
+            document.getElementById("question-container").style.display = "block";
+            showQuestion();
+        }
+
+        // 현재 문항 표시
+        function showQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showResult();
+                return;
+            }
+            const question = questions[currentQuestionIndex];
+            document.getElementById("question-text").innerText = question.text;
+            const options = document.querySelectorAll(".option");
+            options[0].innerText = question.options[0];
+            options[1].innerText = question.options[1];
+
+            document.getElementById("progress").innerText = `${currentQuestionIndex + 1} / ${questions.length}`;
+        }
+
+        // 선택 시 다음 문항으로 이동
+        function selectOption(choice) {
+            userChoices.push(choice);
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        // 결과 출력
+        function showResult() {
+            document.getElementById("question-container").style.display = "none";
+            document.getElementById("result-container").style.display = "block";
+            document.getElementById("result-text").innerText = `당신의 선택: ${userChoices}`;
+        }
+
+        // 첫 화면 보이기
+        document.getElementById("start-container").style.display = "block";
+    </script>
+</html>
