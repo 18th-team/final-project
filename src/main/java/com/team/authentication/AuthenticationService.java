@@ -37,12 +37,10 @@ public class AuthenticationService {
     private final HttpSession session;
     private final String clientKey; // 클라이언트별 고유 식별자
 
-    public AuthenticationService(HttpSession session) {
+    public AuthenticationService(HttpSession session, String clientKey) {
         this.session = session;
-        // 세션에서 기존 clientKey 재사용, 없으면 새로 생성
-        String existingKey = (String) session.getAttribute("clientKey");
-        this.clientKey = existingKey != null ? existingKey : UUID.randomUUID().toString();
-        session.setAttribute("clientKey", this.clientKey);
+        this.clientKey = clientKey != null ? clientKey : UUID.randomUUID().toString();
+        System.out.println("Initialized AuthenticationService with clientKey: " + this.clientKey);
     }
 
     public String getClientKey() {
@@ -116,7 +114,49 @@ public class AuthenticationService {
                 .map(bytes -> "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(bytes))
                 .doOnError(error -> System.out.println("캡차 이미지 요청 실패: " + error.getMessage()));
     }
-
+    public Mono<MultiValueMap<String, String>> checkOtp(MultiValueMap<String, String> formData, String otp) {
+        formData.set("otp", otp);
+        WebClient client = WebClient.builder()
+                .filter(cookieFilter())
+                .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
+                .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))
+                .build();
+        return client.post()
+                .uri(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi04.jsp")
+                .header(HttpHeaders.HOST, "pcc.siren24.com")
+                .header(HttpHeaders.REFERER, BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi03.jsp")
+                .header(HttpHeaders.COOKIE, getSelectedCookies("JSESSIONID"))
+                .body(BodyInserters.fromFormData(formData))
+                .exchangeToMono(passResponse4 -> {
+                    System.out.println(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi04.jsp");
+                    if (!passResponse4.statusCode().equals(HttpStatus.OK)) {
+                        return Mono.error(new RuntimeException("상태 코드 " + passResponse4.statusCode()));
+                    }
+                    return passResponse4.bodyToMono(String.class).flatMap(passBody4 -> {
+                        System.out.println(passBody4);
+                        Document passDoc4 = Jsoup.parse(passBody4);
+                        MultiValueMap<String, String> passFormData4 = new LinkedMultiValueMap<>();
+                        Elements scripts2 = passDoc4.select("script");
+                        for (Element script : scripts2) {
+                            String scriptContent = script.data();
+                            System.out.println("Script Content: " + scriptContent);
+                            if (scriptContent.isEmpty()) {
+                                continue;
+                            }
+                            if (scriptContent.contains("pop_alert")) {
+                                Pattern pattern = Pattern.compile("pop_alert\\s*\\(\\s*\"([^\"]*)\"\\s*\\)");
+                                Matcher matcher = pattern.matcher(scriptContent);
+                                if (matcher.find()) {
+                                    String alertText = matcher.group(1).replace("\\n", "\n");
+                                    passFormData4.add("alertText", alertText);
+                                    return Mono.just(passFormData4);
+                                }
+                            }
+                        }
+                        return Mono.just(passFormData4);
+                    });
+                });
+    }
     public Mono<MultiValueMap<String, String>> CertificationRequest(AuthenticationDTO authenticationDTO, MultiValueMap<String, String> formData) {
         formData.set("cellCorp", authenticationDTO.getCellcorp());
         System.out.println(formData);
@@ -202,7 +242,50 @@ public class AuthenticationService {
                                                             passFormData2.add(name, value);
                                                         }
                                                     });
-                                                    return Mono.just(passFormData2);
+                                                    return client.post()
+                                                            .uri(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi03.jsp")
+                                                            .header(HttpHeaders.HOST, "pcc.siren24.com")
+                                                            .header(HttpHeaders.REFERER, BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi02.jsp")
+                                                            .header(HttpHeaders.COOKIE, getSelectedCookies("JSESSIONID"))
+                                                            .body(BodyInserters.fromFormData(passFormData2))
+                                                            .exchangeToMono(passResponse3 -> {
+                                                                System.out.println(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi03.jsp");
+                                                                if (!passResponse3.statusCode().equals(HttpStatus.OK)) {
+                                                                    return Mono.error(new RuntimeException("상태 코드 " + passResponse3.statusCode()));
+                                                                }
+                                                                return passResponse3.bodyToMono(String.class).flatMap(passBody3 -> {
+                                                                    System.out.println(passBody3);
+                                                                    Document passDoc3 = Jsoup.parse(passBody3);
+                                                                    MultiValueMap<String, String> passFormData3 = new LinkedMultiValueMap<>();
+                                                                    /*Elements scripts1 = passDoc3.select("script");
+                                                                    for (Element script : scripts1) {
+                                                                        String scriptContent = script.data();
+                                                                        System.out.println("Script Content: " + scriptContent);
+                                                                        if (scriptContent.isEmpty()) {
+                                                                            continue;
+                                                                        }
+                                                                        if (scriptContent.contains("pop_alert")) {
+                                                                            Pattern pattern = Pattern.compile("pop_alert\\s*\\(\\s*\"([^\"]*)\"\\s*\\)");
+                                                                            Matcher matcher = pattern.matcher(scriptContent);
+                                                                            if (matcher.find()) {
+                                                                                String alertText = matcher.group(1).replace("\\n", "\n");
+                                                                                passFormData3.add("alertText", alertText);
+                                                                                return Mono.just(passFormData3);
+                                                                            }
+                                                                        }
+                                                                    }*/
+                                                                    Elements passFormInputs3 = passDoc3.select("form[name=goPass] input");
+                                                                    passFormInputs3.forEach(input -> {
+                                                                        String name = input.attr("name");
+                                                                        String value = input.attr("value");
+                                                                        if (!name.isEmpty()) {
+                                                                            passFormData3.add(name, value);
+                                                                        }
+                                                                    });
+                                                                    session.setAttribute("resultFormData_" + clientKey, passFormData3);
+                                                                    return Mono.just(passFormData3);
+                                                                });
+                                                            });
                                                 });
                                             });
                                 });
@@ -211,7 +294,6 @@ public class AuthenticationService {
             return Mono.error(new IllegalArgumentException("지원하지 않는 통신사 코드: " + authenticationDTO.getCellcorp()));
         }
     }
-
     public Mono<Void> cookieSetup() {
         WebClient client = WebClient.builder()
                 .filter(cookieFilter())
