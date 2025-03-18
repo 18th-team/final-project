@@ -5,6 +5,8 @@
     <link th:href="@{/css/carousel.css}" rel="stylesheet"/>
     <link th:href="@{/css/navigation.css}" rel="stylesheet"/>
     <link th:href="@{/css/category_menu.css}" rel="stylesheet"/>
+    <link th:href="@{/css/userRecommend.css}" rel="stylesheet"/>
+    <link th:href="@{/css/userLocation.css}" rel="stylesheet"/>
 <style>
               @font-face {
     font-family: 'Pretendard-Thin';
@@ -72,7 +74,9 @@
     <div >
         <div th:replace="~{fragments/carousel :: carousel}"></div>
         <div th:replace="~{fragments/category_menu :: category}"></div>
-        <div th:replace="~{fragments/userRecommend   :: userRecommend}"></div>
+        <div th:replace="~{fragments/userRecommend :: userRecommend}"></div>
+        <div th:replace="~{fragments/userLocation :: userLocation}"></div>
+        <div th:replace="~{fragments/randomList :: randomList}"></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
