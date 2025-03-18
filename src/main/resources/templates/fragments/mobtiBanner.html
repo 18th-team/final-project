@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="mobtiBanner">
+<head>
+<style>
+.mobti-container {
+    background-color: #e36d1d;
+    border-radius: 70px;
+    height: 145px;
+      padding:20px;
+}
+.mobti-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #000;
+}
+
+.mobti-button {
+    white-space: nowrap;
+}
+.btn01 {
+    background-color: #dfd1a6; /* 첫 번째 버튼 색상 */
+    color: #fff;
+    border: none;
+}
+.btn01:hover {
+   border: solid 3px #dfd1a6;
+
+}
+
+.btn02 {
+    background-color: #805c4c; /* 두 번째 버튼 색상 */
+    color: #fff;
+    border: none;
+}
+.btn02:hover {
+    background-color: #6b4b3e;
+}
+</style>
+</head>
+<body>
+<div class="container my-5">
+   <section class="mobti-container" aria-labelledby="mobti-title">
+           <div class="mobti-wrapper row align-items-center h-100">
+               <div class="col-12 col-md-8">
+                   <h1 id="mobti-title" class="mobti-title fs-1 fs-md-2 fs-sm-3">
+                       <a th:href="@{/mobti}" class="text-decoration-none text-dark">나의 MOBTI 찾기📝</a>
+                   </h1>
+               </div>
+               <div class="mobti-buttons col-12 col-md-4 d-flex justify-content-end gap-2 my-3">
+                   <a th:href="@{/mobti}" class="mobti-button btn btn01 text-decoration-none ">MOBTI검사하기</a>
+                   <button class="mobti-button btn btn02" type="button">친구에게 공유하기</button>
+               </div>
+           </div>
+       </section>
+</div>
+</body>
+</html>
