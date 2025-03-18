@@ -1,4 +1,4 @@
-.carousel { position: relative; margin-top: 50px}
+.carousel { position: relative; margin: 50px auto}
 .carousel-inner { border-radius: 8px; overflow: hidden; }
 .carousel-item img { object-fit: contain;}
 .carousel-indicators {
