@@ -48,8 +48,7 @@ public class AuthenticationController {
             return Mono.just("redirect:/test");
         }
         return authService.checkOtp(resultFormData, otp).flatMap(data -> {
-            List<String> alertText = data.get("alertText");
-            model.addAttribute("error", "결과 : " + alertText.get(0));
+            model.addAttribute("error", "결과 : " + data);
             return Mono.just("test2");
         });
     }
