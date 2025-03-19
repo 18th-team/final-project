@@ -1,0 +1,181 @@
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Created by https://www.toptal.com/developers/gitignore/api/windows,eclipse,java\r\n# Edit at https://www.toptal.com/developers/gitignore?templates=windows,eclipse,java\r\n\r\n### Eclipse ###\r\n.metadata\r\nbin/\r\ntmp/\r\n*.tmp\r\n*.bak\r\n*.swp\r\n*~.nib\r\nlocal.properties\r\n.settings/\r\n.loadpath\r\n.recommenders\r\n\r\n# External tool builders\r\n.externalToolBuilders/\r\n\r\n# Locally stored \"Eclipse launch configurations\"\r\n*.launch\r\n\r\n# PyDev specific (Python IDE for Eclipse)\r\n*.pydevproject\r\n\r\n# CDT-specific (C/C++ Development Tooling)\r\n.cproject\r\n\r\n# CDT- autotools\r\n.autotools\r\n\r\n# Java annotation processor (APT)\r\n.factorypath\r\n\r\n# PDT-specific (PHP Development Tools)\r\n.buildpath\r\n\r\n# sbteclipse plugin\r\n.target\r\n\r\n# Tern plugin\r\n.tern-project\r\n\r\n# TeXlipse plugin\r\n.texlipse\r\n\r\n# STS (Spring Tool Suite)\r\n.springBeans\r\n\r\n# Code Recommenders\r\n.recommenders/\r\n\r\n# Annotation Processing\r\n.apt_generated/\r\n.apt_generated_test/\r\n\r\n# Scala IDE specific (Scala & Java development for Eclipse)\r\n.cache-main\r\n.scala_dependencies\r\n.worksheet\r\n\r\n# Uncomment this line if you wish to ignore the project description file.\r\n# Typically, this file would be tracked if it contains build/dependency configurations:\r\n#.project\r\n\r\n### Eclipse Patch ###\r\n# Spring Boot Tooling\r\n.sts4-cache/\r\n\r\n### Java ###\r\n# Compiled class file\r\n*.class\r\n\r\n# Log file\r\n*.log\r\n\r\n# BlueJ files\r\n*.ctxt\r\n\r\n# Mobile Tools for Java (J2ME)\r\n.mtj.tmp/\r\n\r\n# Package Files #\r\n*.jar\r\n*.war\r\n*.nar\r\n*.ear\r\n*.zip\r\n*.tar.gz\r\n*.rar\r\n\r\n# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml\r\nhs_err_pid*\r\nreplay_pid*\r\n\r\n### Windows ###\r\n# Windows thumbnail cache files\r\nThumbs.db\r\nThumbs.db:encryptable\r\nehthumbs.db\r\nehthumbs_vista.db\r\n\r\n# Dump file\r\n*.stackdump\r\n\r\n# Folder config file\r\n[Dd]esktop.ini\r\n\r\n# Recycle Bin used on file shares\r\n$RECYCLE.BIN/\r\n\r\n# Windows Installer files\r\n*.cab\r\n*.msi\r\n*.msix\r\n*.msm\r\n*.msp\r\n\r\n# Windows shortcuts\r\n*.lnk\r\n\r\n# End of https://www.toptal.com/developers/gitignore/api/windows,eclipse,java
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+--- a/.gitignore	(revision d3ec595770899cc6465c50146bf06f48f985141a)
++++ b/.gitignore	(date 1742280273096)
+@@ -1,5 +1,5 @@
+-# Created by https://www.toptal.com/developers/gitignore/api/windows,eclipse,java
+-# Edit at https://www.toptal.com/developers/gitignore?templates=windows,eclipse,java
++# Created by https://www.toptal.com/developers/gitignore/api/eclipse,java,windows,intellij
++# Edit at https://www.toptal.com/developers/gitignore?templates=eclipse,java,windows,intellij
+ 
+ ### Eclipse ###
+ .metadata
+@@ -67,6 +67,119 @@
+ # Spring Boot Tooling
+ .sts4-cache/
+ 
++### Intellij ###
++# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
++# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
++
++# User-specific stuff
++.idea/**/workspace.xml
++.idea/**/tasks.xml
++.idea/**/usage.statistics.xml
++.idea/**/dictionaries
++.idea/**/shelf
++
++# AWS User-specific
++.idea/**/aws.xml
++
++# Generated files
++.idea/**/contentModel.xml
++
++# Sensitive or high-churn files
++.idea/**/dataSources/
++.idea/**/dataSources.ids
++.idea/**/dataSources.local.xml
++.idea/**/sqlDataSources.xml
++.idea/**/dynamic.xml
++.idea/**/uiDesigner.xml
++.idea/**/dbnavigator.xml
++
++# Gradle
++.idea/**/gradle.xml
++.idea/**/libraries
++
++# Gradle and Maven with auto-import
++# When using Gradle or Maven with auto-import, you should exclude module files,
++# since they will be recreated, and may cause churn.  Uncomment if using
++# auto-import.
++# .idea/artifacts
++# .idea/compiler.xml
++# .idea/jarRepositories.xml
++# .idea/modules.xml
++# .idea/*.iml
++# .idea/modules
++# *.iml
++# *.ipr
++
++# CMake
++cmake-build-*/
++
++# Mongo Explorer plugin
++.idea/**/mongoSettings.xml
++
++# File-based project format
++*.iws
++
++# IntelliJ
++out/
++
++# mpeltonen/sbt-idea plugin
++.idea_modules/
++
++# JIRA plugin
++atlassian-ide-plugin.xml
++
++# Cursive Clojure plugin
++.idea/replstate.xml
++
++# SonarLint plugin
++.idea/sonarlint/
++
++# Crashlytics plugin (for Android Studio and IntelliJ)
++com_crashlytics_export_strings.xml
++crashlytics.properties
++crashlytics-build.properties
++fabric.properties
++
++# Editor-based Rest Client
++.idea/httpRequests
++
++# Android studio 3.1+ serialized cache file
++.idea/caches/build_file_checksums.ser
++
++### Intellij Patch ###
++# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
++
++# *.iml
++# modules.xml
++# .idea/misc.xml
++# *.ipr
++
++# Sonarlint plugin
++# https://plugins.jetbrains.com/plugin/7973-sonarlint
++.idea/**/sonarlint/
++
++# SonarQube Plugin
++# https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin
++.idea/**/sonarIssues.xml
++
++# Markdown Navigator plugin
++# https://plugins.jetbrains.com/plugin/7896-markdown-navigator-enhanced
++.idea/**/markdown-navigator.xml
++.idea/**/markdown-navigator-enh.xml
++.idea/**/markdown-navigator/
++
++# Cache file creation bug
++# See https://youtrack.jetbrains.com/issue/JBR-2257
++.idea/$CACHE_FILE$
++
++# CodeStream plugin
++# https://plugins.jetbrains.com/plugin/12206-codestream
++.idea/codestream.xml
++
++# Azure Toolkit for IntelliJ plugin
++# https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
++.idea/**/azureSettings.xml
++
+ ### Java ###
+ # Compiled class file
+ *.class
+@@ -119,4 +232,4 @@
+ # Windows shortcuts
+ *.lnk
+ 
+-# End of https://www.toptal.com/developers/gitignore/api/windows,eclipse,java
+\ No newline at end of file
++# End of https://www.toptal.com/developers/gitignore/api/eclipse,java,windows,intellij
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"15f66eb0-fcde-4668-9d86-0ee631e64485\" name=\"Changes\" comment=\"본인 인증 작업중\">\r\n      <change afterPath=\"$PROJECT_DIR$/src/main/resources/templates/test2.html\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/main/resources/templates/test.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/resources/templates/test.html\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ExternalProjectsData\">\r\n    <projectState path=\"$PROJECT_DIR$\">\r\n      <ProjectState />\r\n    </projectState>\r\n  </component>\r\n  <component name=\"ExternalProjectsManager\">\r\n    <system id=\"GRADLE\">\r\n      <state>\r\n        <projects_view>\r\n          <tree_state>\r\n            <expand>\r\n              <path>\r\n                <item name=\"\" type=\"6a2764b6:ExternalProjectsStructure$RootNode\" />\r\n                <item name=\"18th_final\" type=\"f1a62948:ProjectNode\" />\r\n              </path>\r\n            </expand>\r\n            <select />\r\n          </tree_state>\r\n        </projects_view>\r\n      </state>\r\n    </system>\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n        <option value=\"HTML File\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"development\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;kwix316&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,\r\n    &quot;accountId&quot;: &quot;af438f09-1c98-4fc6-896c-82d063cb9dc4&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 5\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2uC1tHvTWJxqwvxdMxDQCMmFCyR\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"ASKED_SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\r\n    \"DefaultHtmlFileTemplate\": \"HTML File\",\r\n    \"Gradle.Build final-project.executor\": \"Run\",\r\n    \"RequestMappingsPanelOrder0\": \"0\",\r\n    \"RequestMappingsPanelOrder1\": \"1\",\r\n    \"RequestMappingsPanelWidth0\": \"75\",\r\n    \"RequestMappingsPanelWidth1\": \"75\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"Spring Boot.Application.executor\": \"Run\",\r\n    \"git-widget-placeholder\": \"jsw\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"last_opened_file_path\": \"C:/Users/GREEN/IdeaProjects/final-project/src/main/java/com/team/authentication\",\r\n    \"node.js.detected.package.eslint\": \"true\",\r\n    \"node.js.detected.package.tslint\": \"true\",\r\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\r\n    \"nodejs_package_manager_path\": \"npm\",\r\n    \"project.structure.last.edited\": \"Modules\",\r\n    \"project.structure.proportion\": \"0.0\",\r\n    \"project.structure.side.proportion\": \"0.0\",\r\n    \"settings.editor.selected.configurable\": \"build.tools\",\r\n    \"vue.rearranger.settings.migration\": \"true\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\GREEN\\IdeaProjects\\final-project\\src\\main\\java\\com\\team\\authentication\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\">\r\n    <configuration default=\"true\" type=\"JetRunConfigurationType\">\r\n      <module name=\"final-project\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"KotlinStandaloneScriptRunConfigurationType\">\r\n      <module name=\"final-project\" />\r\n      <option name=\"filePath\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"Application\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\r\n      <option name=\"FRAME_DEACTIVATION_UPDATE_POLICY\" value=\"UpdateClassesAndResources\" />\r\n      <module name=\"18th_final.main\" />\r\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"com.team.Application\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n        <option name=\"LaunchBrowser.Before.Run\" url=\"http://localhost:8080/\" />\r\n      </method>\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59\" />\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"15f66eb0-fcde-4668-9d86-0ee631e64485\" name=\"Changes\" comment=\"\" />\r\n      <created>1741737955556</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1741737955556</updated>\r\n      <workItem from=\"1741737956819\" duration=\"4173000\" />\r\n      <workItem from=\"1742169606910\" duration=\"24000\" />\r\n      <workItem from=\"1742258806095\" duration=\"984000\" />\r\n      <workItem from=\"1742259797716\" duration=\"144000\" />\r\n      <workItem from=\"1742259949124\" duration=\"182000\" />\r\n      <workItem from=\"1742260136860\" duration=\"6628000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"본인 인증 작업중\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1742259899877</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1742259899877</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"본인 인증 작업중\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1742260463274</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1742260463274</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"3\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"본인 인증 작업중\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"본인 인증 작업중\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision d3ec595770899cc6465c50146bf06f48f985141a)
++++ b/.idea/workspace.xml	(date 1742280277839)
+@@ -5,13 +5,9 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="본인 인증 작업중">
+-      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/test2.html" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/test.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -89,7 +85,7 @@
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+     "RunOnceActivity.git.unshallow": "true",
+     "Spring Boot.Application.executor": "Run",
+-    "git-widget-placeholder": "jsw",
++    "git-widget-placeholder": "#3 on jsw",
+     "kotlin-language-version-configured": "true",
+     "last_opened_file_path": "C:/Users/GREEN/IdeaProjects/final-project/src/main/java/com/team/authentication",
+     "node.js.detected.package.eslint": "true",
