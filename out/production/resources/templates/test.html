@@ -15,7 +15,7 @@
     </div>
     <div class="row">
         <div class="col mt-5">
-            <form th:action="@{/test}" method="post">
+            <form th:action="@{/}" method="post">
                 <input type="hidden" name="clientKey" th:value="${clientKey}"/>
                 <select class="form-select" name="cellCorp">
                     <option value="KTF">KT</option>
@@ -39,7 +39,7 @@
                     <img th:src="${captchaImage}" alt="">
                     <input type="text" class="form-control" name="captchaInput" placeholder="보안문자 입력" maxlength="6">
                 </div>
-                <button type="submit" class="btn btn-primary">인증번호 전송</button>
+                <button class="btn btn-primary">확인</button>
             </form>
 
         </div>
