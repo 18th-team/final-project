@@ -1,0 +1,58 @@
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Pretendard-Bold';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Pretendard-Regular', sans-serif;
+    text-align: center;
+    margin: 50px;
+}
+
+#start-container, #question-container {
+    margin-top: 130px;
+}
+
+#start-container h1, #question-container h3 {
+    font-family: 'Pretendard-Bold', sans-serif;
+}
+
+#question-text {
+    margin-bottom: 30px;
+}
+
+/*
+#start-container, #question-container, #result-container {
+    display: none;
+}
+*/
+.option, #start-button {
+    display: block;
+    margin: 10px auto;
+    padding: 15px;
+    width: 80%;
+    max-width: 300px;
+    background-color: #E36D1D;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+.option:hover, #start-button:hover {
+    background: #805C4C;
+}
+#progress {
+    margin-top: 20px;
+    font-size: 16px;
+}
