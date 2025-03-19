@@ -44,7 +44,7 @@ public class HomeController {
         model.addAttribute("userCreateForm", userCreateForm);
         String clientKey = UUID.randomUUID().toString();
         AuthenticationService authService = new AuthenticationService(session, clientKey);
-        model.addAttribute("clientKey", authService.getClientKey()); // clientKey 전달
+        model.addAttribute("clientKey", clientKey); // clientKey 전달
         return "signup";
     }
 }
