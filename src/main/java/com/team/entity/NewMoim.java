@@ -35,7 +35,7 @@ public class NewMoim {
     private Integer feeAmount;
 
     @ElementCollection
-    @CollectionTable(name = "new_moim_fee_details", joinColumns = @JoinColumn(name = "new_moim_id"))
+    @CollectionTable(name = "moim_fee_details", joinColumns = @JoinColumn(name = "new_moim_id"))
     @Column(name = "fee_detail")
     @Enumerated(EnumType.STRING)
     private List<FeeDetail> feeDetails = new ArrayList<>();
@@ -52,7 +52,7 @@ public class NewMoim {
     private MoimTheme moimTheme;
 
     @ElementCollection
-    @CollectionTable(name = "new_moim_images", joinColumns = @JoinColumn(name = "new_moim_id"))
+    @CollectionTable(name = "moim_images", joinColumns = @JoinColumn(name = "new_moim_id"))
     @Column(name = "image_path")
     private List<String> images = new ArrayList<>();
 
