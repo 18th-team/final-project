@@ -19,9 +19,17 @@
     color: #805c4c;
     font-size: 20px;
 }
+@media (max-width: 754px){
+    .category-title{
+        font-size: 14px;
+    }
+    .category-icon {
+        width: 8px;
+        height: 8px;
+    }
+}
 
-
-    /* .category-icon: 이미지 스타일 유지 */
+/* .category-icon: 이미지 스타일 유지 */
 .category-icon {
     aspect-ratio: 1.18;
     object-fit: cover;
