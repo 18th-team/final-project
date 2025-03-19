@@ -1,0 +1,57 @@
+.nav-tabs {
+    border-bottom: none;
+}
+
+.nav-link {
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    padding: 12px 24px;
+}
+
+.nav-link.active {
+    border-bottom: 3px solid #ff6600; /* 강조 색상 */
+}
+
+.search-bar {
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+    width: 100%;
+}
+
+.post-card {
+    border-radius: 10px;
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.post-author {
+    font-weight: bold;
+}
+
+.post-time {
+    color: gray;
+    font-size: 14px;
+}
+
+.hashtags span {
+    background: #f1f1f1;
+    border-radius: 12px;
+    padding: 5px 10px;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+}
+
+.icons span {
+    margin-right: 15px;
+    font-size: 16px;
+}
