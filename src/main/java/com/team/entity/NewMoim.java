@@ -1,8 +1,7 @@
 package com.team.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,8 +10,11 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
-public class newMoim {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+
+public class NewMoim {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,22 +39,25 @@ public class newMoim {
     @Column
     private Integer feeAmount; // 참가비 금액 (있을 경우)
 
-    //이것도 뭐지?
+
     @ElementCollection
     @CollectionTable(name = "moim_fee_details", joinColumns = @JoinColumn(name = "moim_id"))
     @Column(name = "fee_detail")
     @Enumerated(EnumType.STRING)
-    private List<FeeDetail> feeDetails = new ArrayList<>(); // 참가비 세부 정보 (다중 선택 가능)
+
+    private List<FeeDetail> feeDetails = new ArrayList<>();
+    // 참가비 세부 정보 (다중 선택 가능)
 
     // 장소
     @Column(nullable = false)
     private Boolean isOnline; // 온라인 여부
 
+    @Enumerated(EnumType.STRING)
     @Column
-    private String city; // 도시 (오프라인일 경우)
+    private City city;
 
     @Column
-    private String district; // 군/구 (오프라인일 경우)
+    private String district;
 
     // 모임 주제
     @Enumerated(EnumType.STRING)
