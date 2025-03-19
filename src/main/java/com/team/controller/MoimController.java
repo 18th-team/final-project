@@ -1,6 +1,8 @@
 package com.team.controller;
 
+import com.team.dto.DistrictDto;
 import com.team.entity.*;
+import com.team.repository.DistrictRepository;
 import com.team.repository.MoimRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +15,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class MoimController {
     private final MoimRepository moimRepository;
+    private final DistrictRepository districtRepository;
 
-    public MoimController(MoimRepository moimRepository) {
+    public MoimController(MoimRepository moimRepository, DistrictRepository districtRepository) {
         this.moimRepository = moimRepository;
+        this.districtRepository = districtRepository;
     }
 
     @GetMapping("/moim/create")
@@ -29,23 +34,25 @@ public class MoimController {
 
     @PostMapping("/moim/create")
     public String createMoim(
-            @RequestParam Integer minParticipants,
-            @RequestParam Integer maxParticipants,
-            @RequestParam AgeRestriction ageRestriction,
-            @RequestParam Boolean hasFee,
-            @RequestParam(required = false) Integer feeAmount,
-            @RequestParam(required = false) List<FeeDetail> feeDetails,
-            @RequestParam Boolean isOnline,
-            @RequestParam(required = false) String city,
-            @RequestParam(required = false) String district,
-            @RequestParam MoimTheme moimTheme,
+            @RequestParam("minParticipants") Integer minParticipants,
+            @RequestParam("maxParticipants") Integer maxParticipants,
+            @RequestParam("ageRestriction") AgeRestriction ageRestriction,
+            @RequestParam("hasFee") Boolean hasFee,
+            @RequestParam(value = "feeAmount", required = false) Integer feeAmount,
+            @RequestParam(value = "feeDetails", required = false) List<FeeDetail> feeDetails,
+            @RequestParam("isOnline") Boolean isOnline,
+            @RequestParam(value = "district", required = false) Long districtId, // District ID로 받음
+            @RequestParam("moimTheme") MoimTheme moimTheme,
             @RequestParam("images") List<MultipartFile> images,
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam LocalDate date,
-            @RequestParam LocalTime time) {
-        City cityEnum = (city != null && !city.isEmpty()) ? City.valueOf(city) : null;
-        NewMoim moim = NewMoim.builder()
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("date") LocalDate date,
+            @RequestParam("time") LocalTime time) {
+
+        District district = (districtId != null) ? districtRepository.findById(districtId)
+                .orElse(null) : null;
+
+        NewMoim newMoim = NewMoim.builder()
                 .minParticipants(minParticipants)
                 .maxParticipants(maxParticipants)
                 .ageRestriction(ageRestriction)
@@ -53,8 +60,7 @@ public class MoimController {
                 .feeAmount(hasFee ? feeAmount : null)
                 .feeDetails(hasFee ? feeDetails : null)
                 .isOnline(isOnline)
-                .city(isOnline ? null : cityEnum) // City 타입으로 전달
-                .district(isOnline ? null : district)
+                .district(isOnline ? null : district) // District 객체 설정
                 .moimTheme(moimTheme)
                 .images(images.stream().map(file -> saveImage(file)).toList())
                 .title(title)
@@ -63,32 +69,27 @@ public class MoimController {
                 .time(time)
                 .build();
 
-        moimRepository.save(moim);
+        moimRepository.save(newMoim);
         return "redirect:/";
     }
 
     @GetMapping("/moim/districts")
     @ResponseBody
-    public List<String> getDistricts(@RequestParam String city) {
-        System.out.println("Received city: " + city); // 서버 로그
+    public List<DistrictDto> getDistricts(@RequestParam(value = "city") String city) {
+        System.out.println("Received city: " + city);
         try {
-            switch (city) {
-                case "GYEONGGI":
-                    return List.of("수원시 팔달구", "수원시 장안구", "평택시", "이천시", "안양시 만안구");
-                case "SEOUL":
-                    return List.of("강남구", "종로구", "영등포구", "마포구");
-                case "INCHEON":
-                    return List.of("남동구", "연수구", "부평구");
-                default:
-                    return Collections.emptyList(); // 기본값으로 빈 리스트 반환
-            }
+            City cityEnum = City.valueOf(city);
+            List<District> districts = districtRepository.findByCity(cityEnum);
+            return districts.stream()
+                    .map(d -> new DistrictDto(d.getId(), d.getName()))
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             System.err.println("Error in getDistricts: " + e.getMessage());
-            return Collections.emptyList(); // 예외 발생 시 빈 리스트 반환
+            return Collections.emptyList();
         }
     }
 
     private String saveImage(MultipartFile file) {
-        return "img/" + file.getOriginalFilename(); // 임시 구현
+        return "img/" + file.getOriginalFilename();
     }
 }

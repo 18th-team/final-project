@@ -54,30 +54,29 @@
             </div>
         </div>
 
-        <!-- 장소 -->
-        <div class="mb-3">
-            <label>장소</label>
-            <select name="isOnline" class="form-control" id="isOnline" onchange="toggleLocation()">
-                <option value="false">오프라인</option>
-                <option value="true">온라인</option>
-            </select>
-        </div>
-        <div id="locationDetails" style="display:block;">
-            <div class="mb-3">
-                <label>도시</label>
-                <select name="city" class="form-control select2" id="city">
-                    <option th:each="city : ${T(com.team.entity.City).values()}"
-                            th:value="${city}" th:text="${city.koreanName}"></option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label>군/구</label>
-                <select name="district" class="form-control select2" id="district">
-                    <option value="">선택하세요</option>
-                </select>
-            </div>
-        </div>
-
+      <!-- 장소 -->
+      <div class="mb-3">
+          <label>장소</label>
+          <select name="isOnline" class="form-control" id="isOnline" onchange="toggleLocation()">
+              <option value="false">오프라인</option>
+              <option value="true">온라인</option>
+          </select>
+      </div>
+      <div id="locationDetails" style="display:block;">
+          <div class="mb-3">
+              <label>도시</label>
+              <select name="city" class="form-control select2" id="city">
+                  <option th:each="city : ${T(com.team.entity.City).values()}"
+                          th:value="${city}" th:text="${city.koreanName}"></option>
+              </select>
+          </div>
+          <div class="mb-3">
+              <label>군/구</label>
+              <select name="district" class="form-control select2" id="district">
+                  <option value="">선택하세요</option>
+              </select>
+          </div>
+      </div>
         <!-- 모임 주제 -->
         <div class="mb-3">
             <label>모임 주제</label>
@@ -128,57 +127,41 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Select2 초기화
-        $('#city').select2({
-            placeholder: '도시를 선택하세요',
-            allowClear: true
-        });
-        $('#district').select2({
-            placeholder: '군/구를 선택하세요',
-            allowClear: true
-        });
+ $(document).ready(function() {
+         $('#city').select2({
+             placeholder: '도시를 선택하세요',
+             allowClear: true
+         });
+         $('#district').select2({
+             placeholder: '군/구를 선택하세요',
+             allowClear: true
+         });
 
-        // 도시 선택 시 군/구 로드
-        $('#city').on('change', function() {
-            const city = $(this).val();
-            console.log('Selected city:', city); // 디버깅용 로그
-            if (city) {
-                $.ajax({
-                    url: '/moim/districts',
-                    type: 'GET',
-                    data: { city: city },
+         $('#city').on('change', function() {
+             const city = $(this).val();
+             console.log('Selected city:', city);
+             if (city) {
+                 $.ajax({
+                     url: '/moim/districts',
+                     type: 'GET',
+                     data: { city: city },
                     success: function(data) {
-                        console.log('Districts received:', data); // 디버깅용 로그
+                        console.log('Districts received:', data);
                         $('#district').empty().append('<option value="">선택하세요</option>');
                         data.forEach(function(district) {
-                            $('#district').append(`<option value="${district}">${district}</option>`);
+                            $('#district').append(`<option value="${district.id}">${district.name}</option>`);
                         });
                         $('#district').trigger('change');
                     },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX error:', status, error); // 오류 로그
-                    }
-                });
-            } else {
-                $('#district').empty().append('<option value="">선택하세요</option>');
-            }
-        });
-    });
-
-    function toggleFeeDetails() {
-        const hasFee = document.getElementById('hasFee').value === 'true';
-        document.getElementById('feeDetails').style.display = hasFee ? 'block' : 'none';
-    }
-
-    function toggleLocation() {
-        const isOnline = document.getElementById('isOnline').value === 'true';
-        document.getElementById('locationDetails').style.display = isOnline ? 'none' : 'block';
-        if (isOnline) {
-            $('#city').val(null).trigger('change');
-            $('#district').val(null).trigger('change');
-        }
-    }
+                     error: function(xhr, status, error) {
+                         console.error('AJAX error:', status, error);
+                     }
+                 });
+             } else {
+                 $('#district').empty().append('<option value="">선택하세요</option>');
+             }
+         });
+     });
 </script>
 </body>
 </html>
