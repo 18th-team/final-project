@@ -26,18 +26,18 @@ body {
 
 .profile-card h4 {
     font-family: 'Pretendard-Bold', sans-serif;
-    font-size: 1.25rem; /* 모바일: 20px */
+    font-size: 1.5rem; /* 모바일: 20px */
 }
 
 .profile-card img {
-    width: 60px; /* 모바일 */
-    height: 60px;
+    width: 80px; /* 모바일 */
+    height: 80px;
     margin-bottom: 10px;
 }
 
 .form-label {
     font-family: 'Pretendard-Regular', sans-serif;
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: rgb(77, 77, 77);
 }
 
@@ -69,7 +69,7 @@ body {
 /* 태블릿 조정 */
 @media (min-width: 768px) {
     .profile-card {
-        padding: 30px;
+        padding: 20px;
     }
     .profile-card h4 {
         font-size: 1.5rem; /* 태블릿: 24px */
@@ -86,7 +86,7 @@ body {
         padding: 10px;
     }
     .form-control::placeholder {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
     .btn-save {
         padding: 10px;
@@ -99,20 +99,20 @@ body {
         padding: 40px;
     }
     .profile-card h4 {
-        font-size: 2.5rem; /* 데스크톱: 32px */
+        font-size: 2.2rem; /* 데스크톱: 32px */
     }
     .profile-card img {
         width: 220px;
         height: 240px;
     }
     .form-label {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
     .form-control {
         padding: 22px;
     }
     .form-control::placeholder {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
     .btn-save {
         padding: 18px;
