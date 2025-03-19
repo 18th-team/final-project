@@ -33,7 +33,6 @@ public class AuthenticationService {
     private static final String BASEURL2 = "https://pcc.siren24.com/";
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0";
 
-    private String updatedUrl = "";
     private final HttpSession session;
     private final String clientKey; // 클라이언트별 고유 식별자
 
@@ -85,34 +84,36 @@ public class AuthenticationService {
                 .collect(Collectors.joining("; "));
     }
 
-    private String getAllCookies() {
-        Map<String, String> cookieStore = getCookieStoreFromSession();
-        return cookieStore.entrySet().stream()
-                .map(entry -> entry.getKey() + "=" + entry.getValue())
-                .collect(Collectors.joining("; "));
-    }
-
-    public Mono<String> getCaptchaImage() {
+    public Mono<String> getCaptchaImage(Integer cnt) {
         WebClient client = WebClient.builder()
                 .filter(cookieFilter())
                 .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))
                 .build();
-        String cookies = getSelectedCookies("JSESSIONID");
-        System.out.println("Sending Cookie in getCaptchaImage: " + cookies);
-        if (cookies.isEmpty()) {
-            System.out.println("Warning: JSESSIONID is missing in getCaptchaImage");
+        if (cnt == null) {
+            return client.get()
+                    .uri(BASEURL2 + "pcc_V3/Captcha/simpleCaptchaImg.jsp")
+                    .header(HttpHeaders.HOST, "pcc.siren24.com")
+                    .header(HttpHeaders.REFERER, BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi01.jsp")
+                    .header(HttpHeaders.COOKIE, getSelectedCookies("JSESSIONID"))
+                    .accept(MediaType.IMAGE_JPEG)
+                    .retrieve()
+                    .bodyToMono(byte[].class)
+                    .map(bytes -> "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(bytes))
+                    .doOnError(error -> System.out.println("캡차 이미지 요청 실패: " + error.getMessage()));
+        }else{
+            return client.get()
+                    .uri(BASEURL2 + "pcc_V3/Captcha/simpleCaptchaImg.jsp?cnt=" + cnt)
+                    .header(HttpHeaders.HOST, "pcc.siren24.com")
+                    .header(HttpHeaders.REFERER, BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi01.jsp")
+                    .header(HttpHeaders.COOKIE, getSelectedCookies("JSESSIONID"))
+                    .accept(MediaType.IMAGE_JPEG)
+                    .retrieve()
+                    .bodyToMono(byte[].class)
+                    .map(bytes -> "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(bytes))
+                    .doOnError(error -> System.out.println("캡차 이미지 요청 실패: " + error.getMessage()));
         }
-        return client.get()
-                .uri(BASEURL2 + "pcc_V3/Captcha/simpleCaptchaImg.jsp")
-                .header(HttpHeaders.HOST, "pcc.siren24.com")
-                .header(HttpHeaders.REFERER, BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi01.jsp")
-                .header(HttpHeaders.COOKIE, getSelectedCookies("JSESSIONID"))
-                .accept(MediaType.IMAGE_JPEG)
-                .retrieve()
-                .bodyToMono(byte[].class)
-                .map(bytes -> "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(bytes))
-                .doOnError(error -> System.out.println("캡차 이미지 요청 실패: " + error.getMessage()));
+
     }
     public Mono<MultiValueMap<String, String>> checkOtp(MultiValueMap<String, String> formData, String otp) {
         formData.set("otp", otp);
@@ -149,7 +150,12 @@ public class AuthenticationService {
                                 if (matcher.find()) {
                                     String alertText = matcher.group(1).replace("\\n", "\n");
                                     passFormData4.add("alertText", alertText);
-                                    return Mono.just(passFormData4);
+                                    // "인증이 정상적으로 처리되었습니다." 확인
+                                    if ("인증이 정상적으로 처리되었습니다.".equals(alertText)) {
+                                        return Mono.just(passFormData4); // 성공 시 바로 반환
+                                    } else {
+                                        return Mono.error(new RuntimeException(alertText)); // 실패 시 예외 발생
+                                    }
                                 }
                             }
                         }
@@ -157,7 +163,7 @@ public class AuthenticationService {
                     });
                 });
     }
-    public Mono<MultiValueMap<String, String>> CertificationRequest(AuthenticationDTO authenticationDTO, MultiValueMap<String, String> formData) {
+    public Mono<MultiValueMap<String, String>> CertificationRequest(AuthenticationDTO authenticationDTO, MultiValueMap<String, String> formData, String captchaInput) {
         formData.set("cellCorp", authenticationDTO.getCellcorp());
         System.out.println(formData);
         System.out.println("CertificationRequest Cookie : " + getSelectedCookies("JSESSIONID"));
@@ -191,11 +197,15 @@ public class AuthenticationService {
                                             passFormData.add(name, value);
                                         }
                                     });
+                                    List<String> errorMessages = passFormData.get("errMsg");
+                                    if (errorMessages != null && !errorMessages.isEmpty()) {
+                                        return Mono.error(new RuntimeException(errorMessages.get(0)));
+                                    }
                                     passFormData.set("userName", authenticationDTO.getName());
                                     passFormData.set("birthDay1", authenticationDTO.getBirthDay1());
                                     passFormData.set("birthDay2", authenticationDTO.getBirthDay2());
                                     passFormData.set("No", authenticationDTO.getPhone());
-                                    passFormData.set("captchaInput", authenticationDTO.getCaptchaInput());
+                                    passFormData.set("captchaInput", captchaInput);
                                     passFormData.set("passGbn", "N");
 
                                     passFormData.remove("phoneNum");
@@ -214,13 +224,11 @@ public class AuthenticationService {
                                                     return Mono.error(new RuntimeException("상태 코드 " + passResponse2.statusCode()));
                                                 }
                                                 return passResponse2.bodyToMono(String.class).flatMap(passBody2 -> {
-                                                    System.out.println(passBody2);
                                                     Document passDoc2 = Jsoup.parse(passBody2);
                                                     MultiValueMap<String, String> passFormData2 = new LinkedMultiValueMap<>();
                                                     Elements scripts = passDoc2.select("script");
                                                     for (Element script : scripts) {
                                                         String scriptContent = script.data();
-                                                        System.out.println("Script Content: " + scriptContent);
                                                         if (scriptContent.isEmpty()) {
                                                             continue;
                                                         }
@@ -229,8 +237,7 @@ public class AuthenticationService {
                                                             Matcher matcher = pattern.matcher(scriptContent);
                                                             if (matcher.find()) {
                                                                 String alertText = matcher.group(1).replace("\\n", "\n");
-                                                                passFormData2.add("alertText", alertText);
-                                                                return Mono.just(passFormData2);
+                                                                return Mono.error(new RuntimeException(alertText));
                                                             }
                                                         }
                                                     }
@@ -242,6 +249,10 @@ public class AuthenticationService {
                                                             passFormData2.add(name, value);
                                                         }
                                                     });
+                                                    List<String> errorMessages2 = passFormData2.get("errMsg");
+                                                    if (errorMessages2 != null && !errorMessages2.isEmpty()) {
+                                                        return Mono.error(new RuntimeException(errorMessages2.get(0)));
+                                                    }
                                                     return client.post()
                                                             .uri(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi03.jsp")
                                                             .header(HttpHeaders.HOST, "pcc.siren24.com")
@@ -254,7 +265,6 @@ public class AuthenticationService {
                                                                     return Mono.error(new RuntimeException("상태 코드 " + passResponse3.statusCode()));
                                                                 }
                                                                 return passResponse3.bodyToMono(String.class).flatMap(passBody3 -> {
-                                                                    System.out.println(passBody3);
                                                                     Document passDoc3 = Jsoup.parse(passBody3);
                                                                     MultiValueMap<String, String> passFormData3 = new LinkedMultiValueMap<>();
                                                                     /*Elements scripts1 = passDoc3.select("script");
@@ -294,13 +304,11 @@ public class AuthenticationService {
             return Mono.error(new IllegalArgumentException("지원하지 않는 통신사 코드: " + authenticationDTO.getCellcorp()));
         }
     }
-    public Mono<Void> cookieSetup() {
+   public Mono<Void> updatedUrl() {
         WebClient client = WebClient.builder()
-                .filter(cookieFilter())
                 .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))
                 .build();
-        System.out.println("cookieSetup Cookie : " + getSelectedCookies("JSESSIONID"));
         return client.get()
                 .uri(BASEURL + "mypage/login.htm?act=nlogin")
                 .exchangeToMono(response -> {
@@ -308,11 +316,15 @@ public class AuthenticationService {
                     if (!response.statusCode().equals(HttpStatus.OK)) {
                         return Mono.error(new RuntimeException("상태 코드 " + response.statusCode()));
                     }
+                    List<String> setCookies = response.headers().header(HttpHeaders.SET_COOKIE);
+                    String cookieHeader = setCookies.stream()
+                            .map(cookie -> cookie.split(";", 2)[0]) // "key=value" 형식만 추출
+                            .collect(Collectors.joining("; "));
                     return response.bodyToMono(String.class).flatMap(body -> client.get()
                             .uri(BASEURL + "tool/pcc/check.jsp?for=nlogin")
                             .header(HttpHeaders.HOST, "www.jeju.go.kr")
                             .header(HttpHeaders.REFERER, BASEURL + "mypage/login.htm?act=nlogin")
-                            .header(HttpHeaders.COOKIE, getAllCookies())
+                            .header(HttpHeaders.COOKIE, cookieHeader)
                             .exchangeToMono(checkResponse -> {
                                 System.out.println("Requesting: " + BASEURL + "tool/pcc/check.jsp?for=nlogin");
                                 if (!checkResponse.statusCode().equals(HttpStatus.OK)) {
@@ -347,10 +359,9 @@ public class AuthenticationService {
                                                     builder.queryParam(name, values.get(0));
                                                 }
                                             });
-                                            this.updatedUrl = builder.build().toUriString();
-                                            session.setAttribute("updatedUrl_" + clientKey, this.updatedUrl);
-                                            System.out.println("Updated URL set for clientKey: " + clientKey + " - " + this.updatedUrl);
-                                            System.out.println("Cookie after setup: " + getSelectedCookies("JSESSIONID"));
+                                            String updatedUrl = builder.build().toUriString();
+                                            session.setAttribute("updatedUrl_" + clientKey, updatedUrl);
+                                            System.out.println("Updated URL set for clientKey: " + clientKey + " - " + updatedUrl);
                                             return Mono.empty();
                                         });
                             }));
@@ -359,12 +370,12 @@ public class AuthenticationService {
 
     public Mono<MultiValueMap<String, String>> extractReqInfoAndRetUrl(String clientKey) {
         System.out.println("extractReqInfoAndRetUrl: " + getSelectedCookies("JSESSIONID"));
-        this.updatedUrl = (String) session.getAttribute("updatedUrl_" + clientKey);
-        if (this.updatedUrl == null || this.updatedUrl.isEmpty()) {
+        String updatedUrl = (String) session.getAttribute("updatedUrl_" + clientKey);
+        if (updatedUrl == null || updatedUrl.isEmpty()) {
             return Mono.error(new RuntimeException("세션에서 updatedUrl을 찾을 수 없습니다. clientKey: " + clientKey));
         }
 
-        System.out.println("Requesting URL for clientKey: " + clientKey + " - " + this.updatedUrl);
+        System.out.println("Requesting URL for clientKey: " + clientKey + " - " + updatedUrl);
         WebClient client = WebClient.builder()
                 .filter(cookieFilter())
                 .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
@@ -372,12 +383,12 @@ public class AuthenticationService {
                 .build();
 
         return client.get()
-                .uri(this.updatedUrl)
+                .uri(updatedUrl)
                 .header(HttpHeaders.HOST, "pcc.siren24.com")
                 .header(HttpHeaders.REFERER, BASEURL)
                 .header(HttpHeaders.COOKIE, getSelectedCookies("JSESSIONID"))
                 .exchangeToMono(certResponse -> {
-                    System.out.println(this.updatedUrl);
+                    System.out.println(updatedUrl);
                     if (!certResponse.statusCode().equals(HttpStatus.OK)) {
                         return Mono.error(new RuntimeException("세 번째 요청 실패: 상태 코드 " + certResponse.statusCode()));
                     }
@@ -396,7 +407,7 @@ public class AuthenticationService {
                                 List<String> certErrorMessages = certFormData.get("errMsg");
                                 if (certErrorMessages != null && !certErrorMessages.isEmpty()) {
                                     certFormData.add("alertText", certErrorMessages.toString());
-                                    return Mono.just(certFormData);
+                                    return Mono.error(new RuntimeException(certErrorMessages.toString()));
                                 }
                                 String certActionUrl = certDoc.select("form[name=Pcc_V3Form]").attr("action");
                                 System.out.println("certActionUrl: " + certActionUrl);
@@ -428,6 +439,7 @@ public class AuthenticationService {
                                                             finalFormData.add("alertText", finalErrorMessages.toString());
                                                             return Mono.just(finalFormData);
                                                         }
+
                                                         return Mono.just(finalFormData);
                                                     });
                                         });
