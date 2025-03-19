@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,8 +50,18 @@ public class MoimController {
             @RequestParam("date") LocalDate date,
             @RequestParam("time") LocalTime time) {
 
+// District 조회
         District district = (districtId != null) ? districtRepository.findById(districtId)
                 .orElse(null) : null;
+
+        // 이미지 저장 경로 리스트
+        List<String> imagePaths = new ArrayList<>();
+        for (MultipartFile file : images) {
+            if (!file.isEmpty()) {
+                String path = saveImage(file);
+                imagePaths.add(path);
+            }
+        }
 
         NewMoim newMoim = NewMoim.builder()
                 .minParticipants(minParticipants)
@@ -62,7 +73,7 @@ public class MoimController {
                 .isOnline(isOnline)
                 .district(isOnline ? null : district) // District 객체 설정
                 .moimTheme(moimTheme)
-                .images(images.stream().map(file -> saveImage(file)).toList())
+                .images(imagePaths)
                 .title(title)
                 .content(content)
                 .date(date)
