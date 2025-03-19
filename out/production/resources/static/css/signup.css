@@ -1,82 +1,123 @@
-        @font-face {
-            font-family: 'Pretendard-Regular';
-            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
-            font-weight: 400;
-            font-style: normal;
-        }
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
 
-        @font-face {
-            font-family: 'Pretendard-Bold';
-            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
-            font-weight: 700;
-            font-style: normal;
-        }
+@font-face {
+    font-family: 'Pretendard-Bold';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
 
-        body {
-            background-color: #fff;
-        }
+body {
+    background-color: #fff;
+}
 
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+.profile-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    background-color: #fff;
+}
 
-        .profile-card {
-            border: none;
-            border-radius: 10px;
-            padding: 30px;
-            width: 350px;
-            box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
+.profile-card h4 {
+    font-family: 'Pretendard-Bold', sans-serif;
+    font-size: 1.25rem; /* 모바일: 20px */
+}
 
-        .profile-card h4 {
-            font-family: 'Pretendard-Bold', sans-serif;
-            font-size: 1.5em;
-        }
+.profile-card img {
+    width: 60px; /* 모바일 */
+    height: 60px;
+    margin-bottom: 10px;
+}
 
-        .profile-card img {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 15px;
-        }
+.form-label {
+    font-family: 'Pretendard-Regular', sans-serif;
+    font-size: 0.8rem;
+    color: rgb(77, 77, 77);
+}
 
-        label {
-            font-family: 'Pretendard-Regular', sans-serif;
-            font-size: 0.9em;
-            float: left;
-            margin-top: 5px;
-            padding-left: 10px;
-            color: rgb(77, 77, 77);
-        }
+.form-control {
+    font-family: 'Pretendard-Regular', sans-serif;
+    border: none;
+    border-radius: 10px;
+    background-color: #fafafa;
+    padding: 8px;
+}
 
-        .form-control {
-            font-family: 'Pretendard-Regular', sans-serif;
-            border: none;
-            border-radius: 10px;
-            background-color: #fafafa;
-            width: 90%;
-            padding: 10px;
-            margin: 5px;
-        }
+.form-control::placeholder {
+    font-size: 0.8rem;
+}
 
-        .form-control::placeholder {
-            font-size: 0.9em;
-        }
+.btn-save {
+    font-family: 'Pretendard-Regular', sans-serif;
+    background-color: #e36d1d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 8px;
+}
 
-        .btn-save {
-            font-family: 'Pretendard-Regular', sans-serif;
-            background-color: #e36d1d;
-            color: white;
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            margin-top: 20px;
-        }
+.btn-save:hover {
+    background-color: #d35f0e;
+}
 
-        .btn-save:hover {
-            background-color: #e36d1d;
-        }
+/* 태블릿 조정 */
+@media (min-width: 768px) {
+    .profile-card {
+        padding: 30px;
+    }
+    .profile-card h4 {
+        font-size: 1.5rem; /* 태블릿: 24px */
+    }
+    .profile-card img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 15px;
+    }
+    .form-label {
+        font-size: 0.9rem;
+    }
+    .form-control {
+        padding: 10px;
+    }
+    .form-control::placeholder {
+        font-size: 0.9rem;
+    }
+    .btn-save {
+        padding: 10px;
+    }
+}
+
+/* 데스크톱 조정 */
+@media (min-width: 992px) {
+    .profile-card {
+        padding: 40px;
+    }
+    .profile-card h4 {
+        font-size: 2.5rem; /* 데스크톱: 32px */
+    }
+    .profile-card img {
+        width: 220px;
+        height: 240px;
+    }
+    .form-label {
+        font-size: 1.2rem;
+    }
+    .form-control {
+        padding: 22px;
+    }
+    .form-control::placeholder {
+        font-size: 1.2rem;
+    }
+    .btn-save {
+        padding: 18px;
+        font-size: 1.2rem;
+
+    }
+
+}
