@@ -18,8 +18,8 @@ public class HomeController {
 
 
     @GetMapping("/signup")
-    public String signUP() {
+    public String signUP() { return "signup"; }
 
-        return "signup";
-    }
+    @GetMapping("/community")
+    public String community() { return "community"; }
 }
