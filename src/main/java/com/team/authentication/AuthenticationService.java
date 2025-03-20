@@ -1,6 +1,8 @@
 package com.team.authentication;
 
 import io.netty.channel.ChannelOption;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import jakarta.servlet.http.HttpSession;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +25,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.time.Duration;
@@ -57,12 +60,25 @@ public class AuthenticationService {
 
     private WebClient createWebClient(boolean withCookieFilter) {
         HttpClient httpClient = HttpClient.create()
+                .secure(sslContextSpec -> {
+                    try {
+                        SslContext sslContext = SslContextBuilder.forClient()
+                                .protocols("TLSv1.2") // TLS 1.2를 명시적으로 사용
+                                .ciphers(Arrays.asList("TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"))
+                                .build();
+                        sslContextSpec.sslContext(sslContext);
+                    } catch (SSLException e) {
+                        throw new RuntimeException("SSL 컨텍스트 설정에 실패했습니다.", e);
+                    }
+                })
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) CONNECT_TIMEOUT.toMillis())
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .responseTimeout(RESPONSE_TIMEOUT);
+
         WebClient.Builder builder = WebClient.builder()
                 .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
                 .clientConnector(new ReactorClientHttpConnector(httpClient));
+
         if (withCookieFilter) {
             builder.filter(cookieFilter());
         }

@@ -49,4 +49,11 @@ public class UserCreateForm {
     private String captchaInput;
 
     private String otp;
+
+    private String profileImage;
+
+    @NotBlank
+    private String otpVerified;
+    @NotBlank
+    private String clientKey;
 }

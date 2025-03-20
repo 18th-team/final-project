@@ -2,9 +2,12 @@ package com.team.controller;
 
 import com.team.authentication.AuthenticationDTO;
 import com.team.authentication.AuthenticationService;
+import com.team.user.SiteUser;
 import com.team.user.UserCreateForm;
+import com.team.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,12 +19,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+@RequiredArgsConstructor
 @Controller
 public class HomeController {
-
+    private final UserService userService;
     @GetMapping("/")
     public String home() {
         return "index";
@@ -40,11 +45,45 @@ public class HomeController {
 
     @GetMapping("/signup")
     public String signUp(Model model, HttpSession session) {
-        UserCreateForm userCreateForm = new UserCreateForm();
-        model.addAttribute("userCreateForm", userCreateForm);
         String clientKey = UUID.randomUUID().toString();
-        AuthenticationService authService = new AuthenticationService(session, clientKey);
-        model.addAttribute("clientKey", clientKey); // clientKey 전달
+        UserCreateForm userCreateForm = new UserCreateForm();
+        userCreateForm.setClientKey(clientKey);
+        model.addAttribute("userCreateForm", userCreateForm);
         return "signup";
+    }
+    @PostMapping("/signup")
+    public String signUp(
+            @Valid UserCreateForm userCreateForm,
+            BindingResult bindingResult,
+            Model model, HttpSession session) {
+        // 폼 검증 에러 체크
+
+        if (bindingResult.hasErrors()) {
+            return "signup";
+        }
+
+        // OTP 인증 여부 확인
+        if (!"true".equals(userCreateForm.getOtpVerified())) {
+            bindingResult.reject("otpNotVerified", "OTP 인증이 완료되지 않았습니다.");
+            return "signup";
+        }else{
+            //백엔드에서 한번 더 검증
+            Object otpVerifiedObj =  session.getAttribute("otpVerified_" + userCreateForm.getClientKey());
+            boolean otpVerified = otpVerifiedObj instanceof Boolean && (Boolean) otpVerifiedObj;
+            if(!otpVerified){
+                bindingResult.reject("otpNotVerified", "OTP 인증이 완료되지 않았습니다.");
+                return "signup";
+            }
+        }
+        this.userService.createSiteUser(
+                userCreateForm.getName(),
+                userCreateForm.getEmail(),
+                userCreateForm.getPassword1(),
+                userCreateForm.getBirthDay1(),
+                userCreateForm.getBirthDay2(),
+                userCreateForm.getPhone(),
+                userCreateForm.getProfileImage());
+
+        return "redirect:/login";
     }
 }

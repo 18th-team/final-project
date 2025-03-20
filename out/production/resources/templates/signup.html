@@ -5,43 +5,49 @@
 <div class="container d-flex justify-content-center align-items-center min-vh-80 my-5">
     <div class="profile-card  col-md-8 col-lg-11 p-4 ">
         <h4 class="text-center my-5">회원가입</h4>
-        <input type="hidden" id="clientKey" name="clientKey" th:value="${clientKey}"/>
-        <form th:object="${userCreateForm}" action="" method="post" enctype="multipart/form-data">
+
+        <form th:object="${userCreateForm}" th:action="@{/signup}" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="clientKey" name="clientKey" th:field="*{clientKey}"/>
+            <input type="hidden" id="otpVerified" name="otpVerified" th:field="*{otpVerified}"/>
             <div class="mb-4 text-center profile-container" >
                 <label for="profile-upload" class="profile-label">
                     <img id="profile-preview" th:src="@{/img/default-profile.png}" alt="프로필 이미지" class="profile-img img-fluid">
 
                 </label>
-                <input type="file" id="profile-upload" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                <input type="file" id="profile-upload" name="profileImage" accept="image/*" style="display: none;" onchange="previewImage(event)">
             </div>
             <label for="profile-upload">
                 <img th:src="@{/img/camera.svg}" alt="업로드 아이콘" class="upload-icon" style="width: 40px; height: 40px;">
             </label>
             <div class="mb-4 text-start">
                 <label for="name" class="form-label">이름</label>
-                <input type="name" class="form-control" id="name" placeholder="이름을 입력하세요">
+                <input type="name" class="form-control" id="name" placeholder="이름을 입력하세요" th:field="*{name}">
+                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
             </div>
             <div class="mb-4 text-start">
                 <label for="email" class="form-label">이메일</label>
-                <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요">
+                <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요" th:field="*{email}">
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
             </div>
             <div class="mb-4 text-start">
                 <label for="password1" class="form-label">비밀번호</label>
-                <input type="password" class="form-control" id="password1" name="password1" placeholder="영문자/특수문자/숫자 포함 8~20자">
+                <input type="password" class="form-control" id="password1" name="password1" placeholder="영문자/특수문자/숫자 포함 8~20자" th:field="*{password1}">
+                <span th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}" class="text-danger"></span>
             </div>
             <div class="mb-4 text-start">
                 <label for="password2" class="form-label">비밀번호 확인</label>
-                <input type="password" class="form-control" id="password2" name="password2" placeholder="영문자/특수문자/숫자 포함 8~20자">
+                <input type="password" class="form-control" id="password2" name="password2" placeholder="영문자/특수문자/숫자 포함 8~20자" th:field="*{password2}">
+                <span th:if="${#fields.hasErrors('password2')}" th:errors="*{password2}" class="text-danger"></span>
             </div>
 
             <!-- 생년월일/성별 -->
             <div class="mb-4 text-start" id="birthDaySection">
                 <label class="form-label">생년월일/성별</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="birthDay1" th:field="*{birthDay1}"
+                    <input type="text" class="form-control" id="birthDay1" name="birthDay1" th:field="*{birthDay1}"
                            placeholder="YYMMDD" maxlength="6" />
                     <span class="input-group-text border-0">-</span>
-                    <input type="text" class="form-control" id="birthDay2" th:field="*{birthDay2}"
+                    <input type="text" class="form-control" id="birthDay2" name="birthDay2" th:field="*{birthDay2}"
                            placeholder="성별(1~4)" maxlength="1" />
                 </div>
                 <span th:if="${#fields.hasErrors('birthDay1')}" th:errors="*{birthDay1}" class="text-danger"></span>
@@ -58,7 +64,7 @@
                         <option value="SKT">SKT</option>
                         <option value="LGT">LGU</option>
                     </select>
-                    <input type="text" class="form-control" id="phone" th:field="*{phone}" placeholder="01012345678" />
+                    <input type="text" class="form-control" id="phone" name="phone" th:field="*{phone}" placeholder="01012345678" />
                     <button type="button" class="btn btn-outline-secondary" id="sendOtpBtn">인증번호 전송</button>
                 </div>
                 <span th:if="${#fields.hasErrors('cellCorp')}" th:errors="*{cellCorp}" class="text-danger"></span>
@@ -72,6 +78,7 @@
                     <button type="button" class="btn btn-outline-secondary" id="verifyOtpBtn">인증번호 확인</button>
                 </div>
                 <span id="otpError" class="text-danger" style="display: none;"></span>
+
             </div>
             <!-- 보안문자 -->
             <div class="mb-4 text-start" id="captchaSection">
@@ -94,6 +101,8 @@
 <script layout:fragment="script">
     $(function (){
         let clientKey = $('#clientKey').val();
+        let _csrf = $('input[name=_csrf]').val();
+
         let cnt = 0;
         loadCaptcha(false);
 
@@ -104,7 +113,7 @@
         });
 
         function loadCaptcha(includeCnt) {
-            let data = { clientKey: clientKey };
+            let data = { clientKey: clientKey,  _csrf: _csrf};
             if (includeCnt) {
                 data.cnt = cnt;
             }
@@ -176,7 +185,8 @@
                     birthDay2: birthDay2,
                     cellCorp: cellCorp,
                     phone: phone,
-                    captchaInput: captchaInput
+                    captchaInput: captchaInput,
+                    _csrf: _csrf
                 },
                 success: function(response) {
                     alert(response); // "OTP가 성공적으로 전송되었습니다."
@@ -199,7 +209,8 @@
                 type: 'POST',
                 data: {
                     clientKey: clientKey,
-                    otpInput: otpInput
+                    otpInput: otpInput,
+                    _csrf: _csrf
                 },
                 success: function(response) {
                     alert(response);
