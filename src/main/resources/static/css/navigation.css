@@ -11,16 +11,19 @@
       width: 300px;
         margin: 0 auto;
     }
-    .navbar   .nav-link {
+    .navbar .navbar-nav .nav-link {
         color: #000;
         font-size: 18px;
     }
+    .nav-item .nav-link:hover {
+        color: #e36d1d;
+    }
 }
-.nav-link {
+.navbar-nav .nav-link {
     color: #000;
     font-size: 22px;
 }
-.nav-link:hover {
+.nav-item .nav-link:hover {
     color: #e36d1d;
 }
 
@@ -40,6 +43,9 @@
     .navbar .search-bar {
         width: 100%; /* 토글 버튼 나타날 때 100% */
         margin-top: 15px; /* 여백 조정, 필요 시 변경 */
+    }
+    .nav-item .nav-link:hover {
+        color: #e36d1d;
     }
 }
 
