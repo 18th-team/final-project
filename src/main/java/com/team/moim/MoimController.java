@@ -1,9 +1,8 @@
-package com.team.controller;
+package com.team.moim;
 
-import com.team.dto.DistrictDto;
-import com.team.entity.*;
-import com.team.repository.DistrictRepository;
-import com.team.repository.MoimRepository;
+import com.team.moim.dto.DistrictDto;
+import com.team.moim.repository.DistrictRepository;
+import com.team.moim.repository.MoimRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;

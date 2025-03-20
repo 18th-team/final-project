@@ -1,7 +1,8 @@
-package com.team.repository;
+package com.team.moim.repository;
 
-import com.team.entity.City;
-import com.team.entity.District;
+
+import com.team.moim.entity.City;
+import com.team.moim.entity.District;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

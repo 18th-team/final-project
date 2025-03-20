@@ -1,4 +1,4 @@
-package com.team.dto;
+package com.team.moim.dto;
 
 public class DistrictDto {
     private Long id;

@@ -1,4 +1,4 @@
-package com.team.entity;
+package com.team.moim.entity;
 
 public enum City {
     SEOUL("서울특별시"),

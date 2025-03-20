@@ -1,4 +1,4 @@
-package com.team.entity;
+package com.team.moim.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
