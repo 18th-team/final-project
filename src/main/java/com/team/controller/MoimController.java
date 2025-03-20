@@ -5,6 +5,7 @@ import com.team.entity.*;
 import com.team.repository.DistrictRepository;
 import com.team.repository.MoimRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,12 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
+@Transactional
 public class MoimController {
     private final MoimRepository moimRepository;
     private final DistrictRepository districtRepository;
@@ -42,25 +43,32 @@ public class MoimController {
             @RequestParam(value = "feeAmount", required = false) Integer feeAmount,
             @RequestParam(value = "feeDetails", required = false) List<FeeDetail> feeDetails,
             @RequestParam("isOnline") Boolean isOnline,
-            @RequestParam(value = "district", required = false) Long districtId, // District ID로 받음
+            @RequestParam(value = "city", required = false) City city,
+            @RequestParam(value = "district", required = false) Long districtId,
             @RequestParam("moimTheme") MoimTheme moimTheme,
-            @RequestParam("images") List<MultipartFile> images,
+            @RequestParam("images") List<MultipartFile> images, // 여러 개의 파일을 받을 수 있도록 유지
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam("date") LocalDate date,
             @RequestParam("time") LocalTime time) {
 
-// District 조회
-        District district = (districtId != null) ? districtRepository.findById(districtId)
-                .orElse(null) : null;
 
-        // 이미지 저장 경로 리스트
-        List<String> imagePaths = new ArrayList<>();
-        for (MultipartFile file : images) {
-            if (!file.isEmpty()) {
-                String path = saveImage(file);
-                imagePaths.add(path);
+// 이미지 저장 및 경로 리스트 생성
+        List<String> imagePaths = images.stream()
+                .filter(file -> !file.isEmpty()) // 빈 파일 필터링
+                .map(this::saveImage) // 파일 저장 후 경로 반환
+                .filter(path -> path != null) // 저장 실패한 파일 제외
+                .collect(Collectors.toList());
+
+        System.out.println("Saved image paths: " + imagePaths);
+
+        District district = null;
+        if (!isOnline) {
+            if (districtId == null) {
+                throw new IllegalArgumentException("오프라인 모임은 지역을 선택해야 합니다.");
             }
+            district = districtRepository.findById(districtId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid district ID"));
         }
 
         NewMoim newMoim = NewMoim.builder()
@@ -71,9 +79,10 @@ public class MoimController {
                 .feeAmount(hasFee ? feeAmount : null)
                 .feeDetails(hasFee ? feeDetails : null)
                 .isOnline(isOnline)
-                .district(isOnline ? null : district) // District 객체 설정
+                .city(isOnline ? null : city)
+                .district(district)
                 .moimTheme(moimTheme)
-                .images(imagePaths)
+                .images(imagePaths) // 3개의 이미지 경로 리스트 저장
                 .title(title)
                 .content(content)
                 .date(date)
@@ -101,6 +110,20 @@ public class MoimController {
     }
 
     private String saveImage(MultipartFile file) {
-        return "img/" + file.getOriginalFilename();
+        try {
+            String uploadDir = "C:/upload/img/";
+            java.io.File directory = new java.io.File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String path = uploadDir + fileName;
+            file.transferTo(new java.io.File(path));
+            System.out.println("Saved image to: " + path);
+            return "/img/" + fileName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
