@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -55,9 +56,9 @@ public class HomeController {
     public String signUp(
             @Valid UserCreateForm userCreateForm,
             BindingResult bindingResult,
-            Model model, HttpSession session) {
+            @RequestParam("profileImage") MultipartFile profileImage, HttpSession session) {
         // 폼 검증 에러 체크
-
+        System.out.println(userCreateForm);
         if (bindingResult.hasErrors()) {
             return "signup";
         }
@@ -82,7 +83,7 @@ public class HomeController {
                 userCreateForm.getBirthDay1(),
                 userCreateForm.getBirthDay2(),
                 userCreateForm.getPhone(),
-                userCreateForm.getProfileImage());
+                profileImage);
 
         return "redirect:/login";
     }

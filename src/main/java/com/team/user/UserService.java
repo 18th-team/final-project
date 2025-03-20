@@ -4,16 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public SiteUser createSiteUser(String name, String email, String password, String birthDay1, String birthDay2, String phone, String profileImage) {
+    private static final String UPLOAD_DIR = "src/main/resources/static/img/user/";
+    public SiteUser createSiteUser(String name, String email, String password, String birthDay1, String birthDay2, String phone, MultipartFile profileImage) {
         SiteUser siteUser = new SiteUser();
         siteUser.setName(name);
         siteUser.setPassword(password);
@@ -37,7 +43,21 @@ public class UserService {
         siteUser.setAge(age);
         siteUser.setPassword(passwordEncoder.encode(password));
         siteUser.setPhone(phone);
-        siteUser.setProfileImage(profileImage);
+
+        if(!profileImage.isEmpty()){
+            try {
+                String originalFileName = profileImage.getOriginalFilename();
+                String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+                String fileName = UUID.randomUUID() + extension;
+                Path filePath = Paths.get(UPLOAD_DIR, fileName);
+
+                Files.createDirectories(filePath.getParent());
+                Files.write(filePath, profileImage.getBytes());
+                siteUser.setProfileImage("/img/user/" +  fileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         this.userRepository.save(siteUser);
         return siteUser;
     }

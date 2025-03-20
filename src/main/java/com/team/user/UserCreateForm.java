@@ -50,8 +50,6 @@ public class UserCreateForm {
 
     private String otp;
 
-    private String profileImage;
-
     @NotBlank
     private String otpVerified;
     @NotBlank

@@ -14,14 +14,14 @@
                     <img id="profile-preview" th:src="@{/img/default-profile.png}" alt="프로필 이미지" class="profile-img img-fluid">
 
                 </label>
-                <input type="file" id="profile-upload" name="profileImage" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                <input type="file" id="profile-upload" name="profileImage" accept="image/*" style="display: none;">
             </div>
             <label for="profile-upload">
                 <img th:src="@{/img/camera.svg}" alt="업로드 아이콘" class="upload-icon" style="width: 40px; height: 40px;">
             </label>
             <div class="mb-4 text-start">
                 <label for="name" class="form-label">이름</label>
-                <input type="name" class="form-control" id="name" placeholder="이름을 입력하세요" th:field="*{name}">
+                <input type="text" class="form-control" id="name" placeholder="이름을 입력하세요" th:field="*{name}">
                 <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
             </div>
             <div class="mb-4 text-start">

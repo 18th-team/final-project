@@ -20,6 +20,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
@@ -42,8 +43,8 @@ public class AuthenticationService {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0";
     private static final int MAX_RETRIES = 3;
     private static final Duration RETRY_DELAY = Duration.ofSeconds(2);
-    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(30);
-    private static final Duration RESPONSE_TIMEOUT = Duration.ofSeconds(60);
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(15);
+    private static final Duration RESPONSE_TIMEOUT = Duration.ofSeconds(45);
 
     private final HttpSession session;
     private final String clientKey;
@@ -66,9 +67,7 @@ public class AuthenticationService {
                                 .protocols("TLSv1.2") // TLS 1.2를 명시적으로 사용
                                 .ciphers(Arrays.asList(
                                         "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-                                        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-                                        "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-                                        "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+                                        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
                                 ))
                                 .build();
                         sslContextSpec.sslContext(sslContext);
@@ -274,11 +273,13 @@ public class AuthenticationService {
                 })
                 .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
                         .filter(throwable -> {
-                            boolean shouldRetry = throwable instanceof SocketException || throwable instanceof IOException;
-                            System.out.println("Retry filter: " + throwable.getClass() + ", Should retry: " + shouldRetry);
-                            return shouldRetry;
+                            if (throwable instanceof WebClientRequestException) {
+                                Throwable cause = throwable.getCause();
+                                return cause instanceof SocketException || cause instanceof IOException;
+                            }
+                            return throwable instanceof SocketException || throwable instanceof IOException;
                         })
-                        .doBeforeRetry(signal -> System.out.println("재시도: Attempt " + signal.totalRetries() + ", 오류: " + signal.failure().getMessage())))
+                        .doBeforeRetry(signal -> System.out.println("재시도: 시도 " + signal.totalRetries() + ", 오류: " + signal.failure().getMessage())))
                 .doOnError(error -> System.out.println("updatedUrl 최종 실패: " + error.getMessage() + ", Time: " + LocalDateTime.now()));
     }
 
