@@ -4,21 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="유저 엔티티">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/security/SecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/UserRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" afterDir="false" />
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="TLS 1.2 및 ECDHE-RSA-AES128-GCM-SHA256으로 설정해 Connection Reset 오류 해결">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/PasswordMatchesValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/PasswordMatchesValidator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/UserCreateForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/UserCreateForm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/signup.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -166,7 +155,7 @@
       <workItem from="1742260136860" duration="6628000" />
       <workItem from="1742366129280" duration="1734000" />
       <workItem from="1742369193300" duration="5947000" />
-      <workItem from="1742428966293" duration="7899000" />
+      <workItem from="1742428966293" duration="8819000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -216,7 +205,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742375017421</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="TLS 1.2 및 ECDHE-RSA-AES128-GCM-SHA256으로 설정해 Connection Reset 오류 해결">
+      <option name="closed" value="true" />
+      <created>1742437118588</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1742437118588</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -238,7 +235,8 @@
     <MESSAGE value="회원가입 작업중" />
     <MESSAGE value="본인 인증 요청 부분 수정" />
     <MESSAGE value="유저 엔티티" />
-    <option name="LAST_COMMIT_MESSAGE" value="유저 엔티티" />
+    <MESSAGE value="TLS 1.2 및 ECDHE-RSA-AES128-GCM-SHA256으로 설정해 Connection Reset 오류 해결" />
+    <option name="LAST_COMMIT_MESSAGE" value="TLS 1.2 및 ECDHE-RSA-AES128-GCM-SHA256으로 설정해 Connection Reset 오류 해결" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -250,12 +248,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java</url>
-          <line>116</line>
+          <line>118</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java</url>
-          <line>112</line>
+          <line>114</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <breakpoint enabled="true" type="java-exception">

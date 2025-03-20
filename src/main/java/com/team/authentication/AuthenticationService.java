@@ -64,7 +64,12 @@ public class AuthenticationService {
                     try {
                         SslContext sslContext = SslContextBuilder.forClient()
                                 .protocols("TLSv1.2") // TLS 1.2를 명시적으로 사용
-                                .ciphers(Arrays.asList("TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"))
+                                .ciphers(Arrays.asList(
+                                        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                                        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                                        "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+                                        "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+                                ))
                                 .build();
                         sslContextSpec.sslContext(sslContext);
                     } catch (SSLException e) {
@@ -267,10 +272,14 @@ public class AuthenticationService {
                             .header(HttpHeaders.COOKIE, cookieHeader)
                             .exchangeToMono(this::processCheckResponse));
                 })
-                .retryWhen(Retry.backoff(MAX_RETRIES, RETRY_DELAY)
-                        .filter(throwable -> throwable instanceof SocketException || throwable instanceof IOException)
-                        .doBeforeRetry(signal -> System.out.println("Retrying updatedUrl: Attempt " + signal.totalRetries())))
-                .doOnError(error -> System.out.println("updatedUrl failed: " + error.getMessage() + ", Time: " + LocalDateTime.now()));
+                .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                        .filter(throwable -> {
+                            boolean shouldRetry = throwable instanceof SocketException || throwable instanceof IOException;
+                            System.out.println("Retry filter: " + throwable.getClass() + ", Should retry: " + shouldRetry);
+                            return shouldRetry;
+                        })
+                        .doBeforeRetry(signal -> System.out.println("재시도: Attempt " + signal.totalRetries() + ", 오류: " + signal.failure().getMessage())))
+                .doOnError(error -> System.out.println("updatedUrl 최종 실패: " + error.getMessage() + ", Time: " + LocalDateTime.now()));
     }
 
     private Mono<Void> processCheckResponse(ClientResponse response) {

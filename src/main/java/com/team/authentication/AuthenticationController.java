@@ -72,14 +72,16 @@ public class AuthenticationController {
         dto.setBirthDay2(birthDay2);
         dto.setPhone(phone);
         dto.setCellcorp(cellCorp);
+
         return authService.updatedUrl()
-                .then(Mono.defer(() -> {
+                .then(Mono.fromCallable(() -> {
                     String updatedUrl = (String) session.getAttribute("updatedUrl_" + clientKey);
                     if (updatedUrl == null || updatedUrl.isEmpty()) {
-                        return Mono.error(new RuntimeException("updatedUrl이 설정되지 않았습니다."));
+                        throw new RuntimeException("updatedUrl이 설정되지 않았습니다.");
                     }
-                    return authService.extractReqInfoAndRetUrl(clientKey);
+                    return updatedUrl;
                 }))
+                .flatMap(url -> authService.extractReqInfoAndRetUrl(clientKey))
                 .flatMap(formData -> {
                     if (formData.containsKey("alertText")) {
                         return Mono.just(ResponseEntity.badRequest().body("정보 추출 실패: " + formData.getFirst("alertText")));
