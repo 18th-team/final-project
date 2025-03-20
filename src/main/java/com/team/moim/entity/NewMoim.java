@@ -17,11 +17,15 @@ public class NewMoim {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "city")
     @Enumerated(EnumType.STRING)
     private City city;
+
+
     @Column(nullable = false)
     private Integer minParticipants;
+
 
     @Column(nullable = false)
     private Integer maxParticipants;

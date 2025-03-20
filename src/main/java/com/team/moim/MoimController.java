@@ -1,14 +1,15 @@
 package com.team.moim;
 
 import com.team.moim.dto.DistrictDto;
+import com.team.moim.dto.NewMoimDto;
+import com.team.moim.entity.City;
+import com.team.moim.entity.District;
+import com.team.moim.entity.NewMoim;
 import com.team.moim.repository.DistrictRepository;
 import com.team.moim.repository.MoimRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -34,63 +35,38 @@ public class MoimController {
     }
 
     @PostMapping("/moim/create")
-    public String createMoim(
-            @RequestParam("minParticipants") Integer minParticipants,
-            @RequestParam("maxParticipants") Integer maxParticipants,
-            @RequestParam("ageRestriction") AgeRestriction ageRestriction,
-            @RequestParam("hasFee") Boolean hasFee,
-            @RequestParam(value = "feeAmount", required = false) Integer feeAmount,
-            @RequestParam(value = "feeDetails", required = false) List<FeeDetail> feeDetails,
-            @RequestParam("isOnline") Boolean isOnline,
-            @RequestParam(value = "city", required = false) City city,
-            @RequestParam(value = "district", required = false) Long districtId,
-            @RequestParam("moimTheme") MoimTheme moimTheme,
-            @RequestParam("images") List<MultipartFile> images, // 여러 개의 파일을 받을 수 있도록 유지
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam("date") LocalDate date,
-            @RequestParam("time") LocalTime time) {
-
-
-// 이미지 저장 및 경로 리스트 생성
-        List<String> imagePaths = images.stream()
-                .filter(file -> !file.isEmpty()) // 빈 파일 필터링
-                .map(this::saveImage) // 파일 저장 후 경로 반환
-                .filter(path -> path != null) // 저장 실패한 파일 제외
+    public String createMoim(@ModelAttribute NewMoimDto dto, @RequestParam("images") List<MultipartFile> imageFiles) {
+        List<String> imagePaths = imageFiles.stream()
+                .filter(file -> !file.isEmpty())
+                .map(this::saveImage)
                 .collect(Collectors.toList());
 
-        System.out.println("Saved image paths: " + imagePaths);
-
-        District district = null;
-        if (!isOnline) {
-            if (districtId == null) {
-                throw new IllegalArgumentException("오프라인 모임은 지역을 선택해야 합니다.");
-            }
-            district = districtRepository.findById(districtId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid district ID"));
-        }
+        District district = dto.getDistrictId() != null
+                ? districtRepository.findById(dto.getDistrictId()).orElse(null)
+                : null;
 
         NewMoim newMoim = NewMoim.builder()
-                .minParticipants(minParticipants)
-                .maxParticipants(maxParticipants)
-                .ageRestriction(ageRestriction)
-                .hasFee(hasFee)
-                .feeAmount(hasFee ? feeAmount : null)
-                .feeDetails(hasFee ? feeDetails : null)
-                .isOnline(isOnline)
-                .city(isOnline ? null : city)
-                .district(district)
-                .moimTheme(moimTheme)
-                .images(imagePaths) // 3개의 이미지 경로 리스트 저장
-                .title(title)
-                .content(content)
-                .date(date)
-                .time(time)
+                .city(dto.getCity())
+                .minParticipants(dto.getMinParticipants())
+                .maxParticipants(dto.getMaxParticipants())
+                .ageRestriction(dto.getAgeRestriction())
+                .hasFee(dto.getHasFee())
+                .feeAmount(dto.getHasFee() ? dto.getFeeAmount() : null)
+                .feeDetails(dto.getHasFee() ? dto.getFeeDetails() : null)
+                .isOnline(dto.getIsOnline())
+                .district(dto.getIsOnline() ? null : district)
+                .moimTheme(dto.getMoimTheme())
+                .images(imagePaths)
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .date(dto.getDate())
+                .time(dto.getTime())
                 .build();
 
         moimRepository.save(newMoim);
-        return "redirect:/";
+        return "redirect:/moim/" + newMoim.getId();
     }
+
 
     @GetMapping("/moim/districts")
     @ResponseBody
