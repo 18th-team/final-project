@@ -1,58 +1,248 @@
-<html layout:decorate="~{layouts/main-layout}" layout:fragment="content" >
-    <link th:href="@{/css/signup.css}" rel="stylesheet"/>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}"
+      layout:fragment="content">
+<link th:href="@{/css/signup.css}" rel="stylesheet"/>
 
-    <body>
-    <div class="container d-flex justify-content-center align-items-center min-vh-80 my-5">
-        <div class="profile-card  col-md-8 col-lg-11 p-4 ">
-            <h4 class="text-center my-5">회원가입</h4>
-            <form action="" method="post" enctype="multipart/form-data">
-                <div class="mb-4 text-center profile-container" >
-                    <label for="profile-upload" class="profile-label">
-                        <img id="profile-preview" th:src="@{/img/default-profile.png}" alt="프로필 이미지" class="profile-img img-fluid">
+<body>
+<div class="container d-flex justify-content-center align-items-center min-vh-80 my-5">
+    <div class="profile-card  col-md-8 col-lg-11 p-4 ">
+        <h4 class="text-center my-5">회원가입</h4>
 
-                    </label>
-                    <input type="file" id="profile-upload" accept="image/*" style="display: none;" onchange="previewImage(event)">
-                </div>
-                <label for="profile-upload">
-                    <img th:src="@{/img/camera.svg}" alt="업로드 아이콘" class="upload-icon" style="width: 40px; height: 40px;">
+        <form th:object="${userCreateForm}" th:action="@{/signup}" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="clientKey" name="clientKey" th:field="*{clientKey}"/>
+            <input type="hidden" id="otpVerified" name="otpVerified" th:field="*{otpVerified}"/>
+            <div class="mb-4 text-center profile-container" >
+                <label for="profile-upload" class="profile-label">
+                    <img id="profile-preview" th:src="@{/img/default-profile.png}" alt="프로필 이미지" class="profile-img img-fluid">
+
                 </label>
-                <div class="mb-4 text-start">
-                    <label for="username" class="form-label">아이디</label>
-                    <input type="text" class="form-control" id="username" placeholder="아이디를 입력하세요">
+                <input type="file" id="profile-upload" name="profileImage" accept="image/*" style="display: none;">
+            </div>
+            <label for="profile-upload">
+                <img th:src="@{/img/camera.svg}" alt="업로드 아이콘" class="upload-icon" style="width: 40px; height: 40px;">
+            </label>
+            <div class="mb-4 text-start">
+                <label for="name" class="form-label">이름</label>
+                <input type="text" class="form-control" id="name" placeholder="이름을 입력하세요" th:field="*{name}">
+                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+            </div>
+            <div class="mb-4 text-start">
+                <label for="email" class="form-label">이메일</label>
+                <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요" th:field="*{email}">
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
+            </div>
+            <div class="mb-4 text-start">
+                <label for="password1" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="password1" name="password1" placeholder="영문자/특수문자/숫자 포함 8~20자" th:field="*{password1}">
+                <span th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}" class="text-danger"></span>
+            </div>
+            <div class="mb-4 text-start">
+                <label for="password2" class="form-label">비밀번호 확인</label>
+                <input type="password" class="form-control" id="password2" name="password2" placeholder="영문자/특수문자/숫자 포함 8~20자" th:field="*{password2}">
+                <span th:if="${#fields.hasErrors('password2')}" th:errors="*{password2}" class="text-danger"></span>
+            </div>
+
+            <!-- 생년월일/성별 -->
+            <div class="mb-4 text-start" id="birthDaySection">
+                <label class="form-label">생년월일/성별</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="birthDay1" name="birthDay1" th:field="*{birthDay1}"
+                           placeholder="YYMMDD" maxlength="6" />
+                    <span class="input-group-text border-0">-</span>
+                    <input type="text" class="form-control" id="birthDay2" name="birthDay2" th:field="*{birthDay2}"
+                           placeholder="성별(1~4)" maxlength="1" />
                 </div>
-                <div class="mb-4 text-start">
-                    <label for="password" class="form-label">비밀번호</label>
-                    <input type="password" class="form-control" id="password" placeholder="영문자/특수문자/숫자 포함 8~20자">
+                <span th:if="${#fields.hasErrors('birthDay1')}" th:errors="*{birthDay1}" class="text-danger"></span>
+                <span th:if="${#fields.hasErrors('birthDay2')}" th:errors="*{birthDay2}" class="text-danger"></span>
+            </div>
+
+            <!-- 전화번호 및 통신사 선택 -->
+            <div class="mb-4 text-start" id="cellCorpSection">
+                <label class="form-label">전화번호</label>
+                <div class="input-group">
+                    <select class="form-select" id="cellCorp" th:field="*{cellCorp}">
+                        <option value="">통신사 선택</option>
+                        <option value="KTF">KT</option>
+                        <option value="SKT">SKT</option>
+                        <option value="LGT">LGU</option>
+                    </select>
+                    <input type="text" class="form-control" id="phone" name="phone" th:field="*{phone}" placeholder="01012345678" />
+                    <button type="button" class="btn btn-outline-secondary" id="sendOtpBtn">인증번호 전송</button>
                 </div>
-                <div class="mb-4 text-start">
-                    <label for="password2" class="form-label">비밀번호 확인</label>
-                    <input type="password" class="form-control" id="password2" name="password2" placeholder="영문자/특수문자/숫자 포함 8~20자">
+                <span th:if="${#fields.hasErrors('cellCorp')}" th:errors="*{cellCorp}" class="text-danger"></span>
+                <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger"></span>
+            </div>
+            <!-- OTP 입력 필드 -->
+            <div class="mb-4 text-start" id="otpSection" style="display: none;">
+                <label class="form-label">인증번호</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="otpInput" placeholder="인증번호 6자리 입력" maxlength="6" />
+                    <button type="button" class="btn btn-outline-secondary" id="verifyOtpBtn">인증번호 확인</button>
                 </div>
-                <div class="mb-4 text-start">
-                    <label for="email" class="form-label">이메일</label>
-                    <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요">
+                <span id="otpError" class="text-danger" style="display: none;"></span>
+
+            </div>
+            <!-- 보안문자 -->
+            <div class="mb-4 text-start" id="captchaSection">
+                <label>보안문자</label>
+                <div class="input-group">
+                    <img id="captchaImage" class="img-fluid mb-0" alt="Captcha Image" style="height: 40px;" />
+                    <input type="text" class="form-control" id="captchaInput" th:field="*{captchaInput}"
+                           placeholder="보안문자 입력" minlength="6" maxlength="6" />
+                    <button type="button" class="btn btn-outline-secondary" id="captchaReloadBtn">새로고침</button>
                 </div>
-                <button type="submit" class="btn-save btn w-100">저장</button>
-            </form>
-        </div>
+                <span th:if="${#fields.hasErrors('captchaInput')}" th:errors="*{captchaInput}" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn-save btn w-100">저장</button>
+        </form>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script layout:fragment="script">
-        function previewImage(event) {
-            const input = event.target;
-            const reader = new FileReader();
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script layout:fragment="script">
+    $(function (){
+        let clientKey = $('#clientKey').val();
+        let _csrf = $('input[name=_csrf]').val();
 
-            reader.onload = function(){
-                const imgElement = document.getElementById('profile-preview');
-                imgElement.src = reader.result;
-            };
+        let cnt = 0;
+        loadCaptcha(false);
 
-            if(input.files && input.files[0]) {
-                reader.readAsDataURL(input.files[0]);
+        $('#captchaReloadBtn').click(function() {
+            cnt++;
+            console.log("Captcha reload count: " + cnt);
+            loadCaptcha(true);
+        });
+
+        function loadCaptcha(includeCnt) {
+            let data = { clientKey: clientKey,  _csrf: _csrf};
+            if (includeCnt) {
+                data.cnt = cnt;
             }
-        }gi
-    </script>
 
-    </body>
+            $.ajax({
+                url: '/get-captcha',
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    $('#captchaImage').attr('src', response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('캡차 이미지를 가져오는 데 실패했습니다:', error);
+                }
+            });
+        }
+        $('#sendOtpBtn').click(function() {
+            let name = $('#name').val();
+            let birthDay1 = $('#birthDay1').val();
+            let birthDay2 = $('#birthDay2').val();
+            let cellCorp = $('#cellCorp').val();
+            let phone = $('#phone').val();
+            let captchaInput = $('#captchaInput').val();
+
+            // 개별 필드 검증
+            if (!name) {
+                alert('이름을 입력해주세요.');
+                $('#name').focus();
+                return;
+            }
+
+            if (!birthDay1) {
+                alert('생년월일(YYMMDD)을 입력해주세요.');
+                $('#birthDay1').focus();
+                return;
+            }
+
+            if (!birthDay2) {
+                alert('성별(1~4)을 입력해주세요.');
+                $('#birthDay2').focus();
+                return;
+            }
+
+            if (!cellCorp) {
+                alert('통신사를 선택해주세요.');
+                $('#cellCorp').focus();
+                return;
+            }
+
+            if (!phone) {
+                alert('전화번호를 입력해주세요.');
+                $('#phone').focus();
+                return;
+            }
+
+            if (!captchaInput) {
+                alert('보안문자를 입력해주세요.');
+                $('#captchaInput').focus();
+                return;
+            }
+
+            $.ajax({
+                url: '/send-otp',
+                type: 'POST',
+                data: {
+                    clientKey: clientKey,
+                    name: name,
+                    birthDay1: birthDay1,
+                    birthDay2: birthDay2,
+                    cellCorp: cellCorp,
+                    phone: phone,
+                    captchaInput: captchaInput,
+                    _csrf: _csrf
+                },
+                success: function(response) {
+                    alert(response); // "OTP가 성공적으로 전송되었습니다."
+                    $('#otpSection').show(); // OTP 입력 필드 표시
+                },
+                error: function(xhr, status, error) {
+                    console.error('OTP 전송 실패:', error);
+                    alert(xhr.responseText); // 에러 메시지 표시
+                    if(xhr.responseText === "OTP 전송 실패: 보안문자를 정확히 입력해 주세요."){
+                        cnt++;
+                        console.log("Captcha reload count: " + cnt);
+                        loadCaptcha(true);
+                    }
+                }
+            });
+        });
+        $('#verifyOtpBtn').click(function() {
+            let otpInput = $('#otpInput').val();
+
+            if (!otpInput) { alert('인증번호를 입력해주세요.'); $('#otpInput').focus(); return; }
+            if (otpInput.length !== 6) { alert('인증번호는 6자리여야 합니다.'); $('#otpInput').focus(); return; }
+
+            $.ajax({
+                url: '/check-otp',
+                type: 'POST',
+                data: {
+                    clientKey: clientKey,
+                    otpInput: otpInput,
+                    _csrf: _csrf
+                },
+                success: function(response) {
+                    alert(response);
+                    $('#otpSection').hide();
+                    $('#captchaSection').hide();
+                    $('#birthDaySection').hide();
+                    $('#cellCorpSection').hide();
+                    $('#phone').prop('readonly', true);
+                    $('#sendOtpBtn').prop('disabled', true);
+                    $('#cellCorp').prop('readonly', true);
+                    $('#birthDay1').prop('readonly', true);
+                    $('#birthDay2').prop('readonly', true);
+                    $('#otpVerified').val('true');
+                },
+                error: function(xhr) {
+                    $('#otpError').text(xhr.responseText).show();
+                }
+            });
+        });
+    })
+
+</script>
+
+</body>
 
 </html>
