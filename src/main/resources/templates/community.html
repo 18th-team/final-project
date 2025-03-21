@@ -1,10 +1,10 @@
 <html layout:decorate="~{layouts/main-layout}" layout:fragment="content" >
-  <link rel="stylesheet" th:href="@{/css/community.css?v=1}">
+  <link rel="stylesheet" th:href="@{/css/community.css}">
 <body class="bg-light">
 
 <div class="container mt-4">
 
-    <!-- 탭 메뉴 -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
     <ul class="nav nav-tabs" id="communityTab" role="tablist">
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed-tab-pane" type="button" role="tab" aria-controls="feed-tab-pane" aria-selected="true">지금 피드</button>
@@ -13,6 +13,9 @@
         <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review-tab-pane" type="button" role="tab" aria-controls="review-tab-pane" aria-selected="false">모임 후기</button>
       </li>
     </ul>
+
+    <a th:href="@{/post/create}" class="btn" id="write-btn">피드 쓰기</a>
+  </div>
 
     <!-- 검색 창 -->
     <div class="row">
@@ -250,7 +253,20 @@
   </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script layout:fragment="script">
+  document.addEventListener("DOMContentLoaded", function() {
+    const writeBtn = document.getElementById("write-btn");
 
+    const communityTab = document.getElementById("communityTab");
+    communityTab.addEventListener("shown.bs.tab", function (event) {
+      const activatedTabId = event.target.id;
+
+      if (activatedTabId === "feed-tab") {
+        writeBtn.textContent = "피드 쓰기";
+      } else if (activatedTabId === "review-tab") {
+        writeBtn.textContent = "후기 쓰기";
+      }
+    });
+  });
 </script>
 </body>
 </html>
