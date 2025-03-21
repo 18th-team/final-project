@@ -70,7 +70,7 @@ public class SecurityConfig {
                                 .loginPage("/login")
                                 .userInfoEndpoint(userInfo ->
                                         userInfo.userService(customOAuth2UserService) // OAuth2 사용자 서비스
-                                )
+                                    )
                                 .defaultSuccessUrl("/")
                                 .failureUrl("/login?error")
 

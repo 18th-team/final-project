@@ -88,6 +88,10 @@ public class HomeController {
             bindingResult.rejectValue("email", "duplicate.email", "이미 가입된 이메일입니다.");
             return "signup";
         }
+        if (userService.isPhoneAlreadyExists(userCreateForm.getPhone())) {
+            bindingResult.rejectValue("phone", "duplicate.phone", "이미 가입된 전화번호입니다.");
+            return "signup";
+        }
         userService.createSiteUser(
                 userCreateForm.getName(),
                 userCreateForm.getEmail(),
