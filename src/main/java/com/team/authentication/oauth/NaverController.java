@@ -61,6 +61,7 @@ public class NaverController {
             model.addAttribute("provider", siteUser.getProvider());
             return "naver-success";
         }
+        System.out.println("네이버 로그인 실패: 사용자 정보가 null입니다.");
         return "redirect:/login?error";
     }
 }

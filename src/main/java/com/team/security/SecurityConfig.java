@@ -1,5 +1,7 @@
 package com.team.security;
 
+import com.team.user.CustomOAuth2UserService;
+import com.team.user.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,29 +20,72 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomUserDetailsService customUserDetailsService;
+
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomUserDetailsService customUserDetailsService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customUserDetailsService = customUserDetailsService;
+    }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers(new AntPathRequestMatcher("/**"))
-                                .permitAll()
+                                .requestMatchers(
+                                        new AntPathRequestMatcher("/login"),
+                                        new AntPathRequestMatcher("/signup"),
+                                        new AntPathRequestMatcher("/login/oauth2/**"),
+                                        new AntPathRequestMatcher("/h2-console/**"),
+                                        new AntPathRequestMatcher("/"),
+                                        new AntPathRequestMatcher("/css/**"), // CSS 허용
+                                        new AntPathRequestMatcher("/js/**"),  // JS 허용 (필요 시)
+                                        new AntPathRequestMatcher("/img/**")  // 이미지 허용 (필요 시)
+                                ).permitAll() // 공개 경로
+                                .anyRequest().authenticated() // 나머지 경로는 인증 필요
                 )
                 .csrf(csrf ->
-                        csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")) // CSRF 방어기능을 사용하지 않도록 설정
+                        csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")) // H2 콘솔 CSRF 제외
                 )
-                .headers((headers) -> headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN)))
-                .formLogin((formLogin) -> formLogin.loginPage("/user/login").defaultSuccessUrl("/"))
-                .logout((logout) -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout")).logoutSuccessUrl("/").invalidateHttpSession(true));
+                .headers(headers ->
+                        headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsMode.SAMEORIGIN))
+                )
+                .formLogin(formLogin ->
+                        formLogin
+                                .loginPage("/login")
+                                .defaultSuccessUrl("/")
+                                .usernameParameter("email") // 로그인 시 email 사용
+                                .permitAll()
+                )
+                .oauth2Login(oauth2Login ->
+                        oauth2Login
+                                .loginPage("/login")
+                                .userInfoEndpoint(userInfo ->
+                                        userInfo.userService(customOAuth2UserService) // OAuth2 사용자 서비스
+                                )
+                                .defaultSuccessUrl("/") // OAuth2 로그인 성공 시
+                                .failureUrl("/login?error") // 실패 시
+                )
+                .logout(logout ->
+                        logout
+                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                                .logoutSuccessUrl("/")
+                                .invalidateHttpSession(true)
+                )
+                .userDetailsService(customUserDetailsService); // 폼 로그인용 UserDetailsService
+
         return http.build();
     }
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 }

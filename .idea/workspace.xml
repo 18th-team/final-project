@@ -4,23 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="Oauth 작업중">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/KakaoController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomUserDetailsService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/MemberRole.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="Oauth 로그인 추가 디비 저장 부분 수정 해야됨">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,6 +73,9 @@
     &quot;accountId&quot;: &quot;af438f09-1c98-4fc6-896c-82d063cb9dc4&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -88,33 +85,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Gradle.Build final-project.executor&quot;: &quot;Run&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;jsw&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/GREEN/IdeaProjects/final-project/src/main/java/com/team/authentication&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;build.tools&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Gradle.Build final-project.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.Application.executor": "Run",
+    "git-widget-placeholder": "jsw",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/GREEN/IdeaProjects/final-project/src/main/java/com/team/authentication",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "build.tools",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -154,6 +151,9 @@
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="StructureViewState">
+    <option name="selectedTab" value="Logical" />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="" />
@@ -235,7 +235,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742438050643</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Oauth 작업중">
+      <option name="closed" value="true" />
+      <created>1742520613945</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1742520613945</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -260,7 +268,8 @@
     <MESSAGE value="TLS 1.2 및 ECDHE-RSA-AES128-GCM-SHA256으로 설정해 Connection Reset 오류 해결" />
     <MESSAGE value="재시도 부분 수정" />
     <MESSAGE value="Oauth 작업중" />
-    <option name="LAST_COMMIT_MESSAGE" value="Oauth 작업중" />
+    <MESSAGE value="Oauth 로그인 추가 디비 저장 부분 수정 해야됨" />
+    <option name="LAST_COMMIT_MESSAGE" value="Oauth 로그인 추가 디비 저장 부분 수정 해야됨" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -269,16 +278,6 @@
           <url>file://$PROJECT_DIR$/src/main/resources/templates/signup.html</url>
           <line>237</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java</url>
-          <line>118</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java</url>
-          <line>114</line>
-          <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
@@ -339,6 +338,41 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
           <line>60</line>
           <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
+          <line>54</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
+          <line>55</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
+          <line>56</line>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
+          <line>63</line>
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
+          <line>64</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
+          <line>21</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
+          <line>22</line>
+          <option name="timeStamp" value="43" />
         </line-breakpoint>
         <breakpoint type="java-exception">
           <properties class="javax.net.ssl.SSLException" package="javax.net.ssl" />

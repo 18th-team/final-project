@@ -7,6 +7,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @Service
@@ -17,14 +19,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        System.out.println("OAuth2UserRequest: " + userRequest);
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
+        System.out.println("OAuth2User Attributes: " + oAuth2User.getAttributes());
         // OAuth 제공자 정보
         String provider = userRequest.getClientRegistration().getRegistrationId(); // "kakao" 또는 "naver"
         String providerId = getProviderId(oAuth2User, provider);
         String email = getEmail(oAuth2User, provider);
         String name = getName(oAuth2User, provider);
-
+        String gender = getGender(oAuth2User, provider);
+        String Phone = getPhoneNumber(oAuth2User, provider).replace("-","");
+        LocalDate birthDate = getBirthDate(oAuth2User, provider);
+        System.out.println("Provider: " + provider + ", ProviderId: " + providerId + ", Email: " + email + ", BirthDate: " + getAge(birthDate) + ", Gender: " + gender + ", Phone: " + Phone);
         // 이메일이 중복될 경우 providerId를 붙여 고유성 보장
         String uniqueEmail = email != null ? email : provider + "_" + providerId;
 
@@ -37,9 +43,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                 .provider(provider)
                                 .providerId(providerId)
                                 .role(MemberRole.USER)
-                                .age(0)
-                                .gender("unknown")
+                                .age(getAge(birthDate))
+                                .gender(gender)
+                                .phone(Phone)
                                 .money(0)
+                                .createdAt(LocalDate.now())
                                 .build();
                     return userRepository.save(newUser);
                 });
@@ -90,18 +98,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return null;
     }
 
-    private Integer getAge(OAuth2User oAuth2User, String provider) {
-        if ("kakao".equals(provider)) {
-            Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
-            String ageRange = kakaoAccount != null ? (String) kakaoAccount.get("age_range") : null;
-            return ageRange != null ? parseAgeRange(ageRange) : null;
-        } else if ("naver".equals(provider)) {
-            Map<String, Object> response = oAuth2User.getAttribute("response");
-            String ageRange = response != null ? (String) response.get("age") : null;
-            return ageRange != null ? parseAgeRange(ageRange) : null;
-        }
-        return null;
-    }
 
     private String getEmail(OAuth2User oAuth2User, String provider) {
         if ("kakao".equals(provider)) {
@@ -113,16 +109,33 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         return null;
     }
-
-    private Integer parseAgeRange(String ageRange) {
-        if (ageRange == null) return null;
-        String[] range = ageRange.split("~");
-        if (range.length == 2) {
-            int min = Integer.parseInt(range[0]);
-            int max = Integer.parseInt(range[1]);
-            return (min + max) / 2;
-        } else if (range.length == 1) {
-            return Integer.parseInt(range[0]);
+    private int getAge(LocalDate birthDate) {
+        if (birthDate == null) return 0;
+        LocalDate today = LocalDate.now();
+        int age = today.getYear() - birthDate.getYear();
+        return age;
+    }
+    private LocalDate getBirthDate(OAuth2User oAuth2User, String provider) {
+        try {
+            if ("kakao".equals(provider)) {
+                Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
+                String birthday = kakaoAccount != null ? (String) kakaoAccount.get("birthday") : null;
+                String birthyear = kakaoAccount != null ? (String) kakaoAccount.get("birthyear") : null;
+                if (birthday != null && birthyear != null) {
+                    String fullDate = birthyear + birthday;
+                    return LocalDate.parse(fullDate, DateTimeFormatter.BASIC_ISO_DATE);
+                }
+            } else if ("naver".equals(provider)) {
+                Map<String, Object> response = oAuth2User.getAttribute("response");
+                String birthday = response != null ? (String) response.get("birthday") : null;
+                String birthyear = response != null ? (String) response.get("birthyear") : null;
+                if (birthday != null && birthyear != null) {
+                    String fullDate = birthyear + birthday.replace("-", "");
+                    return LocalDate.parse(fullDate, DateTimeFormatter.BASIC_ISO_DATE);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("BirthDate 파싱 실패: " + e.getMessage());
         }
         return null;
     }
