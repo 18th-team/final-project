@@ -49,6 +49,9 @@ public class HomeController {
     public String logout() {
         return "redirect:/";
     }
+    
+    @GetMapping("/community")
+    public String community() { return "community"; }
 
     @GetMapping("/signup")
     public String signUp(Model model) {

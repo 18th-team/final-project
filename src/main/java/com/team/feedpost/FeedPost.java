@@ -1,5 +1,6 @@
 package com.team.feedpost;
 
+import com.team.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,7 +30,11 @@ public class FeedPost {
 
     private String tags; // 맛집,강남,소셜다이닝 -> 이런 식으로 입력
 
-    private String author;
+    @ManyToOne
+    private SiteUser author;
+
+    @ManyToMany
+    private Set<SiteUser> voter;
 
     private String imageURL;
 
