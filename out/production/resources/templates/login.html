@@ -1,4 +1,4 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
     <link th:href="@{/css/signup.css}" rel="stylesheet"/>
 
 <body>
@@ -17,6 +17,9 @@
                 </div>
                 <button type="submit" class="btn-save btn w-100">로그인</button>
             </form>
+            <img width="100%" th:src="@{/img/naver_login.png}" alt="" style="width: 15vw; height: auto; margin-top: 5vh;">
+            <br>
+            <img width="100%" th:src="@{/img/kakao_login.png}" alt="" style="width: 15vw; height: auto;">
         </div>
     </div>
 </div>
