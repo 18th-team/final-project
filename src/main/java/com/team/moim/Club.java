@@ -47,7 +47,21 @@ public class Club {
 
     private LocalDateTime deadline; // 모집 마감 날짜
     private int currentParticipants; // 현재 참여 인원
+
+    @Column(nullable = false)
+    private boolean isFull;  // 모집 마감 여부
+
     private String status; // 모집 상태 (모집 중 / 마감됨)
 
     private boolean requiresApproval; // 참여 승인 여부 (true: 호스트 승인 필요, false: 자동 승인)
+
+    // Getter, Setter 추가
+    public boolean getIsFull() {
+        return isFull;
+    }
+
+    public void setIsFull(boolean isFull) {
+        this.isFull = isFull;
+    }
+
 }

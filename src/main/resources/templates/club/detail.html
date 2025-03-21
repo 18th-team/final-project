@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>모임 상세</title>
+</head>
+<body>
+    <h1 th:text="${club.title}">모임 제목</h1>
+    <p th:text="${club.description}">모임 설명</p>
+    <p>호스트: <span th:text="${club.hostNickname}"></span></p>
+    <p>상태: <span th:text="${club.status}"></span></p>
+    <p>참여 인원: <span th:text="${club.currentParticipants}"></span></p>
+    <p>최소 인원: <span th:text="${club.minParticipants}"></span></p>
+    <p>최대 인원: <span th:text="${club.maxParticipants}"></span></p>
+    <p>작성일: <span th:text="${club.createdAt}"></span></p>
+    <p>수정일: <span th:text="${club.updatedAt}"></span></p>
+    <a href="/clubs">목록으로 돌아가기</a>
+</body>
+</html>
