@@ -1,0 +1,207 @@
+Index: src/main/java/com/team/authentication/AuthenticationService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.team.authentication;\r\n\r\nimport jakarta.servlet.http.HttpSession;\r\nimport org.jsoup.Jsoup;\r\nimport org.jsoup.nodes.Document;\r\nimport org.jsoup.nodes.Element;\r\nimport org.jsoup.select.Elements;\r\nimport org.springframework.context.annotation.Scope;\r\nimport org.springframework.http.HttpHeaders;\r\nimport org.springframework.http.HttpStatus;\r\nimport org.springframework.http.MediaType;\r\nimport org.springframework.http.client.reactive.ReactorClientHttpConnector;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.util.LinkedMultiValueMap;\r\nimport org.springframework.util.MultiValueMap;\r\nimport org.springframework.web.reactive.function.BodyInserters;\r\nimport org.springframework.web.reactive.function.client.ExchangeFilterFunction;\r\nimport org.springframework.web.reactive.function.client.WebClient;\r\nimport org.springframework.web.util.UriComponentsBuilder;\r\nimport reactor.core.publisher.Mono;\r\nimport reactor.netty.http.client.HttpClient;\r\n\r\nimport java.util.*;\r\nimport java.util.regex.Matcher;\r\nimport java.util.regex.Pattern;\r\nimport java.util.stream.Collectors;\r\n\r\n@Service\r\n@Scope(\"prototype\")\r\npublic class AuthenticationService {\r\n\r\n    private static final String BASEURL = \"https://www.jeju.go.kr/\";\r\n    private static final String BASEURL2 = \"https://pcc.siren24.com/\";\r\n    private static final String USER_AGENT = \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0\";\r\n\r\n    private String updatedUrl = \"\";\r\n    private final HttpSession session;\r\n    private final String clientKey; // 클라이언트별 고유 식별자\r\n\r\n    public AuthenticationService(HttpSession session) {\r\n        this.session = session;\r\n        // 세션에서 기존 clientKey 재사용, 없으면 새로 생성\r\n        String existingKey = (String) session.getAttribute(\"clientKey\");\r\n        this.clientKey = existingKey != null ? existingKey : UUID.randomUUID().toString();\r\n        session.setAttribute(\"clientKey\", this.clientKey);\r\n    }\r\n\r\n    public String getClientKey() {\r\n        return this.clientKey;\r\n    }\r\n\r\n    private String cleanCookieValue(String value) {\r\n        int dotIndex = value.indexOf(\".\");\r\n        return dotIndex != -1 ? value.substring(0, dotIndex) : value;\r\n    }\r\n\r\n    private ExchangeFilterFunction cookieFilter() {\r\n        return (request, next) -> next.exchange(request)\r\n                .doOnNext(response -> {\r\n                    List<String> setCookies = response.headers().header(HttpHeaders.SET_COOKIE);\r\n                    Map<String, String> cookieStore = getCookieStoreFromSession();\r\n                    setCookies.forEach(cookie -> {\r\n                        String[] parts = cookie.split(\"=\", 2);\r\n                        if (parts.length == 2) {\r\n                            cookieStore.put(parts[0], cleanCookieValue(parts[1].split(\";\")[0]));\r\n                        }\r\n                    });\r\n                    session.setAttribute(\"cookieStore_\" + clientKey, cookieStore);\r\n                    System.out.println(\"Cookies stored for clientKey: \" + clientKey + \" - \" + cookieStore);\r\n                });\r\n    }\r\n\r\n    private Map<String, String> getCookieStoreFromSession() {\r\n        Map<String, String> cookieStore = (Map<String, String>) session.getAttribute(\"cookieStore_\" + clientKey);\r\n        if (cookieStore == null) {\r\n            cookieStore = new HashMap<>();\r\n            session.setAttribute(\"cookieStore_\" + clientKey, cookieStore);\r\n        }\r\n        return cookieStore;\r\n    }\r\n\r\n    private String getSelectedCookies(String... cookieNames) {\r\n        Map<String, String> cookieStore = getCookieStoreFromSession();\r\n        return Arrays.stream(cookieNames)\r\n                .filter(cookieStore::containsKey)\r\n                .map(name -> name + \"=\" + cookieStore.get(name))\r\n                .collect(Collectors.joining(\"; \"));\r\n    }\r\n\r\n    private String getAllCookies() {\r\n        Map<String, String> cookieStore = getCookieStoreFromSession();\r\n        return cookieStore.entrySet().stream()\r\n                .map(entry -> entry.getKey() + \"=\" + entry.getValue())\r\n                .collect(Collectors.joining(\"; \"));\r\n    }\r\n\r\n    public Mono<String> getCaptchaImage() {\r\n        WebClient client = WebClient.builder()\r\n                .filter(cookieFilter())\r\n                .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)\r\n                .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))\r\n                .build();\r\n        String cookies = getSelectedCookies(\"JSESSIONID\");\r\n        System.out.println(\"Sending Cookie in getCaptchaImage: \" + cookies);\r\n        if (cookies.isEmpty()) {\r\n            System.out.println(\"Warning: JSESSIONID is missing in getCaptchaImage\");\r\n        }\r\n        return client.get()\r\n                .uri(BASEURL2 + \"pcc_V3/Captcha/simpleCaptchaImg.jsp\")\r\n                .header(HttpHeaders.HOST, \"pcc.siren24.com\")\r\n                .header(HttpHeaders.REFERER, BASEURL2 + \"pcc_V3/passWebV2/pcc_V3_j30_certHpTi01.jsp\")\r\n                .header(HttpHeaders.COOKIE, getSelectedCookies(\"JSESSIONID\"))\r\n                .accept(MediaType.IMAGE_JPEG)\r\n                .retrieve()\r\n                .bodyToMono(byte[].class)\r\n                .map(bytes -> \"data:image/jpeg;base64,\" + Base64.getEncoder().encodeToString(bytes))\r\n                .doOnError(error -> System.out.println(\"캡차 이미지 요청 실패: \" + error.getMessage()));\r\n    }\r\n\r\n    public Mono<MultiValueMap<String, String>> CertificationRequest(AuthenticationDTO authenticationDTO, MultiValueMap<String, String> formData) {\r\n        formData.set(\"cellCorp\", authenticationDTO.getCellcorp());\r\n        System.out.println(formData);\r\n        System.out.println(\"CertificationRequest Cookie : \" + getSelectedCookies(\"JSESSIONID\"));\r\n        WebClient client = WebClient.builder()\r\n                .filter(cookieFilter())\r\n                .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)\r\n                .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))\r\n                .build();\r\n\r\n        if (authenticationDTO.getCellcorp().equals(\"SKT\") || authenticationDTO.getCellcorp().equals(\"KTF\") || authenticationDTO.getCellcorp().equals(\"LGT\")) {\r\n            return client.post()\r\n                    .uri(BASEURL2 + \"pcc_V3/passWebV2/pcc_V3_j30_certHpTi01.jsp\")\r\n                    .header(HttpHeaders.HOST, \"pcc.siren24.com\")\r\n                    .header(HttpHeaders.REFERER, BASEURL2 + \"pcc_V3/passWebV2/pcc_V3_j10.jsp\")\r\n                    .header(HttpHeaders.COOKIE, getSelectedCookies(\"JSESSIONID\"))\r\n                    .body(BodyInserters.fromFormData(formData))\r\n                    .exchangeToMono(passResponse -> {\r\n                        System.out.println(BASEURL2 + \"pcc_V3/passWebV2/pcc_V3_j30_certHpTi01.jsp\");\r\n                        if (!passResponse.statusCode().equals(HttpStatus.OK)) {\r\n                            return Mono.error(new RuntimeException(\"상태 코드 \" + passResponse.statusCode()));\r\n                        }\r\n                        return passResponse.bodyToMono(String.class)\r\n                                .flatMap(passBody -> {\r\n                                    Document passDoc = Jsoup.parse(passBody);\r\n                                    Elements passFormInputs = passDoc.select(\"form[name=goPassForm] input\");\r\n                                    MultiValueMap<String, String> passFormData = new LinkedMultiValueMap<>();\r\n                                    passFormInputs.forEach(input -> {\r\n                                        String name = input.attr(\"name\");\r\n                                        String value = input.attr(\"value\");\r\n                                        if (!name.isEmpty()) {\r\n                                            passFormData.add(name, value);\r\n                                        }\r\n                                    });\r\n                                    passFormData.set(\"userName\", authenticationDTO.getName());\r\n                                    passFormData.set(\"birthDay1\", authenticationDTO.getBirthDay1());\r\n                                    passFormData.set(\"birthDay2\", authenticationDTO.getBirthDay2());\r\n                                    passFormData.set(\"No\", authenticationDTO.getPhone());\r\n                                    passFormData.set(\"captchaInput\", authenticationDTO.getCaptchaInput());\r\n                                    passFormData.set(\"passGbn\", \"N\");\r\n\r\n                                    passFormData.remove(\"phoneNum\");\r\n                                    passFormData.remove(\"sci_name\");\r\n                                    passFormData.remove(\"sci_agency\");\r\n                                    System.out.println(passFormData);\r\n                                    return client.post()\r\n                                            .uri(BASEURL2 + \"pcc_V3/passWebV2/pcc_V3_j30_certHpTi02.jsp\")\r\n                                            .header(HttpHeaders.HOST, \"pcc.siren24.com\")\r\n                                            .header(HttpHeaders.REFERER, BASEURL2 + \"pcc_V3/passWebV2/pcc_V3_j30_certHpTi01.jsp\")\r\n                                            .header(HttpHeaders.COOKIE, getSelectedCookies(\"JSESSIONID\"))\r\n                                            .body(BodyInserters.fromFormData(passFormData))\r\n                                            .exchangeToMono(passResponse2 -> {\r\n                                                System.out.println(BASEURL2 + \"pcc_V3/passWebV2/pcc_V3_j30_certHpTi02.jsp\");\r\n                                                if (!passResponse2.statusCode().equals(HttpStatus.OK)) {\r\n                                                    return Mono.error(new RuntimeException(\"상태 코드 \" + passResponse2.statusCode()));\r\n                                                }\r\n                                                return passResponse2.bodyToMono(String.class).flatMap(passBody2 -> {\r\n                                                    System.out.println(passBody2);\r\n                                                    Document passDoc2 = Jsoup.parse(passBody2);\r\n                                                    MultiValueMap<String, String> passFormData2 = new LinkedMultiValueMap<>();\r\n                                                    Elements scripts = passDoc2.select(\"script\");\r\n                                                    for (Element script : scripts) {\r\n                                                        String scriptContent = script.data();\r\n                                                        System.out.println(\"Script Content: \" + scriptContent);\r\n                                                        if (scriptContent.isEmpty()) {\r\n                                                            continue;\r\n                                                        }\r\n                                                        if (scriptContent.contains(\"pop_alert\")) {\r\n                                                            Pattern pattern = Pattern.compile(\"pop_alert\\\\s*\\\\(\\\\s*\\\"([^\\\"]*)\\\"\\\\s*\\\\)\");\r\n                                                            Matcher matcher = pattern.matcher(scriptContent);\r\n                                                            if (matcher.find()) {\r\n                                                                String alertText = matcher.group(1).replace(\"\\\\n\", \"\\n\");\r\n                                                                passFormData2.add(\"alertText\", alertText);\r\n                                                                return Mono.just(passFormData2);\r\n                                                            }\r\n                                                        }\r\n                                                    }\r\n                                                    Elements passFormInputs2 = passDoc2.select(\"form[name=goForm] input\");\r\n                                                    passFormInputs2.forEach(input -> {\r\n                                                        String name = input.attr(\"name\");\r\n                                                        String value = input.attr(\"value\");\r\n                                                        if (!name.isEmpty()) {\r\n                                                            passFormData2.add(name, value);\r\n                                                        }\r\n                                                    });\r\n                                                    return Mono.just(passFormData2);\r\n                                                });\r\n                                            });\r\n                                });\r\n                    });\r\n        } else {\r\n            return Mono.error(new IllegalArgumentException(\"지원하지 않는 통신사 코드: \" + authenticationDTO.getCellcorp()));\r\n        }\r\n    }\r\n\r\n    public Mono<Void> cookieSetup() {\r\n        WebClient client = WebClient.builder()\r\n                .filter(cookieFilter())\r\n                .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)\r\n                .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))\r\n                .build();\r\n        System.out.println(\"cookieSetup Cookie : \" + getSelectedCookies(\"JSESSIONID\"));\r\n        return client.get()\r\n                .uri(BASEURL + \"mypage/login.htm?act=nlogin\")\r\n                .exchangeToMono(response -> {\r\n                    System.out.println(\"Requesting: \" + BASEURL + \"mypage/login.htm?act=nlogin\");\r\n                    if (!response.statusCode().equals(HttpStatus.OK)) {\r\n                        return Mono.error(new RuntimeException(\"상태 코드 \" + response.statusCode()));\r\n                    }\r\n                    return response.bodyToMono(String.class).flatMap(body -> client.get()\r\n                            .uri(BASEURL + \"tool/pcc/check.jsp?for=nlogin\")\r\n                            .header(HttpHeaders.HOST, \"www.jeju.go.kr\")\r\n                            .header(HttpHeaders.REFERER, BASEURL + \"mypage/login.htm?act=nlogin\")\r\n                            .header(HttpHeaders.COOKIE, getAllCookies())\r\n                            .exchangeToMono(checkResponse -> {\r\n                                System.out.println(\"Requesting: \" + BASEURL + \"tool/pcc/check.jsp?for=nlogin\");\r\n                                if (!checkResponse.statusCode().equals(HttpStatus.OK)) {\r\n                                    return Mono.error(new RuntimeException(\"요청 실패: 상태 코드 \" + checkResponse.statusCode()));\r\n                                }\r\n                                return checkResponse.bodyToMono(String.class)\r\n                                        .flatMap(checkBody -> {\r\n                                            Document checkDoc = Jsoup.parse(checkBody);\r\n                                            Elements textInputs = checkDoc.select(\"input[type=text]\");\r\n                                            MultiValueMap<String, String> checkFormData = new LinkedMultiValueMap<>();\r\n\r\n                                            for (Element input : textInputs) {\r\n                                                String name = input.attr(\"name\");\r\n                                                String value = input.attr(\"value\");\r\n                                                if (!name.isEmpty()) {\r\n                                                    checkFormData.add(name, value);\r\n                                                }\r\n                                            }\r\n\r\n                                            List<String> errorMessages = checkFormData.get(\"errMsg\");\r\n                                            if (errorMessages != null && !errorMessages.isEmpty()) {\r\n                                                return Mono.error(new RuntimeException(errorMessages.get(0)));\r\n                                            }\r\n\r\n                                            String actionUrl = checkDoc.select(\"form[name=reqPCCForm]\").attr(\"action\");\r\n                                            if (actionUrl.isEmpty()) {\r\n                                                return Mono.error(new RuntimeException(\"actionUrl을 찾을 수 없습니다.\"));\r\n                                            }\r\n                                            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(actionUrl);\r\n                                            checkFormData.forEach((name, values) -> {\r\n                                                if (!values.isEmpty()) {\r\n                                                    builder.queryParam(name, values.get(0));\r\n                                                }\r\n                                            });\r\n                                            this.updatedUrl = builder.build().toUriString();\r\n                                            session.setAttribute(\"updatedUrl_\" + clientKey, this.updatedUrl);\r\n                                            System.out.println(\"Updated URL set for clientKey: \" + clientKey + \" - \" + this.updatedUrl);\r\n                                            System.out.println(\"Cookie after setup: \" + getSelectedCookies(\"JSESSIONID\"));\r\n                                            return Mono.empty();\r\n                                        });\r\n                            }));\r\n                });\r\n    }\r\n\r\n    public Mono<MultiValueMap<String, String>> extractReqInfoAndRetUrl(String clientKey) {\r\n        System.out.println(\"extractReqInfoAndRetUrl: \" + getSelectedCookies(\"JSESSIONID\"));\r\n        this.updatedUrl = (String) session.getAttribute(\"updatedUrl_\" + clientKey);\r\n        if (this.updatedUrl == null || this.updatedUrl.isEmpty()) {\r\n            return Mono.error(new RuntimeException(\"세션에서 updatedUrl을 찾을 수 없습니다. clientKey: \" + clientKey));\r\n        }\r\n\r\n        System.out.println(\"Requesting URL for clientKey: \" + clientKey + \" - \" + this.updatedUrl);\r\n        WebClient client = WebClient.builder()\r\n                .filter(cookieFilter())\r\n                .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)\r\n                .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))\r\n                .build();\r\n\r\n        return client.get()\r\n                .uri(this.updatedUrl)\r\n                .header(HttpHeaders.HOST, \"pcc.siren24.com\")\r\n                .header(HttpHeaders.REFERER, BASEURL)\r\n                .header(HttpHeaders.COOKIE, getSelectedCookies(\"JSESSIONID\"))\r\n                .exchangeToMono(certResponse -> {\r\n                    System.out.println(this.updatedUrl);\r\n                    if (!certResponse.statusCode().equals(HttpStatus.OK)) {\r\n                        return Mono.error(new RuntimeException(\"세 번째 요청 실패: 상태 코드 \" + certResponse.statusCode()));\r\n                    }\r\n                    return certResponse.bodyToMono(String.class)\r\n                            .flatMap(certBody -> {\r\n                                Document certDoc = Jsoup.parse(certBody);\r\n                                Elements hiddenInputs = certDoc.select(\"input[type=hidden]\");\r\n                                MultiValueMap<String, String> certFormData = new LinkedMultiValueMap<>();\r\n                                hiddenInputs.forEach(input -> {\r\n                                    String name = input.attr(\"name\");\r\n                                    String value = input.attr(\"value\");\r\n                                    if (!name.isEmpty()) {\r\n                                        certFormData.add(name, value);\r\n                                    }\r\n                                });\r\n                                List<String> certErrorMessages = certFormData.get(\"errMsg\");\r\n                                if (certErrorMessages != null && !certErrorMessages.isEmpty()) {\r\n                                    certFormData.add(\"alertText\", certErrorMessages.toString());\r\n                                    return Mono.just(certFormData);\r\n                                }\r\n                                String certActionUrl = certDoc.select(\"form[name=Pcc_V3Form]\").attr(\"action\");\r\n                                System.out.println(\"certActionUrl: \" + certActionUrl);\r\n                                return client.post()\r\n                                        .uri(certActionUrl)\r\n                                        .header(HttpHeaders.HOST, \"pcc.siren24.com\")\r\n                                        .header(HttpHeaders.REFERER, updatedUrl)\r\n                                        .header(HttpHeaders.COOKIE, getSelectedCookies(\"JSESSIONID\"))\r\n                                        .body(BodyInserters.fromFormData(certFormData))\r\n                                        .exchangeToMono(finalResponse -> {\r\n                                            System.out.println(certActionUrl);\r\n                                            if (!finalResponse.statusCode().equals(HttpStatus.OK)) {\r\n                                                return Mono.error(new RuntimeException(\"네 번째 요청 실패: 상태 코드 \" + finalResponse.statusCode()));\r\n                                            }\r\n                                            return finalResponse.bodyToMono(String.class)\r\n                                                    .flatMap(finalBody -> {\r\n                                                        Document finalDoc = Jsoup.parse(finalBody);\r\n                                                        Elements loginInputs = finalDoc.select(\"form[name=cplogn] input\");\r\n                                                        MultiValueMap<String, String> finalFormData = new LinkedMultiValueMap<>();\r\n                                                        loginInputs.forEach(input -> {\r\n                                                            String name = input.attr(\"name\");\r\n                                                            String value = input.attr(\"value\");\r\n                                                            if (!name.isEmpty()) {\r\n                                                                finalFormData.add(name, value);\r\n                                                            }\r\n                                                        });\r\n                                                        List<String> finalErrorMessages = finalFormData.get(\"errMsg\");\r\n                                                        if (finalErrorMessages != null && !finalErrorMessages.isEmpty()) {\r\n                                                            finalFormData.add(\"alertText\", finalErrorMessages.toString());\r\n                                                            return Mono.just(finalFormData);\r\n                                                        }\r\n                                                        return Mono.just(finalFormData);\r\n                                                    });\r\n                                        });\r\n                            });\r\n                });\r\n    }\r\n\r\n    public String getCellcorpaa(String co) {\r\n        switch (co) {\r\n            case \"KT\": return \"KTF\";\r\n            case \"SKT\": return \"SKT\";\r\n            case \"LGU\": return \"LGT\";\r\n            case \"SKM\": return \"SKM\";\r\n            case \"KTM\": return \"KTM\";\r\n            case \"LGM\": return \"LGM\";\r\n            default: return \"Unknown\";\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/team/authentication/AuthenticationService.java b/src/main/java/com/team/authentication/AuthenticationService.java
+--- a/src/main/java/com/team/authentication/AuthenticationService.java	(revision 69803818cd197bad39b1920ce3f1401d16d38788)
++++ b/src/main/java/com/team/authentication/AuthenticationService.java	(date 1742279453430)
+@@ -37,12 +37,10 @@
+     private final HttpSession session;
+     private final String clientKey; // 클라이언트별 고유 식별자
+ 
+-    public AuthenticationService(HttpSession session) {
++    public AuthenticationService(HttpSession session, String clientKey) {
+         this.session = session;
+-        // 세션에서 기존 clientKey 재사용, 없으면 새로 생성
+-        String existingKey = (String) session.getAttribute("clientKey");
+-        this.clientKey = existingKey != null ? existingKey : UUID.randomUUID().toString();
+-        session.setAttribute("clientKey", this.clientKey);
++        this.clientKey = clientKey != null ? clientKey : UUID.randomUUID().toString();
++        System.out.println("Initialized AuthenticationService with clientKey: " + this.clientKey);
+     }
+ 
+     public String getClientKey() {
+@@ -116,7 +114,49 @@
+                 .map(bytes -> "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(bytes))
+                 .doOnError(error -> System.out.println("캡차 이미지 요청 실패: " + error.getMessage()));
+     }
+-
++    public Mono<MultiValueMap<String, String>> checkOtp(MultiValueMap<String, String> formData, String otp) {
++        formData.set("otp", otp);
++        WebClient client = WebClient.builder()
++                .filter(cookieFilter())
++                .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
++                .clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(false)))
++                .build();
++        return client.post()
++                .uri(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi04.jsp")
++                .header(HttpHeaders.HOST, "pcc.siren24.com")
++                .header(HttpHeaders.REFERER, BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi03.jsp")
++                .header(HttpHeaders.COOKIE, getSelectedCookies("JSESSIONID"))
++                .body(BodyInserters.fromFormData(formData))
++                .exchangeToMono(passResponse4 -> {
++                    System.out.println(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi04.jsp");
++                    if (!passResponse4.statusCode().equals(HttpStatus.OK)) {
++                        return Mono.error(new RuntimeException("상태 코드 " + passResponse4.statusCode()));
++                    }
++                    return passResponse4.bodyToMono(String.class).flatMap(passBody4 -> {
++                        System.out.println(passBody4);
++                        Document passDoc4 = Jsoup.parse(passBody4);
++                        MultiValueMap<String, String> passFormData4 = new LinkedMultiValueMap<>();
++                        Elements scripts2 = passDoc4.select("script");
++                        for (Element script : scripts2) {
++                            String scriptContent = script.data();
++                            System.out.println("Script Content: " + scriptContent);
++                            if (scriptContent.isEmpty()) {
++                                continue;
++                            }
++                            if (scriptContent.contains("pop_alert")) {
++                                Pattern pattern = Pattern.compile("pop_alert\\s*\\(\\s*\"([^\"]*)\"\\s*\\)");
++                                Matcher matcher = pattern.matcher(scriptContent);
++                                if (matcher.find()) {
++                                    String alertText = matcher.group(1).replace("\\n", "\n");
++                                    passFormData4.add("alertText", alertText);
++                                    return Mono.just(passFormData4);
++                                }
++                            }
++                        }
++                        return Mono.just(passFormData4);
++                    });
++                });
++    }
+     public Mono<MultiValueMap<String, String>> CertificationRequest(AuthenticationDTO authenticationDTO, MultiValueMap<String, String> formData) {
+         formData.set("cellCorp", authenticationDTO.getCellcorp());
+         System.out.println(formData);
+@@ -202,7 +242,50 @@
+                                                             passFormData2.add(name, value);
+                                                         }
+                                                     });
+-                                                    return Mono.just(passFormData2);
++                                                    return client.post()
++                                                            .uri(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi03.jsp")
++                                                            .header(HttpHeaders.HOST, "pcc.siren24.com")
++                                                            .header(HttpHeaders.REFERER, BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi02.jsp")
++                                                            .header(HttpHeaders.COOKIE, getSelectedCookies("JSESSIONID"))
++                                                            .body(BodyInserters.fromFormData(passFormData2))
++                                                            .exchangeToMono(passResponse3 -> {
++                                                                System.out.println(BASEURL2 + "pcc_V3/passWebV2/pcc_V3_j30_certHpTi03.jsp");
++                                                                if (!passResponse3.statusCode().equals(HttpStatus.OK)) {
++                                                                    return Mono.error(new RuntimeException("상태 코드 " + passResponse3.statusCode()));
++                                                                }
++                                                                return passResponse3.bodyToMono(String.class).flatMap(passBody3 -> {
++                                                                    System.out.println(passBody3);
++                                                                    Document passDoc3 = Jsoup.parse(passBody3);
++                                                                    MultiValueMap<String, String> passFormData3 = new LinkedMultiValueMap<>();
++                                                                    /*Elements scripts1 = passDoc3.select("script");
++                                                                    for (Element script : scripts1) {
++                                                                        String scriptContent = script.data();
++                                                                        System.out.println("Script Content: " + scriptContent);
++                                                                        if (scriptContent.isEmpty()) {
++                                                                            continue;
++                                                                        }
++                                                                        if (scriptContent.contains("pop_alert")) {
++                                                                            Pattern pattern = Pattern.compile("pop_alert\\s*\\(\\s*\"([^\"]*)\"\\s*\\)");
++                                                                            Matcher matcher = pattern.matcher(scriptContent);
++                                                                            if (matcher.find()) {
++                                                                                String alertText = matcher.group(1).replace("\\n", "\n");
++                                                                                passFormData3.add("alertText", alertText);
++                                                                                return Mono.just(passFormData3);
++                                                                            }
++                                                                        }
++                                                                    }*/
++                                                                    Elements passFormInputs3 = passDoc3.select("form[name=goPass] input");
++                                                                    passFormInputs3.forEach(input -> {
++                                                                        String name = input.attr("name");
++                                                                        String value = input.attr("value");
++                                                                        if (!name.isEmpty()) {
++                                                                            passFormData3.add(name, value);
++                                                                        }
++                                                                    });
++                                                                    session.setAttribute("resultFormData_" + clientKey, passFormData3);
++                                                                    return Mono.just(passFormData3);
++                                                                });
++                                                            });
+                                                 });
+                                             });
+                                 });
+@@ -211,7 +294,6 @@
+             return Mono.error(new IllegalArgumentException("지원하지 않는 통신사 코드: " + authenticationDTO.getCellcorp()));
+         }
+     }
+-
+     public Mono<Void> cookieSetup() {
+         WebClient client = WebClient.builder()
+                 .filter(cookieFilter())
+Index: src/main/resources/templates/test.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!doctype html>\r\n<html lang=\"en\" xmlns:th=\"http://www.thymeleaf.org\">\r\n<head>\r\n    <meta charset=\"utf-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <title>Bootstrap demo</title>\r\n    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH\" crossorigin=\"anonymous\">\r\n</head>\r\n<body>\r\n<div class=\"container\">\r\n    <div class=\"row mt-5\" th:if=\"${error != null}\">\r\n        <div class=\"col\">\r\n            <div class=\"alert alert-danger\" role=\"alert\" th:text=\"${error}\"></div>\r\n        </div>\r\n    </div>\r\n    <div class=\"row\">\r\n        <div class=\"col mt-5\">\r\n            <form th:action=\"@{/}\" method=\"post\">\r\n                <input type=\"hidden\" name=\"clientKey\" th:value=\"${clientKey}\"/>\r\n                <select class=\"form-select\" name=\"cellCorp\">\r\n                    <option value=\"KTF\">KT</option>\r\n                    <option value=\"SKT\">SKT</option>\r\n                    <option value=\"LGT\">LGU</option>\r\n                </select>\r\n                <div class=\"mb-3\">\r\n                    <label for=\"userName\" class=\"form-label\">이름</label>\r\n                    <input type=\"text\" class=\"form-control\" id=\"userName\" placeholder=\"성명입력\" name=\"userName\">\r\n                </div>\r\n                <label class=\"form-label\">생년월일/성별</label>\r\n                <div class=\"input-group mb-3\">\r\n                    <input type=\"text\" class=\"form-control d-inline\" maxlength=\"6\" name=\"birthDay1\">-<input type=\"text\" class=\"form-control d-inline\" maxlength=\"1\" name=\"birthDay2\">\r\n                </div>\r\n                <div class=\"mb-3\">\r\n                    <label class=\"form-label\">휴대폰번호</label>\r\n                    <input type=\"text\" class=\"form-control\" name=\"No\" placeholder=\"숫자만 입력\">\r\n                </div>\r\n                <div class=\"mb-3\">\r\n                    <label class=\"form-label\">보안문자</label>\r\n                    <img th:src=\"${captchaImage}\" alt=\"\">\r\n                    <input type=\"text\" class=\"form-control\" name=\"captchaInput\" placeholder=\"보안문자 입력\" maxlength=\"6\">\r\n                </div>\r\n                <button class=\"btn btn-primary\">확인</button>\r\n            </form>\r\n\r\n        </div>\r\n    </div>\r\n</div>\r\n<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz\" crossorigin=\"anonymous\"></script>\r\n</body>\r\n</html>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/test.html b/src/main/resources/templates/test.html
+--- a/src/main/resources/templates/test.html	(revision 69803818cd197bad39b1920ce3f1401d16d38788)
++++ b/src/main/resources/templates/test.html	(date 1742279453430)
+@@ -15,7 +15,7 @@
+     </div>
+     <div class="row">
+         <div class="col mt-5">
+-            <form th:action="@{/}" method="post">
++            <form th:action="@{/test}" method="post">
+                 <input type="hidden" name="clientKey" th:value="${clientKey}"/>
+                 <select class="form-select" name="cellCorp">
+                     <option value="KTF">KT</option>
+@@ -39,7 +39,7 @@
+                     <img th:src="${captchaImage}" alt="">
+                     <input type="text" class="form-control" name="captchaInput" placeholder="보안문자 입력" maxlength="6">
+                 </div>
+-                <button class="btn btn-primary">확인</button>
++                <button type="submit" class="btn btn-primary">인증번호 전송</button>
+             </form>
+ 
+         </div>
+Index: src/main/resources/templates/test2.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/test2.html b/src/main/resources/templates/test2.html
+new file mode 100644
+--- /dev/null	(date 1742279453430)
++++ b/src/main/resources/templates/test2.html	(date 1742279453430)
+@@ -0,0 +1,31 @@
++<!doctype html>
++<html lang="en" xmlns:th="http://www.thymeleaf.org">
++<head>
++  <meta charset="utf-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1">
++  <title>Bootstrap demo</title>
++  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
++</head>
++<body>
++<div class="container">
++  <div class="row mt-5" th:if="${error != null}">
++    <div class="col">
++      <div class="alert alert-danger" role="alert" th:text="${error}"></div>
++    </div>
++  </div>
++  <div class="row">
++    <div class="col mt-5">
++      <form th:action="@{/otp}" method="post">
++        <input type="hidden" name="clientKey" th:value="${clientKey}"/>
++        <div class="mb-3">
++          <label for="otp" class="form-label">인증번호</label>
++          <input type="text" class="form-control" id="otp" placeholder="인증번호" name="otp">
++        </div>
++        <button type="submit" class="btn btn-primary">인증번호 확인</button>
++      </form>
++    </div>
++  </div>
++</div>
++<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
++</body>
++</html>
+\ No newline at end of file

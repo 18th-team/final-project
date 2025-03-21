@@ -1,6 +1,7 @@
 package com.team.feedpost;
 
 import com.team.DataNotFoundException;
+import com.team.user.SiteUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +42,6 @@ public class FeedPostService {
         fp.setContent(content);
         fp.setCreateDate(LocalDateTime.now());
         fp.setTags(tags);
-        fp.setAuthor(user);
+        fp.setAuthor(user.getName());
     }
 }

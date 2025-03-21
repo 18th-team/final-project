@@ -1,0 +1,79 @@
+Index: src/main/java/com/team/authentication/AuthenticationController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.team.authentication;\r\n\r\nimport jakarta.servlet.http.HttpSession;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.ui.Model;\r\nimport org.springframework.web.bind.annotation.GetMapping;\r\nimport org.springframework.web.bind.annotation.PostMapping;\r\nimport org.springframework.web.bind.annotation.RequestParam;\r\nimport reactor.core.publisher.Mono;\r\n\r\nimport java.util.List;\r\n\r\n@RequiredArgsConstructor\r\n@Controller\r\npublic class AuthenticationController {\r\n    @GetMapping(\"/test\")\r\n    public Mono<String> index(Model model, HttpSession session) {\r\n        AuthenticationService authService = new AuthenticationService(session);\r\n        return authService.cookieSetup()\r\n                .then(authService.getCaptchaImage())\r\n                .map(captchaImage -> {\r\n                    model.addAttribute(\"captchaImage\", captchaImage);\r\n                    model.addAttribute(\"clientKey\", authService.getClientKey()); // clientKey 전달\r\n                    return \"test\";\r\n                })\r\n                .onErrorResume(e -> {\r\n                    System.out.println(\"쿠키 설정 실패: \" + e.getMessage());\r\n                    model.addAttribute(\"error\", \"캡차 이미지를 불러오는 중 오류가 발생했습니다.\");\r\n                    return Mono.just(\"test\");\r\n                });\r\n    }\r\n\r\n    @PostMapping(\"/test\")\r\n    public Mono<String> submit(\r\n            @RequestParam(\"cellCorp\") String cellCorp,\r\n            @RequestParam(\"userName\") String userName,\r\n            @RequestParam(\"birthDay1\") String birthDay1,\r\n            @RequestParam(\"birthDay2\") String birthDay2,\r\n            @RequestParam(\"No\") String No,\r\n            @RequestParam(\"captchaInput\") String captchaInput,\r\n            @RequestParam(\"clientKey\") String clientKey, // clientKey 받기\r\n            Model model,\r\n            HttpSession session) {\r\n\r\n        AuthenticationDTO authenticationDTO = new AuthenticationDTO();\r\n        authenticationDTO.setCellcorp(cellCorp);\r\n        authenticationDTO.setPhone(No);\r\n        authenticationDTO.setName(userName);\r\n        authenticationDTO.setBirthDay1(birthDay1);\r\n        authenticationDTO.setBirthDay2(birthDay2);\r\n        authenticationDTO.setCaptchaInput(captchaInput);\r\n\r\n        AuthenticationService authService = new AuthenticationService(session);\r\n        return authService.extractReqInfoAndRetUrl(clientKey)\r\n                .flatMap(formData -> {\r\n                    System.out.println(\"Extracted formData for clientKey: \" + clientKey + \" - \" + formData);\r\n                    List<String> alertText = formData.get(\"alertText\");\r\n                    if (alertText != null && !alertText.isEmpty()) {\r\n                        model.addAttribute(\"error\", alertText.get(0));\r\n                        return authService.cookieSetup()\r\n                                .then(authService.getCaptchaImage())\r\n                                .map(captchaImage -> {\r\n                                    model.addAttribute(\"captchaImage\", captchaImage);\r\n                                    model.addAttribute(\"clientKey\", authService.getClientKey());\r\n                                    return \"test\";\r\n                                });\r\n                    } else {\r\n                        return authService.CertificationRequest(authenticationDTO, formData)\r\n                                .flatMap(resultFormData -> {\r\n                                    System.out.println(\"CertificationRequest result formData: \" + resultFormData);\r\n                                    List<String> alertText2 = resultFormData.get(\"alertText\");\r\n                                    if (alertText2 != null && !alertText2.isEmpty()) {\r\n                                        model.addAttribute(\"error\", alertText2.get(0));\r\n                                        return authService.cookieSetup()\r\n                                                .then(authService.getCaptchaImage())\r\n                                                .map(captchaImage -> {\r\n                                                    model.addAttribute(\"captchaImage\", captchaImage);\r\n                                                    model.addAttribute(\"clientKey\", authService.getClientKey());\r\n                                                    return \"test\";\r\n                                                });\r\n                                    }\r\n                                    return Mono.just(\"redirect:/\");\r\n                                });\r\n                    }\r\n                })\r\n                .onErrorResume(e -> {\r\n                    System.out.println(\"인증 요청 처리 중 오류 발생: \" + e.getMessage());\r\n                    e.printStackTrace();\r\n                    model.addAttribute(\"error\", \"인증 처리 중 오류가 발생했습니다: \" + e.getMessage());\r\n                    return authService.cookieSetup()\r\n                            .then(authService.getCaptchaImage())\r\n                            .map(captchaImage -> {\r\n                                model.addAttribute(\"captchaImage\", captchaImage);\r\n                                model.addAttribute(\"clientKey\", authService.getClientKey());\r\n                                return \"test\";\r\n                            });\r\n                });\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/team/authentication/AuthenticationController.java b/src/main/java/com/team/authentication/AuthenticationController.java
+--- a/src/main/java/com/team/authentication/AuthenticationController.java	(revision 69803818cd197bad39b1920ce3f1401d16d38788)
++++ b/src/main/java/com/team/authentication/AuthenticationController.java	(date 1742279453430)
+@@ -4,19 +4,22 @@
+ import lombok.RequiredArgsConstructor;
+ import org.springframework.stereotype.Controller;
+ import org.springframework.ui.Model;
++import org.springframework.util.MultiValueMap;
+ import org.springframework.web.bind.annotation.GetMapping;
+ import org.springframework.web.bind.annotation.PostMapping;
+ import org.springframework.web.bind.annotation.RequestParam;
+ import reactor.core.publisher.Mono;
+ 
+ import java.util.List;
++import java.util.UUID;
+ 
+ @RequiredArgsConstructor
+ @Controller
+ public class AuthenticationController {
+     @GetMapping("/test")
+     public Mono<String> index(Model model, HttpSession session) {
+-        AuthenticationService authService = new AuthenticationService(session);
++        String clientKey = UUID.randomUUID().toString();
++        AuthenticationService authService = new AuthenticationService(session, clientKey);
+         return authService.cookieSetup()
+                 .then(authService.getCaptchaImage())
+                 .map(captchaImage -> {
+@@ -30,7 +33,25 @@
+                     return Mono.just("test");
+                 });
+     }
+-
++    @GetMapping("/otp")
++    public Mono<String> otpCheck(Model model, HttpSession session,  @RequestParam("clientKey") String clientKey) {
++        AuthenticationService authService = new AuthenticationService(session, clientKey);
++        model.addAttribute("clientKey", authService.getClientKey());
++        return Mono.just("test2");
++    }
++    @PostMapping ("/otp")
++    public Mono<String> otpCheckPost(Model model, HttpSession session,  @RequestParam("clientKey") String clientKey, @RequestParam("otp") String otp) {
++        AuthenticationService authService = new AuthenticationService(session, clientKey);
++        MultiValueMap<String, String> resultFormData = (MultiValueMap<String, String>) session.getAttribute("resultFormData_" + clientKey);
++        if (resultFormData == null) {
++            model.addAttribute("error", "인증 데이터가 없습니다. 다시 시도해주세요.");
++            return Mono.just("redirect:/test");
++        }
++        return authService.checkOtp(resultFormData, otp).flatMap(data -> {
++            model.addAttribute("error", "결과 : " + data);
++            return Mono.just("test2");
++        });
++    }
+     @PostMapping("/test")
+     public Mono<String> submit(
+             @RequestParam("cellCorp") String cellCorp,
+@@ -51,7 +72,7 @@
+         authenticationDTO.setBirthDay2(birthDay2);
+         authenticationDTO.setCaptchaInput(captchaInput);
+ 
+-        AuthenticationService authService = new AuthenticationService(session);
++        AuthenticationService authService = new AuthenticationService(session, clientKey);
+         return authService.extractReqInfoAndRetUrl(clientKey)
+                 .flatMap(formData -> {
+                     System.out.println("Extracted formData for clientKey: " + clientKey + " - " + formData);
+@@ -80,7 +101,7 @@
+                                                     return "test";
+                                                 });
+                                     }
+-                                    return Mono.just("redirect:/");
++                                    return Mono.just("redirect:/otp?clientKey=" + authService.getClientKey());
+                                 });
+                     }
+                 })
