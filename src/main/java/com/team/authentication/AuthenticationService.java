@@ -403,16 +403,4 @@ public class AuthenticationService {
         formData.remove("sci_name");
         formData.remove("sci_agency");
     }
-
-    public String getCellcorpaa(String co) {
-        return switch (co) {
-            case "KT" -> "KTF";
-            case "SKT" -> "SKT";
-            case "LGU" -> "LGT";
-            case "SKM" -> "SKM";
-            case "KTM" -> "KTM";
-            case "LGM" -> "LGM";
-            default -> "Unknown";
-        };
-    }
 }

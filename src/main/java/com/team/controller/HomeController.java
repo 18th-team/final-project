@@ -2,13 +2,12 @@ package com.team.controller;
 
 import com.team.authentication.AuthenticationDTO;
 import com.team.authentication.AuthenticationService;
-import com.team.user.SiteUser;
-import com.team.user.UserCreateForm;
-import com.team.user.UserService;
+import com.team.user.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -28,6 +28,9 @@ import java.util.regex.Pattern;
 @Controller
 public class HomeController {
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
     @GetMapping("/")
     public String home() {
         return "index";
@@ -39,13 +42,17 @@ public class HomeController {
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(Model model) {
         return "login";
     }
-
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/";
+    }
 
     @GetMapping("/signup")
-    public String signUp(Model model, HttpSession session) {
+    public String signUp(Model model) {
+        System.out.println("Accessed /signup");
         String clientKey = UUID.randomUUID().toString();
         UserCreateForm userCreateForm = new UserCreateForm();
         userCreateForm.setClientKey(clientKey);
@@ -76,7 +83,12 @@ public class HomeController {
                 return "signup";
             }
         }
-        this.userService.createSiteUser(
+        // 이메일 중복 확인
+        if (userService.isEmailAlreadyExists(userCreateForm.getEmail())) {
+            bindingResult.rejectValue("email", "duplicate.email", "이미 가입된 이메일입니다.");
+            return "signup";
+        }
+        userService.createSiteUser(
                 userCreateForm.getName(),
                 userCreateForm.getEmail(),
                 userCreateForm.getPassword1(),
@@ -84,7 +96,7 @@ public class HomeController {
                 userCreateForm.getBirthDay2(),
                 userCreateForm.getPhone(),
                 profileImage);
-
         return "redirect:/login";
     }
+
 }

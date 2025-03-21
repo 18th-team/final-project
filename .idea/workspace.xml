@@ -4,17 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="Oauth 로그인 추가 디비 저장 부분 수정 해야됨">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="Oauth 디비 저장 오류 수정, 로그인 수정 해야됨">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/UserLoginForm.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/KakaoController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/security/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/team/ApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/team/ApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,6 +100,7 @@
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "DefaultHtmlFileTemplate": "HTML File",
     "Gradle.Build final-project.executor": "Run",
+    "JUnit.ApplicationTests.executor": "Debug",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
@@ -120,7 +131,22 @@
       <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\java\com\team\authentication" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.Application">
+    <configuration name="ApplicationTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="18th_final.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.team.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.team" />
+      <option name="MAIN_CLASS_NAME" value="com.team.ApplicationTests" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <module name="final-project" />
       <method v="2">
@@ -141,6 +167,11 @@
         <option name="LaunchBrowser.Before.Run" url="http://localhost:8080/" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.ApplicationTests" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -243,7 +274,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742520613945</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Oauth 디비 저장 오류 수정, 로그인 수정 해야됨">
+      <option name="closed" value="true" />
+      <created>1742524144049</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1742524144049</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -269,110 +308,91 @@
     <MESSAGE value="재시도 부분 수정" />
     <MESSAGE value="Oauth 작업중" />
     <MESSAGE value="Oauth 로그인 추가 디비 저장 부분 수정 해야됨" />
-    <option name="LAST_COMMIT_MESSAGE" value="Oauth 로그인 추가 디비 저장 부분 수정 해야됨" />
+    <MESSAGE value="Oauth 디비 저장 오류 수정, 로그인 수정 해야됨" />
+    <option name="LAST_COMMIT_MESSAGE" value="Oauth 디비 저장 오류 수정, 로그인 수정 해야됨" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint type="javascript">
           <url>file://$PROJECT_DIR$/src/main/resources/templates/signup.html</url>
-          <line>237</line>
+          <line>242</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>75</line>
-          <option name="timeStamp" value="23" />
+          <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>74</line>
-          <option name="timeStamp" value="24" />
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>70</line>
+          <option name="timeStamp" value="51" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>73</line>
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>72</line>
-          <option name="timeStamp" value="26" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>71</line>
-          <option name="timeStamp" value="27" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>68</line>
-          <option name="timeStamp" value="28" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>67</line>
-          <option name="timeStamp" value="29" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>66</line>
-          <option name="timeStamp" value="31" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>63</line>
-          <option name="timeStamp" value="32" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>62</line>
-          <option name="timeStamp" value="33" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>61</line>
-          <option name="timeStamp" value="34" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java</url>
-          <line>60</line>
-          <option name="timeStamp" value="36" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
-          <line>54</line>
-          <option name="timeStamp" value="37" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
-          <line>55</line>
-          <option name="timeStamp" value="38" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
-          <line>56</line>
-          <option name="timeStamp" value="39" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
-          <line>63</line>
-          <option name="timeStamp" value="40" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java</url>
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>64</line>
-          <option name="timeStamp" value="41" />
+          <option name="timeStamp" value="53" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
-          <line>21</line>
-          <option name="timeStamp" value="42" />
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>59</line>
+          <option name="timeStamp" value="55" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
-          <line>22</line>
-          <option name="timeStamp" value="43" />
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>54</line>
+          <option name="timeStamp" value="57" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>49</line>
+          <option name="timeStamp" value="59" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>44</line>
+          <option name="timeStamp" value="61" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>39</line>
+          <option name="timeStamp" value="63" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>34</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>32</line>
+          <option name="timeStamp" value="67" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>33</line>
+          <option name="timeStamp" value="68" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>26</line>
+          <option name="timeStamp" value="69" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>25</line>
+          <option name="timeStamp" value="70" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>19</line>
+          <option name="timeStamp" value="71" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>20</line>
+          <option name="timeStamp" value="72" />
         </line-breakpoint>
         <breakpoint type="java-exception">
           <properties class="javax.net.ssl.SSLException" package="javax.net.ssl" />
@@ -382,6 +402,90 @@
           <properties class="java.net.SocketException" package="java.net" />
           <option name="timeStamp" value="8" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>74</line>
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getName">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>69</line>
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getAttributes">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>63</line>
+          <properties class="com.team.user.CustomSecurityUserDetails" method="isEnabled">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>58</line>
+          <properties class="com.team.user.CustomSecurityUserDetails" method="isCredentialsNonExpired">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>53</line>
+          <properties class="com.team.user.CustomSecurityUserDetails" method="isAccountNonLocked">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>48</line>
+          <properties class="com.team.user.CustomSecurityUserDetails" method="isAccountNonExpired">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="60" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>43</line>
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getUsername">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>38</line>
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getPassword">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-field">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>15</line>
+          <properties field="attributes" class="com.team.user.CustomSecurityUserDetails" />
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-field">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
+          <line>14</line>
+          <properties field="siteUser" class="com.team.user.CustomSecurityUserDetails" />
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

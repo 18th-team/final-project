@@ -49,10 +49,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                                 .money(0)
                                 .createdAt(LocalDate.now())
                                 .build();
-                    return userRepository.save(newUser);
+                        return userRepository.save(newUser);
                 });
 
-        return new CustomSecurityUserDetails(siteUser, oAuth2User.getAttributes());
+        CustomSecurityUserDetails userDetails = new CustomSecurityUserDetails(siteUser, oAuth2User.getAttributes());
+        System.out.println("Returning userDetails: " + userDetails.getUsername() + ", Role: " + userDetails.getAuthorities());
+        return userDetails;
     }
 
     private String getProviderId(OAuth2User oAuth2User, String provider) {
@@ -79,21 +81,37 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private String getGender(OAuth2User oAuth2User, String provider) {
         if ("kakao".equals(provider)) {
             Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
-            return kakaoAccount != null ? (String) kakaoAccount.get("gender") : null;
+            String kakaoGender = kakaoAccount != null ? (String) kakaoAccount.get("gender") : null;
+            if ("male".equalsIgnoreCase(kakaoGender)) {
+                return "남자";
+            } else if ("female".equalsIgnoreCase(kakaoGender)) {
+                return "여자";
+            }
+            return null; // 확인 불가 시 null
         } else if ("naver".equals(provider)) {
             Map<String, Object> response = oAuth2User.getAttribute("response");
-            return response != null ? (String) response.get("gender") : null;
+            String naverGender = response != null ? (String) response.get("gender") : null;
+            if ("M".equalsIgnoreCase(naverGender)) {
+                return "남자";
+            } else if ("F".equalsIgnoreCase(naverGender)) {
+                return "여자";
+            }
+            return null; // "U" 또는 null 시 null
         }
         return null;
     }
 
     private String getPhoneNumber(OAuth2User oAuth2User, String provider) {
+        String rawPhoneNumber = null;
         if ("kakao".equals(provider)) {
             Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
-            return kakaoAccount != null ? (String) kakaoAccount.get("phone_number") : null;
+            rawPhoneNumber = kakaoAccount != null ? (String) kakaoAccount.get("phone_number") : null;
         } else if ("naver".equals(provider)) {
             Map<String, Object> response = oAuth2User.getAttribute("response");
-            return response != null ? (String) response.get("mobile") : null;
+            rawPhoneNumber = response != null ? (String) response.get("mobile") : null;
+        }
+        if (rawPhoneNumber != null) {
+            return rawPhoneNumber.replaceAll("[^0-9+]", ""); // 하이픈 및 기타 문자 제거
         }
         return null;
     }

@@ -22,6 +22,7 @@ public class CustomSecurityUserDetails implements UserDetails, OAuth2User {
     }
     // 소셜 로그인용 생성자
     public CustomSecurityUserDetails(SiteUser siteUser, Map<String, Object> attributes) {
+        System.out.println(siteUser);
         this.siteUser = siteUser;
         this.attributes = attributes;
     }
@@ -29,7 +30,9 @@ public class CustomSecurityUserDetails implements UserDetails, OAuth2User {
     // UserDetails 구현
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + siteUser.getRole().name()));
+        String role = (siteUser.getRole() != null) ? siteUser.getRole().name() : "USER";
+        System.out.println("Authorities: ROLE_" + role); // 디버깅 로그
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
     @Override
