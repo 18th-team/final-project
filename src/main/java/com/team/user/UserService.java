@@ -58,6 +58,7 @@ public class UserService {
                 throw new RuntimeException(e);
             }
         }
+        siteUser.setRole(MemberRole.USER);
         this.userRepository.save(siteUser);
         return siteUser;
     }

@@ -4,21 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="재시도 부분 수정">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/img/btnG_완성형.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/callback.html" afterDir="false" />
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="Oauth 작업중">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/KakaoController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomUserDetailsService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/user/MemberRole.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/css/mobti.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/css/mobti.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/css/signup.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/css/signup.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/default-profile.png" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/img/default-profile.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/mobti_test.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/mobti_test.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/oauthtest.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/test.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/test.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/oauth/NaverController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,9 +52,10 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
-        <option value="Class" />
         <option value="HTML File" />
+        <option value="Interface" />
+        <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -70,12 +73,12 @@
     &quot;assignee&quot;: &quot;kwix316&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/18th-team/final-project.git",
-    "accountId": "ca8e8df1-6bdc-4c6d-b514-65dcffef15e0"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
+    &quot;accountId&quot;: &quot;af438f09-1c98-4fc6-896c-82d063cb9dc4&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -118,9 +121,6 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\java\com\team\authentication" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\admin\Desktop\final-project\src\main\resources\static\img" />
     </key>
   </component>
   <component name="RunManager">
@@ -170,7 +170,6 @@
       <workItem from="1742366129280" duration="1734000" />
       <workItem from="1742369193300" duration="5947000" />
       <workItem from="1742428966293" duration="11690000" />
-      <workItem from="1742461106652" duration="6190000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -260,7 +259,8 @@
     <MESSAGE value="유저 엔티티" />
     <MESSAGE value="TLS 1.2 및 ECDHE-RSA-AES128-GCM-SHA256으로 설정해 Connection Reset 오류 해결" />
     <MESSAGE value="재시도 부분 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="Oauth 작업중" />
+    <option name="LAST_COMMIT_MESSAGE" value="Oauth 작업중" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

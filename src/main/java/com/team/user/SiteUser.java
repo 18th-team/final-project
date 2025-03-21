@@ -1,14 +1,16 @@
 package com.team.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor // 기본 생성자
+@AllArgsConstructor // 모든 필드 포함 생성자
+@Builder
 public class SiteUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +43,8 @@ public class SiteUser {
     @Column(nullable = false)
     private LocalDate createdAt = LocalDate.now();
 
+    @Enumerated(EnumType.STRING)
+    private MemberRole role;
     // OAuth 관련 필드
     @Column
     private String provider; // OAuth 제공자 ("kakao", "naver")
