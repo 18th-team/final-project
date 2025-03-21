@@ -1,12 +1,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content">
-    <link th:href="@{/css/signup.css}" rel="stylesheet"/>
+<link th:href="@{/css/signup.css}" rel="stylesheet" type="text/css"/>
 
 <body>
 <div >
     <div class="container d-flex justify-content-center align-items-center min-vh-80 my-5 ">
         <div class="profile-card col-md-8 col-lg-11 p-4 ">
             <h4 class="text-center my-4">로그인</h4>
-            <form>
+            <form th:action="@{/login}" method="post">
                 <div class="mb-5 text-start">
                     <label for="email" class="form-label">이메일</label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="이메일을 입력하세요">
@@ -17,6 +17,16 @@
                 </div>
                 <button type="submit" class="btn-save btn w-100">로그인</button>
             </form>
+            <!--이미지 누락 임시로 변경-->
+            <!--<img width="100%" th:src="@{/img/naver_login.png}" alt="" style="width: 15vw; height: auto; margin-top: 5vh;">-->
+
+            <a th:href="@{/oauth2/authorization/naver}">
+                <img width="100%" th:src="@{/img/btnG_완성형.png}" alt="" style="width: 15vw; height: auto; margin-top: 5vh;">
+            </a>
+            <br>
+            <a th:href="@{/oauth2/authorization/kakao}">
+                <img width="100%" th:src="@{/img/kakao_login.png}" alt="" style="width: 15vw; height: auto;">
+            </a>
         </div>
     </div>
 </div>
