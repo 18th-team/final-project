@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Create a Club</h1>
+    <form th:action="@{/clubs/createOneDay}" method="post" id="clubForm" class="needs-validation" novalidate>
+        <!-- Club ID -->
+            <input type="hidden" name="clubId" id="clubId" class="form-control" placeholder="모임 ID" required>
+
+
+        <!-- Date -->
+        <div class="mb-3">
+            <label for="date" class="form-label">Event Date</label>
+            <input type="date" name="date" id="date" class="form-control" required>
+            <div class="invalid-feedback">날짜를 선택해주세요.</div>
+        </div>
+
+        <!-- Time -->
+        <div class="mb-3">
+            <label for="time" class="form-label">Event Time</label>
+            <input type="time" name="time" id="time" class="form-control" required>
+            <div class="invalid-feedback">시간을 선택해주세요.</div>
+        </div>
+
+        <!-- Is Online -->
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="isOnline" id="isOnline" class="form-check-input" value="true">
+            <label for="isOnline" class="form-check-label">Online Event</label>
+            <input type="hidden" name="isOnline" value="false"> <!-- 체크 안 되면 false -->
+        </div>
+
+        <!-- Min Participants -->
+        <div class="mb-3">
+            <label for="minParticipants" class="form-label">Minimum Participants</label>
+            <input type="number" name="minParticipants" id="minParticipants" class="form-control" min="1" required>
+            <div class="invalid-feedback">최소 참가자 수를 입력해주세요.</div>
+        </div>
+
+        <!-- Max Participants -->
+        <div class="mb-3">
+            <label for="maxParticipants" class="form-label">Maximum Participants</label>
+            <input type="number" name="maxParticipants" id="maxParticipants" class="form-control" min="1" required>
+            <div class="invalid-feedback">최대 참가자 수를 입력해주세요.</div>
+        </div>
+
+        <!-- Place -->
+        <div class="mb-3">
+            <label for="place" class="form-label">Place</label>
+            <input type="text" name="place" id="place" class="form-control" placeholder="예: 킨디">
+        </div>
+
+        <!-- Has Fee -->
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="hasFee" id="hasFee" class="form-check-input" value="true">
+            <label for="hasFee" class="form-check-label">Has Fee</label>
+            <input type="hidden" name="hasFee" value="false"> <!-- 체크 안 되면 false -->
+        </div>
+
+        <!-- Fee Details -->
+        <div class="mb-3">
+            <label for="feeDetails" class="form-label">Fee Details</label>
+            <input type="text" name="feeDetails" id="feeDetails" class="form-control" placeholder="참가비 상세 정보">
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</body>
+</html>

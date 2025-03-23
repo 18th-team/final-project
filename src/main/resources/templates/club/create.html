@@ -2,32 +2,100 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>모임 만들기</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>모임 만들기</h1>
-    <form action="#" th:action="@{/clubs/create}" th:object="${club}" method="post">
-        <label for="title">모임 제목</label>
-        <input type="text" th:field="*{title}" required />
-        <br/>
+<div class="container mt-5">
+    <h1>Create a Club</h1>
+    <form th:action="@{/clubs/insert}" method="post" id="clubForm" class="needs-validation" novalidate>
+        <!-- Title -->
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" name="title" id="title" class="form-control" required>
+            <div class="invalid-feedback">제목을 입력해주세요.</div>
+        </div>
 
-        <label for="description">모임 설명</label>
-        <textarea th:field="*{description}" required></textarea>
-        <br/>
+        <!-- Content -->
+        <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <textarea name="content" id="content" class="form-control" rows="4"></textarea>
+        </div>
 
-        <label for="hostNickname">호스트 닉네임</label>
-        <input type="text" th:field="*{hostNickname}" required />
-        <br/>
+        <!-- Images -->
+        <div class="mb-3">
+            <label class="form-label">Images (최대 3장)</label>
+            <div class="row">
+                <div class="col">
+                    <input type="file" id="imageInput01" class="form-control" accept="image/*">
+                    <div id="preview01" class="mt-2"></div>
+                    <input type="hidden" name="images01" id="imagesField01">
+                </div>
+                <div class="col">
+                    <input type="file" id="imageInput02" class="form-control" accept="image/*">
+                    <div id="preview02" class="mt-2"></div>
+                    <input type="hidden" name="images02" id="imagesField02">
+                </div>
+                <div class="col">
+                    <input type="file" id="imageInput03" class="form-control" accept="image/*">
+                    <div id="preview03" class="mt-2"></div>
+                    <input type="hidden" name="images03" id="imagesField03">
+                </div>
+            </div>
+        </div>
 
-        <label for="minParticipants">최소 인원</label>
-        <input type="number" th:field="*{minParticipants}" required />
-        <br/>
+        <!-- City -->
+        <div class="mb-3">
+            <label for="city" class="form-label">City (시)</label>
+            <input type="text" name="city" id="city" class="form-control" placeholder="예: 수원시">
+        </div>
 
-        <label for="maxParticipants">최대 인원</label>
-        <input type="number" th:field="*{maxParticipants}" required />
-        <br/>
+        <!-- District -->
+        <div class="mb-3">
+            <label for="district" class="form-label">District (군/구)</label>
+            <select name="district" id="district" class="form-select">
+                <option value="">선택하세요</option>
+                <option value="영통구">영통구</option>
+                <option value="권선구">권선구</option>
+                <option value="장안구">장안구</option>
+                <option value="팔달구">팔달구</option>
+                <!-- 나중에 키워드 매칭용으로 확장 가능 -->
+            </select>
+        </div>
 
-        <button type="submit">모임 생성</button>
+        <!-- Age Restriction -->
+        <div class="mb-3">
+            <label for="ageRestriction" class="form-label">Age Restriction</label>
+            <input type="number" name="ageRestriction" id="ageRestriction" class="form-control" placeholder="예: 최소나이로 입력하시오">
+        </div>
+
+        <!-- Theme -->
+        <div class="mb-3">
+            <label for="theme" class="form-label">Theme (카테고리)</label>
+            <select name="theme" id="theme" class="form-select">
+                <option value="">선택하세요</option>
+                <option value="액티비티">액티비티</option>
+                <option value="자기계발">자기계발</option>
+                <option value="취미">취미</option>
+                <option value="여행">여행</option>
+                <option value="문화/예술">문화/예술</option>
+                <option value="푸드/드링크">푸드/드링크</option>
+            </select>
+        </div>
+
+        <!-- Host (임시로 입력, 나중에 로그인 연동 가능) -->
+        <div class="mb-3">
+            <label for="hostId" class="form-label">Host ID</label>
+            <input type="number" name="hostId" id="hostId" class="form-control" placeholder="호스트 ID">
+        </div>
+        <div class="mb-3">
+            <label for="hostName" class="form-label">Host Name</label>
+            <input type="text" name="hostName" id="hostName" class="form-control" placeholder="호스트 이름">
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary">Save</button>
     </form>
-    <a href="/clubs">목록으로 돌아가기</a>
+</div>
 </body>
 </html>
