@@ -4,18 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="로그인 페이지">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" afterDir="false" />
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="중복 가입 부분 수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/signup.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/authentication/AuthenticationService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,12 +59,12 @@
     &quot;assignee&quot;: &quot;kwix316&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
-    &quot;accountId&quot;: &quot;af438f09-1c98-4fc6-896c-82d063cb9dc4&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/18th-team/final-project.git",
+    "accountId": "ca8e8df1-6bdc-4c6d-b514-65dcffef15e0"
   }
-}</component>
+}]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -168,8 +159,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59" />
       </set>
     </attachedChunks>
   </component>
@@ -195,6 +186,7 @@
       <workItem from="1742428966293" duration="11690000" />
       <workItem from="1742539594618" duration="4266000" />
       <workItem from="1742543920450" duration="1891000" />
+      <workItem from="1742722477288" duration="1738000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -300,7 +292,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742539525763</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="중복 가입 부분 수정">
+      <option name="closed" value="true" />
+      <created>1742717835142</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1742717835142</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -329,7 +329,8 @@
     <MESSAGE value="Oauth 디비 저장 오류 수정, 로그인 수정 해야됨" />
     <MESSAGE value="로그인, 회원가입 기능 완료" />
     <MESSAGE value="로그인 페이지" />
-    <option name="LAST_COMMIT_MESSAGE" value="로그인 페이지" />
+    <MESSAGE value="중복 가입 부분 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="중복 가입 부분 수정" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

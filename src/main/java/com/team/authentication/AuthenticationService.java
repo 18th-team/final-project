@@ -52,6 +52,7 @@ public class AuthenticationService {
     private final WebClient webClientNoCookie;   // 쿠키 저장 불필요용
 
     public AuthenticationService(HttpSession session, String clientKey) {
+        System.setProperty("javax.net.debug", "ssl:handshake"); // 디버깅 활성화
         this.session = session;
         this.clientKey = clientKey;
         this.webClientWithCookie = createWebClient(true);  // 쿠키 필터 적용
@@ -65,10 +66,6 @@ public class AuthenticationService {
                     try {
                         SslContext sslContext = SslContextBuilder.forClient()
                                 .protocols("TLSv1.2") // TLS 1.2를 명시적으로 사용
-                                .ciphers(Arrays.asList(
-                                        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-                                        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
-                                ))
                                 .build();
                         sslContextSpec.sslContext(sslContext);
                     } catch (SSLException e) {
@@ -81,6 +78,8 @@ public class AuthenticationService {
 
         WebClient.Builder builder = WebClient.builder()
                 .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
+                .defaultHeader(HttpHeaders.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
                 .clientConnector(new ReactorClientHttpConnector(httpClient));
 
         if (withCookieFilter) {
