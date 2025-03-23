@@ -1,4 +1,8 @@
-<html layout:decorate="~{layouts/main-layout}" layout:fragment="content" >
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}"
+      layout:fragment="content">
 <link th:href="@{/css/signup.css}" rel="stylesheet"/>
 
 <body>
@@ -195,6 +199,11 @@
                 error: function(xhr, status, error) {
                     console.error('OTP 전송 실패:', error);
                     alert(xhr.responseText); // 에러 메시지 표시
+                    if(xhr.responseText === "OTP 전송 실패: 보안문자를 정확히 입력해 주세요."){
+                        cnt++;
+                        console.log("Captcha reload count: " + cnt);
+                        loadCaptcha(true);
+                    }
                 }
             });
         });

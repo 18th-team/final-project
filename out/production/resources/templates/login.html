@@ -1,11 +1,20 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content">
-<link th:href="@{/css/signup.css}" rel="stylesheet" type="text/css"/>
+<link th:href="@{/css/signup.css}" rel="stylesheet"/>
 
 <body>
 <div >
     <div class="container d-flex justify-content-center align-items-center min-vh-80 my-5 ">
         <div class="profile-card col-md-8 col-lg-11 p-4 ">
             <h4 class="text-center my-4">로그인</h4>
+            <!-- 로그인 실패 메시지 -->
+            <div th:if="${param.error}" class="alert alert-danger mt-3" role="alert">
+                로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.
+            </div>
+
+            <!-- 안내 메시지 -->
+            <div class="alert alert-info mt-3" role="alert">
+                네이버로 로그인하면 같은 이메일이나 전화번호를 사용하는 기존 계정과 자동으로 연결됩니다. 이후에는 이메일과 비밀번호로도 로그인 가능합니다.
+            </div>
             <form th:action="@{/login}" method="post">
                 <div class="mb-5 text-start">
                     <label for="email" class="form-label">이메일</label>
@@ -17,16 +26,12 @@
                 </div>
                 <button type="submit" class="btn-save btn w-100">로그인</button>
             </form>
-            <!--이미지 누락 임시로 변경-->
-            <!--<img width="100%" th:src="@{/img/naver_login.png}" alt="" style="width: 15vw; height: auto; margin-top: 5vh;">-->
-
             <a th:href="@{/oauth2/authorization/naver}">
-                <img width="100%" th:src="@{/img/btnG_완성형.png}" alt="" style="width: 15vw; height: auto; margin-top: 5vh;">
+                <img th:src="@{/img/btnG_완성형.png}" alt="네이버 로그인" class="social-login-btn">
             </a>
+            <img width="100%" th:src="@{/img/naver_login.png}" alt="" style="width: 15vw; height: auto; margin-top: 5vh;">
             <br>
-            <a th:href="@{/oauth2/authorization/kakao}">
-                <img width="100%" th:src="@{/img/kakao_login.png}" alt="" style="width: 15vw; height: auto;">
-            </a>
+            <img width="100%" th:src="@{/img/kakao_login.png}" alt="" style="width: 15vw; height: auto;">
         </div>
     </div>
 </div>
