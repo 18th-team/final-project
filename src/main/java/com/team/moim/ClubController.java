@@ -1,7 +1,12 @@
 package com.team.moim;
 
 import com.team.moim.service.ClubService;
+import com.team.user.CustomSecurityUserDetails;
+import com.team.user.SiteUser;
+import com.team.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,18 +19,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClubController {
     private final ClubService clubService;
+    private final UserService userService;
 
     @GetMapping("/create")
-    public String create() {
+    public String createForm(Model model) {
+        model.addAttribute("clubDTO", new ClubDTO());
         return "club/create";
     }
 
     @PostMapping("/insert")
-    public String insert(@ModelAttribute ClubDTO clubDTO) {
-        System.out.println("clubDTO: " + clubDTO);
-        clubService.save(clubDTO);
+    public String createClub(@ModelAttribute ClubDTO clubDTO, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
+        SiteUser host = userDetails.getSiteUser();
+        clubService.save(clubDTO, host);
         return "redirect:/clubs";
-
     }
 
     @GetMapping()
@@ -36,11 +46,23 @@ public class ClubController {
         return "club/list"; //list.html로 흘러간다.
     }
 
-    //상세보기
+    //상세보기 (사용자정보 저장하기)
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id, Model model) {
+    public String findById(@PathVariable Long id, Model model,Authentication authentication) {
+        if (id == null) {
+            return "redirect:/clubs";
+        }
         ClubDTO clubDTO = clubService.findById(id);
         model.addAttribute("clubDTO", clubDTO);
+
+        //note  현재 로그인한 사용자 ID 추가
+        if (authentication != null && authentication.isAuthenticated()) {
+            CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
+            model.addAttribute("currentUserId", userDetails.getSiteUser().getId());
+        } else {
+            model.addAttribute("currentUserId", null);
+        }
+
         return "club/detail";
     }
 
@@ -54,8 +76,11 @@ public class ClubController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute ClubDTO clubDTO, Model model) {
-        ClubDTO club = clubService.update(clubDTO);
+    public String update(@ModelAttribute ClubDTO clubDTO, Model model,Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {return "redirect:/login";}
+        CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
+        SiteUser host = userDetails.getSiteUser();
+        ClubDTO club = clubService.update(clubDTO,host);
         model.addAttribute("clubUpdate", club);
         return "club/detail";
     }

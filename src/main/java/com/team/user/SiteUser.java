@@ -1,9 +1,12 @@
 package com.team.user;
 
+import com.team.moim.entity.Club;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -52,5 +55,14 @@ public class SiteUser {
     @Column
     private String providerId; // OAuth 제공자에서 발급한 사용자 ID
 
+    // 양방향 관계 추가
+    @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Club> hostedClubs = new ArrayList<>();
+
+    // 편의 메서드 (선택 사항)
+    public void addHostedClub(Club club) {
+        hostedClubs.add(club);
+        club.setHost(this);
+    }
 
 }

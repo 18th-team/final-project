@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"><head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"><head>
     <title>Club Detail</title>
 
 </head>
@@ -29,7 +29,7 @@
                 <dd class="col-sm-9" th:text="${clubDTO.ageRestriction != null ? clubDTO.ageRestriction + '세 이상' : '제한 없음'}">Age</dd>
 
                 <dt class="col-sm-3">Host</dt>
-                <dd class="col-sm-9" th:text="${clubDTO.hostName + ' (ID: ' + clubDTO.hostId + ')'}">Host Name (ID)</dd>
+                <dd class="col-sm-9" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
 
                 <dt class="col-sm-3">Created At</dt>
                 <dd class="col-sm-9" th:text="${#temporals.format(clubDTO.createdAt, 'yyyy-MM-dd HH:mm')}">Created Date</dd>
@@ -39,10 +39,13 @@
             </dl>
         </div>
         <div class="card-footer">
-<a th:href="@{/clubs/update/{id}(id=${clubDTO.id})}" class="btn btn-warning btn-sm">수정하기</a>
-            <form th:action="@{/clubs/delete/{id}(id=${clubDTO.id})}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-            </form>
+      <!-- 수정/삭제 버튼: 작성자만 볼 수 있도록 -->
+               <div th:if="${#authentication.authenticated and #authentication.principal.siteUser.id == clubDTO.hostId}">
+                   <a th:href="@{/clubs/update/{id}(id=${clubDTO.id})}" class="btn btn-warning btn-sm">수정하기</a>
+                   <form th:action="@{/clubs/delete/{id}(id=${clubDTO.id})}" method="post" style="display: inline;">
+                       <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                   </form>
+               </div>
             <a th:href="@{/clubs}" class="btn btn-secondary btn-sm">Back to List</a>
         </div>
     </div>

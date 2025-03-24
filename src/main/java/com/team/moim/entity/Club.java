@@ -2,6 +2,7 @@ package com.team.moim.entity;
 //원데이모임,
 
 import com.team.moim.ClubDTO;
+import com.team.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,38 +35,43 @@ public class Club extends BaseEntity {
     @Column
     private String theme; //카테고리
 
-    @Column(name = "host_id") //호스트아이디
-    private Long hostId;
+    /*
+    * todo 외래키로 연결하기
+    *  */
+    @ManyToOne
+    @JoinColumn(name = "host_id") // 외래키로 host_id 컬럼 사용
+    private SiteUser host; // 로그인한 사용자 (SiteUser와 관계)
 
-    @Column(name = "host_name") //호스트이름
-    private String hostName;
 
-
-    //todo DTO -> Entity로 저장
-    public static Club toSaveEntity(ClubDTO clubDTO) {
-        Club clubEntity = new Club();
-        clubEntity.setTitle(clubDTO.getTitle());
-        clubEntity.setContent(clubDTO.getContent());
-        clubEntity.setCity(clubDTO.getCity());
-        clubEntity.setDistrict(clubDTO.getDistrict());
-        clubEntity.setAgeRestriction(clubDTO.getAgeRestriction());
-        clubEntity.setTheme(clubDTO.getTheme());
-        clubEntity.setHostId(clubDTO.getHostId());
-        clubEntity.setHostName(clubDTO.getHostName());
-        return clubEntity;
+    //note DTO -> Entity로 저장
+    public static Club toSaveEntity(ClubDTO clubDTO, SiteUser host) {
+        return Club.builder()
+                .title(clubDTO.getTitle())
+                .content(clubDTO.getContent())
+                .city(clubDTO.getCity())
+                .district(clubDTO.getDistrict())
+                .ageRestriction(clubDTO.getAgeRestriction())
+                .theme(clubDTO.getTheme())
+                .host(host) // 로그인한 사용자를 host로 설정
+                .build();
     }
 
-    public static Club toUpdateEntity(ClubDTO clubDTO) {
-        Club clubEntity = new Club();
-        clubEntity.setId(clubDTO.getId());
-        clubEntity.setTitle(clubDTO.getTitle());
-        clubEntity.setContent(clubDTO.getContent());
-        clubEntity.setCity(clubDTO.getCity());
-        clubEntity.setDistrict(clubDTO.getDistrict());
-        clubEntity.setAgeRestriction(clubDTO.getAgeRestriction());
-        clubEntity.setTheme(clubDTO.getTheme());
-        clubEntity.setHostId(clubDTO.getHostId());
-        clubEntity.setHostName(clubDTO.getHostName());
-        return clubEntity;
+    //note  DTO -> Entity로 업데이트
+    public static Club toUpdateEntity(ClubDTO clubDTO, SiteUser host) {
+        return Club.builder()
+                .id(clubDTO.getId())
+                .title(clubDTO.getTitle())
+                .content(clubDTO.getContent())
+                .city(clubDTO.getCity())
+                .district(clubDTO.getDistrict())
+                .ageRestriction(clubDTO.getAgeRestriction())
+                .theme(clubDTO.getTheme())
+                .host(host) // 업데이트 시에도 host 유지
+                .build();
+    }
+
+    //note hostName을 동적으로 가져오는 메서드 (필요 시)
+    public String getHostName() {
+        return host != null ? host.getName() : null;
     }
 }

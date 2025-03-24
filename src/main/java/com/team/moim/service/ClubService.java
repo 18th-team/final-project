@@ -3,8 +3,10 @@ package com.team.moim.service;
 import com.team.moim.ClubDTO;
 import com.team.moim.entity.Club;
 import com.team.moim.repository.ClubRepository;
+import com.team.user.SiteUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +24,14 @@ import java.util.Optional;
 public class ClubService {
     private final ClubRepository clubRepository;
 
-    public void save(ClubDTO clubDTO) {
-        Club clubEntity = Club.toSaveEntity(clubDTO);
+    //1. CRUD 생성
+    public void save(ClubDTO clubDTO, SiteUser host) {
+        Club clubEntity = Club.toSaveEntity(clubDTO,host);
         clubRepository.save(clubEntity);
     }
 
+    //2-1. CRUD 전체 목록 조회
+    @Transactional(readOnly = true)
     public List<ClubDTO> findAll() {
         List<Club> clubEntityList = clubRepository.findAll();
         List<ClubDTO> clubDTOList = new ArrayList<>();
@@ -36,7 +41,7 @@ public class ClubService {
         return clubDTOList;
 
     }
-
+//2-1. ID별로 조회(상세보기)
     public ClubDTO findById(Long id) {
         Optional<Club> optionalClub = clubRepository.findById(id);
         if (optionalClub.isPresent()) {
@@ -49,13 +54,15 @@ public class ClubService {
     }
 
 
-    public ClubDTO update(ClubDTO clubDTO) {
+    //3. CRUD 업데이트
+    public ClubDTO update(ClubDTO clubDTO,SiteUser host) {
         //entity로 변환하는 작업
-        Club clubEntity = Club.toUpdateEntity(clubDTO);
+        Club clubEntity = Club.toUpdateEntity(clubDTO,host);
         clubRepository.save(clubEntity);
         return findById(clubDTO.getId());
     }
 
+    //4. CRUD 삭제
     public void delete(Long id) {
         clubRepository.deleteById(id);
     }

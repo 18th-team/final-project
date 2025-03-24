@@ -16,7 +16,7 @@
                 <div class="card-body">
                     <h5 class="card-title" th:text="'타이틀 : '+ ${club.title}">Title</h5>
                     <p class="card-text" th:text="'내용 : '+ ${club.content }">Content</p>
-                    <p class="card-text"><strong>Host:</strong> <span th:text="${club.hostName} + ' (ID: ' + club.hostId + ')'">Host Name</span></p>
+                    <p class="card-text"><strong>작성자:</strong> <span th:text="${club.hostName}">Host Name</span></p>
                     <p class="card-text"><strong>Location:</strong> <span th:text="${club.city + ' ' + club.district}">City District</span></p>
                     <p class="card-text"><strong>Theme:</strong> <span th:text="${club.theme != null ? club.theme : '미정'}">Theme</span></p>
                     <p class="card-text"><strong>Age Restriction:</strong> <span th:text="${club.ageRestriction != null ? club.ageRestriction + '세 이상' : '제한 없음'}">Age</span></p>
