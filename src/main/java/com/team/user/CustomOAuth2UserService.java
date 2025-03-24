@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -34,29 +35,68 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 이메일이 중복될 경우 providerId를 붙여 고유성 보장
         String uniqueEmail = email != null ? email : provider + "_" + providerId;
 
-        // 데이터베이스에서 사용자 조회 또는 생성
-        SiteUser siteUser = userRepository.findByProviderAndProviderId(provider, providerId)
-                .orElseGet(() -> {
-                        SiteUser newUser = SiteUser.builder()
-                                .email(uniqueEmail)
-                                .name(name != null ? name : "소셜 사용자")
-                                .provider(provider)
-                                .providerId(providerId)
-                                .role(MemberRole.USER)
-                                .age(getAge(birthDate))
-                                .gender(gender)
-                                .phone(Phone)
-                                .money(0)
-                                .createdAt(LocalDate.now())
-                                .build();
-                        return userRepository.save(newUser);
-                });
 
-        CustomSecurityUserDetails userDetails = new CustomSecurityUserDetails(siteUser, oAuth2User.getAttributes());
-        System.out.println("Returning userDetails: " + userDetails.getUsername() + ", Role: " + userDetails.getAuthorities());
-        return userDetails;
+        // 1. provider와 providerId로 기존 OAuth 사용자 조회
+        Optional<SiteUser> existingOAuthUser = userRepository.findByProviderAndProviderId(provider, providerId);
+        if (existingOAuthUser.isPresent()) {
+            SiteUser siteUser = existingOAuthUser.get();
+            return new CustomSecurityUserDetails(siteUser, oAuth2User.getAttributes());
+        }
+        // 2. 이메일 중복 체크
+        Optional<SiteUser> existingUserByEmail = userRepository.findByEmail(uniqueEmail);
+        if (existingUserByEmail.isPresent()) {
+            SiteUser user = existingUserByEmail.get();
+            if (user.getProvider() == null && user.getProviderId() == null) {
+                // 일반 계정 -> OAuth로 업데이트
+                user.setProvider(provider);
+                user.setProviderId(providerId);
+                updateUserDetails(user, name, gender, Phone, birthDate);
+                userRepository.save(user);
+                return new CustomSecurityUserDetails(user, oAuth2User.getAttributes());
+            }
+            // 이미 OAuth 계정이면 그대로 반환 (중복 가입 방지)
+            return new CustomSecurityUserDetails(user, oAuth2User.getAttributes());
+        }
+        // 3. 전화번호 중복 체크 (phone이 null이 아닌 경우에만)
+        if (Phone != null) {
+            Optional<SiteUser> existingUserByPhone = userRepository.findByPhone(Phone);
+            if (existingUserByPhone.isPresent()) {
+                SiteUser user = existingUserByPhone.get();
+                if (user.getProvider() == null && user.getProviderId() == null) {
+                    // 일반 계정 -> OAuth로 업데이트
+                    user.setProvider(provider);
+                    user.setProviderId(providerId);
+                    updateUserDetails(user, name, gender, Phone, birthDate);
+                    userRepository.save(user);
+                    return new CustomSecurityUserDetails(user, oAuth2User.getAttributes());
+                }
+                // 이미 OAuth 계정이면 그대로 반환 (중복 가입 방지)
+                return new CustomSecurityUserDetails(user, oAuth2User.getAttributes());
+            }
+        }
+        // 4. 신규 OAuth 사용자 생성
+        SiteUser newUser = SiteUser.builder()
+                .email(uniqueEmail)
+                .name(name != null ? name : "소셜 사용자")
+                .provider(provider)
+                .providerId(providerId)
+                .role(MemberRole.USER)
+                .age(getAge(birthDate))
+                .gender(gender)
+                .phone(Phone)
+                .money(0)
+                .createdAt(LocalDate.now())
+                .build();
+        userRepository.save(newUser);
+        return new CustomSecurityUserDetails(newUser, oAuth2User.getAttributes());
     }
-
+    // 사용자 세부 정보 업데이트 헬퍼 메서드
+    private void updateUserDetails(SiteUser user, String name, String gender, String phone, LocalDate birthDate) {
+        if (name != null && !name.isEmpty()) user.setName(name);
+        if (gender != null) user.setGender(gender);
+        if (phone != null) user.setPhone(phone);
+        if (birthDate != null) user.setAge(getAge(birthDate));
+    }
     private String getProviderId(OAuth2User oAuth2User, String provider) {
         if ("kakao".equals(provider)) {
             return oAuth2User.getAttribute("id").toString();

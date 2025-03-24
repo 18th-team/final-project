@@ -1,8 +1,11 @@
 package com.team.authentication;
 
 import io.netty.channel.ChannelOption;
+import io.netty.handler.logging.LogLevel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import jakarta.servlet.http.HttpSession;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -52,6 +55,7 @@ public class AuthenticationService {
     private final WebClient webClientNoCookie;   // 쿠키 저장 불필요용
 
     public AuthenticationService(HttpSession session, String clientKey) {
+        /*System.setProperty("javax.net.debug", "ssl:handshake:verbose");  상세 로그 활성화*/
         this.session = session;
         this.clientKey = clientKey;
         this.webClientWithCookie = createWebClient(true);  // 쿠키 필터 적용
@@ -66,8 +70,8 @@ public class AuthenticationService {
                         SslContext sslContext = SslContextBuilder.forClient()
                                 .protocols("TLSv1.2") // TLS 1.2를 명시적으로 사용
                                 .ciphers(Arrays.asList(
-                                        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-                                        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+                                        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                                        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
                                 ))
                                 .build();
                         sslContextSpec.sslContext(sslContext);
@@ -77,10 +81,21 @@ public class AuthenticationService {
                 })
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) CONNECT_TIMEOUT.toMillis())
                 .option(ChannelOption.SO_KEEPALIVE, true)
-                .responseTimeout(RESPONSE_TIMEOUT);
+                .responseTimeout(RESPONSE_TIMEOUT)
+                // 추가 설정: 읽기/쓰기 타임아웃 및 연결 풀 관리
+                .doOnConnected(conn -> conn
+                    .addHandlerLast(new ReadTimeoutHandler((int) RESPONSE_TIMEOUT.getSeconds()))
+                    .addHandlerLast(new WriteTimeoutHandler((int) RESPONSE_TIMEOUT.getSeconds())))
+                .tcpConfiguration(tcpClient -> tcpClient
+                        .option(ChannelOption.TCP_NODELAY, true) // Nagle 알고리즘 비활성화로 패킷 전송 속도 개선
+                        .option(ChannelOption.SO_SNDBUF, 1024 * 1024) // 송신 버퍼 크기 증가
+                        .option(ChannelOption.SO_RCVBUF, 1024 * 1024)); // 수신 버퍼 크기 증가
+            /*    .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG); 네트워크 트래픽 로깅*/
 
         WebClient.Builder builder = WebClient.builder()
                 .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)
+                .defaultHeader(HttpHeaders.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3")
                 .clientConnector(new ReactorClientHttpConnector(httpClient));
 
         if (withCookieFilter) {
@@ -257,21 +272,26 @@ public class AuthenticationService {
     public Mono<Void> updatedUrl() {
         return webClientNoCookie.get()
                 .uri(BASEURL + "mypage/login.htm?act=nlogin")
+                .header(HttpHeaders.HOST, "www.jeju.go.kr") // 명시적 Host 헤더 추가
                 .exchangeToMono(response -> {
                     System.out.println("Requesting: " + BASEURL + "mypage/login.htm?act=nlogin, Time: " + LocalDateTime.now());
                     if (!response.statusCode().equals(HttpStatus.OK)) {
-                        return Mono.error(new RuntimeException("Status code: " + response.statusCode()));
+                        return Mono.error(new RuntimeException("Status code: " + response.statusCode() + ", Headers: " + response.headers().asHttpHeaders()));
                     }
                     String cookieHeader = response.headers().header(HttpHeaders.SET_COOKIE)
-                            .stream().map(cookie -> cookie.split(";", 2)[0]).collect(Collectors.joining("; "));
-                    return response.bodyToMono(String.class).flatMap(body -> webClientNoCookie.get()
-                            .uri(BASEURL + "tool/pcc/check.jsp?for=nlogin")
-                            .header(HttpHeaders.HOST, "www.jeju.go.kr")
-                            .header(HttpHeaders.REFERER, BASEURL + "mypage/login.htm?act=nlogin")
-                            .header(HttpHeaders.COOKIE, cookieHeader)
-                            .exchangeToMono(this::processCheckResponse));
+                            .stream()
+                            .map(cookie -> cookie.split(";", 2)[0])
+                            .collect(Collectors.joining("; "));
+                    return response.bodyToMono(String.class)
+                            .doOnNext(body -> System.out.println("Response body length: " + body.length() + ", First 100 chars: " + body.substring(0, Math.min(100, body.length()))))
+                            .flatMap(body -> webClientNoCookie.get()
+                                    .uri(BASEURL + "tool/pcc/check.jsp?for=nlogin")
+                                    .header(HttpHeaders.HOST, "www.jeju.go.kr")
+                                    .header(HttpHeaders.REFERER, BASEURL + "mypage/login.htm?act=nlogin")
+                                    .header(HttpHeaders.COOKIE, cookieHeader)
+                                    .exchangeToMono(this::processCheckResponse));
                 })
-                .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                .retryWhen(Retry.backoff(MAX_RETRIES, RETRY_DELAY)
                         .filter(throwable -> {
                             if (throwable instanceof WebClientRequestException) {
                                 Throwable cause = throwable.getCause();
@@ -279,8 +299,8 @@ public class AuthenticationService {
                             }
                             return throwable instanceof SocketException || throwable instanceof IOException;
                         })
-                        .doBeforeRetry(signal -> System.out.println("재시도: 시도 " + signal.totalRetries() + ", 오류: " + signal.failure().getMessage())))
-                .doOnError(error -> System.out.println("updatedUrl 최종 실패: " + error.getMessage() + ", Time: " + LocalDateTime.now()));
+                        .doBeforeRetry(signal -> System.out.println("Retry attempt: " + signal.totalRetries() + ", Error: " + signal.failure().getMessage() + ", Time: " + LocalDateTime.now())))
+                .doOnError(error -> System.err.println("updatedUrl failed: " + error.getMessage() + ", Stacktrace: " + Arrays.toString(error.getStackTrace()) + ", Time: " + LocalDateTime.now()));
     }
 
     private Mono<Void> processCheckResponse(ClientResponse response) {

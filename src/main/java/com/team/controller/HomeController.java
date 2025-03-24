@@ -74,19 +74,53 @@ public class HomeController {
         if (!"true".equals(userCreateForm.getOtpVerified())) {
             bindingResult.reject("otpNotVerified", "OTP 인증이 완료되지 않았습니다.");
             return "signup";
-        }else{
-            //백엔드에서 한번 더 검증
-            Object otpVerifiedObj =  session.getAttribute("otpVerified_" + userCreateForm.getClientKey());
+        } else {
+            Object otpVerifiedObj = session.getAttribute("otpVerified_" + userCreateForm.getClientKey());
             boolean otpVerified = otpVerifiedObj instanceof Boolean && (Boolean) otpVerifiedObj;
-            if(!otpVerified){
+            if (!otpVerified) {
                 bindingResult.reject("otpNotVerified", "OTP 인증이 완료되지 않았습니다.");
                 return "signup";
             }
         }
         // 이메일 중복 확인
-        if (userService.isEmailAlreadyExists(userCreateForm.getEmail())) {
-            bindingResult.rejectValue("email", "duplicate.email", "이미 가입된 이메일입니다.");
-            return "signup";
+        Optional<SiteUser> existingUserByEmail = userRepository.findByEmail(userCreateForm.getEmail());
+        if (existingUserByEmail.isPresent()) {
+            SiteUser user = existingUserByEmail.get();
+            if (user.getProvider() != null && user.getProviderId() != null) {
+                // OAuth 계정인 경우 비밀번호와 프로필 이미지 업데이트
+                userService.createSiteUser(
+                        userCreateForm.getName(),
+                        userCreateForm.getEmail(),
+                        userCreateForm.getPassword1(),
+                        userCreateForm.getBirthDay1(),
+                        userCreateForm.getBirthDay2(),
+                        userCreateForm.getPhone(),
+                        profileImage);
+                return "redirect:/login";
+            } else {
+                bindingResult.rejectValue("email", "duplicate.email", "이미 가입된 이메일입니다.");
+                return "signup";
+            }
+        }
+        // 전화번호 중복 확인
+        Optional<SiteUser> existingUserByPhone = userRepository.findByPhone(userCreateForm.getPhone());
+        if (existingUserByPhone.isPresent()) {
+            SiteUser user = existingUserByPhone.get();
+            if (user.getProvider() != null && user.getProviderId() != null) {
+                // OAuth 계정인 경우 비밀번호와 프로필 이미지 업데이트
+                userService.createSiteUser(
+                        userCreateForm.getName(),
+                        userCreateForm.getEmail(),
+                        userCreateForm.getPassword1(),
+                        userCreateForm.getBirthDay1(),
+                        userCreateForm.getBirthDay2(),
+                        userCreateForm.getPhone(),
+                        profileImage);
+                return "redirect:/login";
+            } else {
+                bindingResult.rejectValue("phone", "duplicate.phone", "이미 가입된 전화번호입니다.");
+                return "signup";
+            }
         }
         userService.createSiteUser(
                 userCreateForm.getName(),

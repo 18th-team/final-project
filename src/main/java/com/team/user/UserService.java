@@ -31,6 +31,11 @@ public class UserService {
         return false;
     }
 
+    // 전화번호 중복 확인 메서드
+    public boolean isPhoneAlreadyExists(String phone) {
+        return userRepository.findByPhone(phone).isPresent();
+    }
+
     public SiteUser createSiteUser(String name, String email, String password, String birthDay1, String birthDay2, String phone, MultipartFile profileImage){
         // 이메일 중복 확인
         Optional<SiteUser> existingUserByEmail = userRepository.findByEmail(email);
