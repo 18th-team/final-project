@@ -6,7 +6,7 @@
 <body>
 <div class="container mt-5">
 
-    <h1>Create a Club</h1>
+    <h1>모락 크루 만들기</h1>
     <form th:action="@{/clubs/insert}" method="post" id="clubForm" class="needs-validation" novalidate>
         <!-- Title -->
         <div class="mb-3">
@@ -64,62 +64,6 @@
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>
-<script>
-    $(document).ready(function() {
-        $('#city').change(function() {
-            var city = $(this).val();
-            var districtSelect = $('#district');
-            districtSelect.empty(); // 기존 옵션 제거
-            districtSelect.append('<option value="">선택하세요</option>');
-
-            if (city === '서울시') {
-                var seoulDistricts = [
-                    '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
-                    '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
-                    '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'
-                ];
-                $.each(seoulDistricts, function(index, district) {
-                    districtSelect.append('<option value="' + district + '">' + district + '</option>');
-                });
-            } else if (city === '수원시') {
-                var suwonDistricts = ['영통구', '권선구', '장안구', '팔달구'];
-                $.each(suwonDistricts, function(index, district) {
-                    districtSelect.append('<option value="' + district + '">' + district + '</option>');
-                });
-            }
-        });
-    });
-
-    // Bootstrap 유효성 검사
-    (function () {
-        'use strict';
-        var forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    })();
-</script>
-<script>
-    $(document).ready(function() {
-        // Age Restriction 실시간 검증
-        $('#ageRestriction').on('input', function() {
-            var age = $(this).val();
-            if (age < 20) {
-                $(this).val(20); // 20 미만이면 20으로 강제 설정
-                $(this).addClass('is-invalid'); // 오류 표시
-            } else {
-                $(this).removeClass('is-invalid'); // 정상일 때 오류 제거
-            }
-        });
-    });
-
-
-</script>
+    <th:block th:replace="~{layouts/main-layout :: club-scripts}" />
 </body>
 </html>

@@ -29,9 +29,7 @@ public class ClubController {
 
     @PostMapping("/insert")
     public String createClub(@ModelAttribute ClubDTO clubDTO, Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
-        }
+
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
         clubService.save(clubDTO, host);
@@ -77,7 +75,6 @@ public class ClubController {
 
     @PostMapping("/update")
     public String update(@ModelAttribute ClubDTO clubDTO, Model model,Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {return "redirect:/login";}
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
         ClubDTO club = clubService.update(clubDTO,host);
