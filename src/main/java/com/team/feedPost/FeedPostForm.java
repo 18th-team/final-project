@@ -1,4 +1,4 @@
-package com.team.feedpost;
+package com.team.feedPost;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -15,4 +15,6 @@ public class FeedPostForm {
 
     @NotEmpty(message="내용은 필수 입력 항목입니다.")
     private String content;
+
+    private String tags;
 }

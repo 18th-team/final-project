@@ -1,4 +1,4 @@
-package com.team.feedpost;
+package com.team.feedPost;
 
 import com.team.user.SiteUser;
 import jakarta.persistence.*;
@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -38,11 +35,30 @@ public class FeedPost {
 
     private String imageURL;
 
+    /*
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "new_moim_id")
+    private NewMoim moim;
+
+     */
+
+
+    /*
+    @Transient
+    public String getMoimTitle() {
+        return moim != null ? moim.getTitle() : null;
+    }
+
+     */
+
+
     @Transient // DB에는 저장하지 않음
     public List<String> getTagList() {
-        if(tags == null || tags.equals("")) {
+        if (tags == null || tags.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        return Arrays.asList(tags.split(","));
+        // 공백 제거 후 쉼표로 분리
+        String cleanedTags = tags.replaceAll("\\s+", ""); // 모든 공백 제거
+        return Arrays.asList(cleanedTags.split(","));
     }
 }

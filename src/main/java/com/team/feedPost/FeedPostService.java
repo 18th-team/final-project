@@ -1,14 +1,12 @@
-package com.team.feedpost;
+package com.team.feedPost;
 
 import com.team.DataNotFoundException;
 import com.team.user.SiteUser;
-import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +18,10 @@ import java.util.Optional;
 @Service
 public class FeedPostService {
     private final FeedPostRepository feedPostRepository;
+
+    public List<FeedPost> findAll() {
+        return feedPostRepository.findAll(Sort.by(Sort.Direction.DESC, "createDate"));
+    }
 
     public Page<FeedPost> getList(int page, String keyword) {
         List<Sort.Order> sorts = new ArrayList<Sort.Order>();
@@ -39,13 +41,15 @@ public class FeedPostService {
     }
 
     // 작성
-    public void create(String title, String content, String tags, SiteUser user) {
+    public void create(String title, String content, String tags, String imageURL, SiteUser user) {
         FeedPost fp = new FeedPost();
         fp.setTitle(title);
         fp.setContent(content);
-        fp.setCreateDate(LocalDateTime.now());
         fp.setTags(tags);
+        fp.setImageURL(imageURL);
         fp.setAuthor(user);
+        fp.setCreateDate(LocalDateTime.now());
+        this.feedPostRepository.save(fp);
     }
 
     // 수정
@@ -61,10 +65,19 @@ public class FeedPostService {
     }
 
     // 좋아요
-    public void vote(FeedPost fp, SiteUser user) {
-        fp.getVoter().add(user);
-        this.feedPostRepository.save(fp);
+    public void vote(FeedPost post, SiteUser user) {
+        post.getVoter().add(user);
+        feedPostRepository.save(post);
     }
+
+    // 좋아요 취소
+    public void cancelVote(FeedPost post, SiteUser user) {
+        post.getVoter().remove(user);
+        feedPostRepository.save(post);
+    }
+
+
+
 
     /*
     // 검색

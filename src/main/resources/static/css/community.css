@@ -2,14 +2,15 @@
     border-bottom: none !important;
 }
 
-.nav-link {
-    font-size: 18px;
+a.feed-tab {
+    font-size: 20px;
     font-weight: bold;
     background-color: transparent;
     color: black;
-    padding: 12px 24px;
+    padding: 15px 20px;
     border: none !important;
-    border-radius: 10px !important;
+    border-radius: 15px !important;
+    text-decoration: none;
 }
 
 #write-btn {
@@ -28,7 +29,7 @@
     color: #E36D1D;
 }
 
-.nav-tabs .nav-link.active {
+a.active {
     background-color: #E36D1D;
     color: white;
 }
@@ -45,6 +46,7 @@
 
 /* 게시글 카드 스타일 */
 .post-card {
+    height: auto;
     border-radius: 10px;
     background: white;
     padding: 20px;
@@ -98,3 +100,4 @@
 .icons span:hover {
     color: #ff6600;
 }
+

@@ -4,10 +4,33 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="로그인 창 수정&#10;피드 작업 중">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="피드 작업 중">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/FileService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/community/CommunityController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedComment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPost.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/post_create.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/feed_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/feed_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/form_errors.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/review_list.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/signup.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/css/mobti.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/css/mobti.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedpost/FeedPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPost.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedpost/FeedPostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedpost/FeedPostForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedpost/FeedPostRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedpost/FeedPostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/community.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/community.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/community.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/feed/create.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,14 +62,28 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Interface" />
+        <option value="CSS File" />
+        <option value="HTML File" />
         <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/jy" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="development" />
@@ -60,12 +97,12 @@
     &quot;assignee&quot;: &quot;kwix316&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/18th-team/final-project.git",
-    "accountId": "764e6f26-2fe3-4c75-9309-7eb1551cb036"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
+    &quot;accountId&quot;: &quot;764e6f26-2fe3-4c75-9309-7eb1551cb036&quot;
   }
-}]]></component>
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -78,42 +115,46 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Gradle.Build final-project.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ApplicationTests.executor&quot;: &quot;Debug&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;jy&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/GREEN/IdeaProjects/final-project/src/main/java/com/team/authentication&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;build.tools&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Gradle.Build final-project.executor": "Run",
+    "JUnit.ApplicationTests.executor": "Debug",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.Application.executor": "Run",
+    "git-widget-placeholder": "jy",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/GREEN/final-project/src/main/java/com/team/reviewPost",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "build.tools",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\GREEN\final-project\src\main\java\com\team\reviewPost" />
+      <recent name="C:\Users\GREEN\final-project\src\main\resources\templates" />
       <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\java\com\team\authentication" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\GREEN\final-project\src\main\resources\templates" />
       <recent name="C:\Users\GREEN\final-project\src\main\resources\templates\feed" />
     </key>
   </component>
@@ -188,6 +229,9 @@
       <workItem from="1742369193300" duration="5947000" />
       <workItem from="1742428966293" duration="11690000" />
       <workItem from="1742545216019" duration="154000" />
+      <workItem from="1742546916716" duration="959000" />
+      <workItem from="1742547903024" duration="121000" />
+      <workItem from="1742776060488" duration="28271000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -409,9 +453,14 @@
           <option name="timeStamp" value="72" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/feedpost/FeedPostController.java</url>
-          <line>18</line>
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostController.java</url>
+          <line>19</line>
           <option name="timeStamp" value="75" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/FileService.java</url>
+          <line>9</line>
+          <option name="timeStamp" value="77" />
         </line-breakpoint>
         <breakpoint type="java-exception">
           <properties class="javax.net.ssl.SSLException" package="javax.net.ssl" />
@@ -424,7 +473,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>74</line>
-          <properties class="com.team.user.CustomSecurityUserDetails">
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getName">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -433,7 +482,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>69</line>
-          <properties class="com.team.user.CustomSecurityUserDetails">
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getAttributes">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -478,7 +527,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>43</line>
-          <properties class="com.team.user.CustomSecurityUserDetails">
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getUsername">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -487,7 +536,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>38</line>
-          <properties class="com.team.user.CustomSecurityUserDetails">
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getPassword">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>

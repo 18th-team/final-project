@@ -1,0 +1,8 @@
+<!-- templates/form_errors.html -->
+<div th:fragment="formErrorsFragment">
+    <div class="alert alert-danger" th:if="${#fields.hasErrors()}">
+        <ul>
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+        </ul>
+    </div>
+</div>
