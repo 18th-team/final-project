@@ -11,7 +11,5 @@ public class AuthenticationDTO {
     private String name; //이름
     private String birthDay1; //생년월일
     private String birthDay2;   //성별
-    private String captchaInput; //캡차 입력
-
 }
 
