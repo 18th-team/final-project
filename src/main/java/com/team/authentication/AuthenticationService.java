@@ -55,7 +55,7 @@ public class AuthenticationService {
     private final WebClient webClientNoCookie;   // 쿠키 저장 불필요용
 
     public AuthenticationService(HttpSession session, String clientKey) {
-        System.setProperty("javax.net.debug", "ssl:handshake:verbose"); // 상세 로그 활성화
+        /*System.setProperty("javax.net.debug", "ssl:handshake:verbose");  상세 로그 활성화*/
         this.session = session;
         this.clientKey = clientKey;
         this.webClientWithCookie = createWebClient(true);  // 쿠키 필터 적용
@@ -89,8 +89,8 @@ public class AuthenticationService {
                 .tcpConfiguration(tcpClient -> tcpClient
                         .option(ChannelOption.TCP_NODELAY, true) // Nagle 알고리즘 비활성화로 패킷 전송 속도 개선
                         .option(ChannelOption.SO_SNDBUF, 1024 * 1024) // 송신 버퍼 크기 증가
-                        .option(ChannelOption.SO_RCVBUF, 1024 * 1024)) // 수신 버퍼 크기 증가
-                .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG); // 네트워크 트래픽 로깅
+                        .option(ChannelOption.SO_RCVBUF, 1024 * 1024)); // 수신 버퍼 크기 증가
+            /*    .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG); 네트워크 트래픽 로깅*/
 
         WebClient.Builder builder = WebClient.builder()
                 .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT)

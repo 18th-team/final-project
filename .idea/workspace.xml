@@ -48,7 +48,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="jsw" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -59,12 +59,12 @@
     &quot;assignee&quot;: &quot;kwix316&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/18th-team/final-project.git",
-    "accountId": "ca8e8df1-6bdc-4c6d-b514-65dcffef15e0"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
+    &quot;accountId&quot;: &quot;ca8e8df1-6bdc-4c6d-b514-65dcffef15e0&quot;
   }
-}]]></component>
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -151,6 +151,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.ApplicationTests" />
+        <item itemvalue="JUnit.ApplicationTests" />
         <item itemvalue="JUnit.ApplicationTests" />
         <item itemvalue="JUnit.ApplicationTests" />
       </list>
@@ -430,7 +432,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>74</line>
-          <properties class="com.team.user.CustomSecurityUserDetails">
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getName">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -439,7 +441,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>69</line>
-          <properties class="com.team.user.CustomSecurityUserDetails">
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getAttributes">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -484,7 +486,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>43</line>
-          <properties class="com.team.user.CustomSecurityUserDetails">
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getUsername">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -493,7 +495,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>38</line>
-          <properties class="com.team.user.CustomSecurityUserDetails">
+          <properties class="com.team.user.CustomSecurityUserDetails" method="getPassword">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
