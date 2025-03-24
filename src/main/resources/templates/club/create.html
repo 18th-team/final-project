@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title>모임 만들기</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -22,46 +22,24 @@
             <textarea name="content" id="content" class="form-control" rows="4"></textarea>
         </div>
 
-        <!-- Images -->
-        <div class="mb-3">
-            <label class="form-label">Images (최대 3장)</label>
-            <div class="row">
-                <div class="col">
-                    <input type="file" id="imageInput01" class="form-control" accept="image/*">
-                    <div id="preview01" class="mt-2"></div>
-                    <input type="hidden" name="images01" id="imagesField01">
-                </div>
-                <div class="col">
-                    <input type="file" id="imageInput02" class="form-control" accept="image/*">
-                    <div id="preview02" class="mt-2"></div>
-                    <input type="hidden" name="images02" id="imagesField02">
-                </div>
-                <div class="col">
-                    <input type="file" id="imageInput03" class="form-control" accept="image/*">
-                    <div id="preview03" class="mt-2"></div>
-                    <input type="hidden" name="images03" id="imagesField03">
-                </div>
-            </div>
-        </div>
+   <!-- City -->
+           <div class="mb-3">
+               <label for="city" class="form-label">City (시)</label>
+               <select name="city" id="city" class="form-select" required>
+                   <option value="">선택하세요</option>
+                   <option value="서울시">서울시</option>
+                   <option value="수원시">수원시</option>
+               </select>
+               <div class="invalid-feedback">도시를 선택해주세요.</div>
+           </div>
 
-        <!-- City -->
-        <div class="mb-3">
-            <label for="city" class="form-label">City (시)</label>
-            <input type="text" name="city" id="city" class="form-control" placeholder="예: 수원시">
-        </div>
-
-        <!-- District -->
-        <div class="mb-3">
-            <label for="district" class="form-label">District (군/구)</label>
-            <select name="district" id="district" class="form-select">
-                <option value="">선택하세요</option>
-                <option value="영통구">영통구</option>
-                <option value="권선구">권선구</option>
-                <option value="장안구">장안구</option>
-                <option value="팔달구">팔달구</option>
-                <!-- 나중에 키워드 매칭용으로 확장 가능 -->
-            </select>
-        </div>
+           <!-- District -->
+           <div class="mb-3">
+               <label for="district" class="form-label">District (군/구)</label>
+               <select name="district" id="district" class="form-select">
+                   <option value="">선택하세요</option>
+               </select>
+           </div>
 
         <!-- Age Restriction -->
         <div class="mb-3">
@@ -97,5 +75,46 @@
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>
+<script>
+    $(document).ready(function() {
+        $('#city').change(function() {
+            var city = $(this).val();
+            var districtSelect = $('#district');
+            districtSelect.empty(); // 기존 옵션 제거
+            districtSelect.append('<option value="">선택하세요</option>');
+
+            if (city === '서울시') {
+                var seoulDistricts = [
+                    '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
+                    '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
+                    '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'
+                ];
+                $.each(seoulDistricts, function(index, district) {
+                    districtSelect.append('<option value="' + district + '">' + district + '</option>');
+                });
+            } else if (city === '수원시') {
+                var suwonDistricts = ['영통구', '권선구', '장안구', '팔달구'];
+                $.each(suwonDistricts, function(index, district) {
+                    districtSelect.append('<option value="' + district + '">' + district + '</option>');
+                });
+            }
+        });
+    });
+
+    // Bootstrap 유효성 검사
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
 </body>
 </html>

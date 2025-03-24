@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>Club Update</title></head>
+<body>
+<div class="container mt-5">
+    <h1>모임 수정하기</h1>
+    <form th:action="@{/clubs/update}" method="post" id="clubForm" class="needs-validation" novalidate>
+        <!-- Hidden ID -->
+        <input type="hidden" name="id" th:value="${clubUpdate.id}">
+
+        <!-- Title -->
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" name="title" id="title" class="form-control" th:value="${clubUpdate.title}" required>
+            <div class="invalid-feedback">제목을 입력해주세요.</div>
+        </div>
+
+        <!-- Content -->
+        <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <textarea name="content" id="content" class="form-control" rows="4" th:text="${clubUpdate.content}"></textarea>
+        </div>
+
+        <!-- City -->
+        <div class="mb-3">
+            <label for="city" class="form-label">City (시)</label>
+            <input type="text" name="city" id="city" class="form-control" th:value="${clubUpdate.city}" placeholder="예: 수원시">
+        </div>
+
+        <!-- District -->
+        <div class="mb-3">
+            <label for="district" class="form-label">District (군/구)</label>
+            <select name="district" id="district" class="form-select">
+                <option value="" th:selected="${clubUpdate.district == null}">선택하세요</option>
+                <option value="영통구" th:selected="${clubUpdate.district == '영통구'}">영통구</option>
+                <option value="권선구" th:selected="${clubUpdate.district == '권선구'}">권선구</option>
+                <option value="장안구" th:selected="${clubUpdate.district == '장안구'}">장안구</option>
+                <option value="팔달구" th:selected="${clubUpdate.district == '팔달구'}">팔달구</option>
+            </select>
+        </div>
+
+       <!-- Age Restriction -->
+               <div class="mb-3">
+                   <label for="ageRestriction" class="form-label">Age Restriction</label>
+                   <input type="number" name="ageRestriction" id="ageRestriction" class="form-control" th:value="${clubUpdate.ageRestriction}" placeholder="예: 최소 나이">
+               </div>
+
+               <!-- Theme -->
+               <div class="mb-3">
+                   <label for="theme" class="form-label">Theme (카테고리)</label>
+                   <select name="theme" id="theme" class="form-select">
+                       <option value="" th:selected="${clubUpdate.theme == null}">선택하세요</option>
+                       <option value="액티비티" th:selected="${clubUpdate.theme == '액티비티'}">액티비티</option>
+                       <option value="자기계발" th:selected="${clubUpdate.theme == '자기계발'}">자기계발</option>
+                       <option value="취미" th:selected="${clubUpdate.theme == '취미'}">취미</option>
+                       <option value="여행" th:selected="${clubUpdate.theme == '여행'}">여행</option>
+                       <option value="문화/예술" th:selected="${clubUpdate.theme == '문화/예술'}">문화/예술</option>
+                       <option value="푸드/드링크" th:selected="${clubUpdate.theme == '푸드/드링크'}">푸드/드링크</option>
+                   </select>
+               </div>
+
+               <!-- Host -->
+               <div class="mb-3">
+                   <label for="hostId" class="form-label">Host ID</label>
+                   <input type="number" name="hostId" id="hostId" class="form-control" th:value="${clubUpdate.hostId}" placeholder="호스트 ID">
+               </div>
+               <div class="mb-3">
+                   <label for="hostName" class="form-label">Host Name</label>
+                   <input type="text" name="hostName" id="hostName" class="form-control" th:value="${clubUpdate.hostName}" placeholder="호스트 이름">
+               </div>
+
+               <!-- Submit -->
+               <button type="submit" class="btn btn-primary">수정하기</button>
+               <a th:href="@{/clubs}" class="btn btn-secondary">Back to List</a>
+           </form>
+       </div>
+
+       <script>
+           // Bootstrap 유효성 검사
+           (function () {
+               'use strict';
+               var forms = document.querySelectorAll('.needs-validation');
+               Array.prototype.slice.call(forms).forEach(function (form) {
+                   form.addEventListener('submit', function (event) {
+                       if (!form.checkValidity()) {
+                           event.preventDefault();
+                           event.stopPropagation();
+                       }
+                       form.classList.add('was-validated');
+                   }, false);
+               });
+           })();
+       </script>
+       </body>
+       </html>

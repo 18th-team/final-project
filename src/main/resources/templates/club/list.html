@@ -1,38 +1,40 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <title>모임 목록</title>
+    <title>Club List</title>
+
 </head>
 <body>
-    <h1>모임 목록</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>모임 제목</th>
-                <th>호스트</th>
-                <th>상태</th>
-                <th>참여 인원</th>
-                <th>상세보기</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="club : ${clubs}">
-                <td th:text="${club.title}">모임 제목</td>
-                <td th:text="${club.hostNickname}">호스트</td>
-                <td th:text="${club.status}">모임 상태</td>
-                <td th:text="${club.currentParticipants}">참여 인원</td>
-                <td><a th:href="@{/clubs/{id}(id=${club.id})}">상세보기</a></td>
-                <!-- 참여 버튼 -->
-                <form th:action="@{/clubs/participate/{id}(id=${club.id})}" method="post">
-                    <button type="submit" th:disabled="${club.isFull}">참여하기</button>
-                </form>
+<div class="container my-5">
+    <h1 class="mb-4">모임 목록</h1>
 
-                <p th:if="${club.isFull}">모임이 마감되었습니다.</p>
-            </tr>
-        </tbody>
-    </table>
 
-    <a href="/clubs/create">모임 만들기</a>
+    <!-- 클럽 목록 -->
+    <div class="row row-cols-1 row-cols-md-3 g-4" th:unless="${#lists.isEmpty(clubDTOList)}">
+        <div class="col" th:each="club : ${clubDTOList}">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="'타이틀 : '+ ${club.title}">Title</h5>
+                    <p class="card-text" th:text="'내용 : '+ ${club.content }">Content</p>
+                    <p class="card-text"><strong>Host:</strong> <span th:text="${club.hostName} + ' (ID: ' + club.hostId + ')'">Host Name</span></p>
+                    <p class="card-text"><strong>Location:</strong> <span th:text="${club.city + ' ' + club.district}">City District</span></p>
+                    <p class="card-text"><strong>Theme:</strong> <span th:text="${club.theme != null ? club.theme : '미정'}">Theme</span></p>
+                    <p class="card-text"><strong>Age Restriction:</strong> <span th:text="${club.ageRestriction != null ? club.ageRestriction + '세 이상' : '제한 없음'}">Age</span></p>
+                    <p class="card-text"><small class="text-muted">Created: <span th:text="${#temporals.format(club.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span></small></p>
+                </div>
+                <div class="card-footer">
+                    <a th:href="@{/clubs/{id}(id=${club.id})}" class="btn btn-info btn-sm">상세보기</a>
 
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 목록이 비었을 때 -->
+    <div th:if="${#lists.isEmpty(clubDTOList)}" class="alert alert-info">
+        등록된 모임이 없습니다. 새 모임을 만들어 보세요!
+    </div>
+</div>
 </body>
 </html>

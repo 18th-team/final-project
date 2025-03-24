@@ -1,4 +1,4 @@
-package com.team.moim;
+package com.team.moim.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,8 +22,8 @@ public class ClubOneDay {
     @Column(name = "event_time") //모임시간
     private LocalTime time;
 
-@Column(name = "is_online")
-private Boolean isOnline;
+    @Column(name = "is_online")
+    private Boolean isOnline;
 
     @Column(name = "min_participants") //최소인원
     private Integer minParticipants;
@@ -31,7 +31,7 @@ private Boolean isOnline;
     @Column(name = "max_participants") //최대인원
     private Integer maxParticipants;
 
-@Column
+    @Column
     private Integer place; //자세한 장소/(킨디..)
 
     @Column(name = "has_fee") //참가비여부

@@ -1,5 +1,6 @@
-package com.team.moim;
+package com.team.moim.service;
 
+import com.team.moim.repository.ClubOneDayRepository;
 import org.springframework.stereotype.Service;
 
 @Service

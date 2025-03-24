@@ -1,5 +1,6 @@
-package com.team.moim;
+package com.team.moim.repository;
 
+import com.team.moim.entity.ClubOneDay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
