@@ -24,8 +24,13 @@
                                           </div>
                     <div sec:authorize="isAnonymous()">
                          <li class="nav-item"><a class="nav-link" th:href="@{/login}">로그인</a></li>
-                           <li class="nav-item"><a class="nav-link" th:href="@{/signup}">회원가입</a></li>
+
                     </div>
+                      <div sec:authorize="isAnonymous()">
+                                             <li class="nav-item"><a class="nav-link" th:href="@{/signup}">회원가입</a></li>
+
+                                        </div>
+
 
             </ul>
         </div>
