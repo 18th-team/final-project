@@ -48,7 +48,8 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/js/**"),  // JS 허용 (필요 시)
                                         new AntPathRequestMatcher("/img/**"),  // 이미지 허용 (필요 시)
                                         new AntPathRequestMatcher("/font/**"), // 폰트 허용
-                                        new AntPathRequestMatcher("/favicon.ico") // favicon 허용
+                                        new AntPathRequestMatcher("/favicon.ico")
+
                                 ).permitAll() // 공개 경로
                                 .anyRequest().authenticated() // 나머지 경로는 인증 필요
                 )

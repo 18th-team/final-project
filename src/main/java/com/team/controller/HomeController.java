@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +33,12 @@ public class HomeController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
-    public String home() {
+    public String home(Model model, @AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
+        if (userDetails != null) { // sec:authorize로 보호되므로 null 체크는 선택적
+            String username = userDetails.getSiteUser().getEmail();
+            System.out.println("Logged in user: " + username);
+            model.addAttribute("currentUser", username);
+        }
         return "index";
     }
 
@@ -59,6 +65,7 @@ public class HomeController {
         model.addAttribute("userCreateForm", userCreateForm);
         return "signup";
     }
+
     @PostMapping("/signup")
     public String signUp(
             @Valid UserCreateForm userCreateForm,
@@ -132,5 +139,4 @@ public class HomeController {
                 profileImage);
         return "redirect:/login";
     }
-
 }

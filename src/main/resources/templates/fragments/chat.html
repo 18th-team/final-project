@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="chat">
+<head>
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+<body>
+<div class="container-fluid px-0">
+    <div class="chat-system">
+        <!-- Messages List -->
+        <section class="messages-list" aria-label="Messages List" id="messagesList">
+            <header class="messages-header">
+                <h1>채팅</h1>
+            </header>
+
+            <div class="messages-tabs">
+                <button class="tab-button tab-group">
+                    <span>모임</span>
+                    <span class="unread-badge" id="groupUnreadCount">0</span>
+                </button>
+                <button class="tab-button tab-personal active">
+                    <span>개인</span>
+                    <span class="unread-badge" id="personalUnreadCount">0</span>
+                </button>
+            </div>
+
+            <div class="chat-list" id="chatList">
+                <!-- 동적으로 채팅 항목이 추가됨 -->
+            </div>
+        </section>
+
+        <!-- Chat Icons -->
+        <div class="chat-icons">
+            <button class="chat-button chat-open" aria-label="Open chat" id="openChat">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M27.9963 15.5038C27.9963 17.2173 27.6513 18.8464 27.0265 20.3336V20.3375C26.6393 21.2613 26.5703 22.2886 26.8118 23.2622L27.4903 25.9799C27.7203 26.8922 26.8923 27.724 25.9762 27.494L23.2585 26.8155C22.2848 26.5741 21.2575 26.6431 20.3337 27.0302C18.8465 27.655 17.2174 28 15.5039 28C8.62334 28 3.00007 22.3844 3.00007 15.5038C2.99624 8.59644 8.59651 3 15.5039 3C22.3845 3 27.9963 8.62328 27.9963 15.5038Z" fill="white"/>
+                </svg>
+            </button>
+            <button class="chat-button chat-close hidden" aria-label="Close chat" id="closeChat">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M22.3079 9.57893C22.4512 9.44056 22.5655 9.27504 22.6441 9.09204C22.7227 8.90903 22.7641 8.7122 22.7658 8.51303C22.7675 8.31387 22.7296 8.11635 22.6542 7.932C22.5787 7.74766 22.4674 7.58018 22.3265 7.43934C22.1857 7.2985 22.0182 7.18712 21.8339 7.1117C21.6495 7.03628 21.452 6.99833 21.2528 7.00006C21.0537 7.00179 20.8568 7.04317 20.6738 7.12178C20.4908 7.20039 20.3253 7.31467 20.1869 7.45793L14.8829 12.7619L9.58043 7.45943C9.29772 7.18599 8.91892 7.03452 8.52562 7.03766C8.13232 7.0408 7.75599 7.19828 7.47768 7.4762C7.19937 7.75412 7.04135 8.13023 7.03765 8.52353C7.03396 8.91682 7.18489 9.29584 7.45793 9.57893L12.7619 14.8829L7.45793 20.1854C7.31467 20.3238 7.20039 20.4893 7.12178 20.6723C7.04317 20.8553 7.00179 21.0522 7.00006 21.2513C6.99833 21.4505 7.03628 21.648 7.1117 21.8324C7.18712 22.0167 7.2985 22.1842 7.43934 22.325C7.58018 22.4659 7.74766 22.5772 7.932 22.6527C8.11635 22.7281 8.31387 22.766 8.51303 22.7643C8.7122 22.7626 8.90903 22.7212 9.09204 22.6426C9.27504 22.564 9.44056 22.4497 9.57893 22.3064L14.8829 17.0039L20.1869 22.3079C20.4684 22.5892 20.8501 22.7471 21.248 22.747C21.6459 22.7468 22.0274 22.5886 22.3087 22.3072C22.5899 22.0257 22.7479 21.6441 22.7477 21.2462C22.7476 20.8482 22.5894 20.4667 22.3079 20.1854L17.0039 14.8829L22.3079 9.57893Z" fill="black"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- WebSocket 클라이언트 라이브러리 (프래그먼트 외부에서 로드 필요) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:inline="javascript">
+    const currentUser = /*[[${currentUser}]]*/ null;
+    console.log("Current User in chat.html: " + currentUser);
+</script>
+<script src="/js/chat.js"></script>
+</body>
+</html>
