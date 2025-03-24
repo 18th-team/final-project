@@ -1,55 +1,79 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <title>모임 만들기</title>
+    <title>크루 만들기</title>
+    <style>
+            .container-800 {
+                max-width: 800px !important; /* 최대 너비 600px */
+                width: 100%; /* 화면이 600px보다 작을 때 반응형 유지 */
+                margin-right: auto; /* mx-auto와 동일 */
+                margin-left: auto;
+                padding-right: var(--bs-gutter-x, 0.75rem); /* Bootstrap 기본 패딩 유지 */
+                padding-left: var(--bs-gutter-x, 0.75rem);
+            }
+        </style>
 </head>
 <body>
-<div class="container mt-5">
+<div class="container-800 my-5">
 
-    <h1>모락 크루 만들기</h1>
-    <form th:action="@{/clubs/insert}" method="post" id="clubForm" class="needs-validation" novalidate>
+    <h1 class="mb-5">모락 크루 만들기🍳</h1>
+    <form th:action="@{/clubs/insert}" method="post" id="clubForm" class="needs-validation" novalidate enctype="multipart/form-data">
         <!-- Title -->
         <div class="mb-3">
-            <label for="title" class="form-label">Title</label>
+            <label for="title" class="form-label">크루명🍳</label>
             <input type="text" name="title" id="title" class="form-control" required>
-            <div class="invalid-feedback">제목을 입력해주세요.</div>
+            <div class="invalid-feedback">크루명 입력해주세요</div>
         </div>
 
         <!-- Content -->
         <div class="mb-3">
-            <label for="content" class="form-label">Content</label>
+            <label for="content" class="form-label">크루설명🍳</label>
             <textarea name="content" id="content" class="form-control" rows="4" required></textarea>
         </div>
 
-   <!-- City -->
-           <div class="mb-3">
-               <label for="city" class="form-label">City (시)</label>
+      <!-- image 단일 파일 업로드 -->
+                <div class="mb-3">
+                    <label for="clubFile" class="form-label">사진업로드🍳</label>
+                     <input type="file" name="clubFile" id="clubFile" class="form-control" required>
+                                <div class="invalid-feedback">사진을 등록해주세요</div>
+
+                </div>
+
+
+<div class="row">
+<!-- City -->
+           <div class="my-3 col-md-6">
+               <label for="city" class="form-label">활동 지역(서울/수원시)</label>
                <select name="city" id="city" class="form-select" required>
-                   <option value="">선택하세요</option>
+                   <option value="">지역 선택하기</option>
                    <option value="서울시">서울시</option>
                    <option value="수원시">수원시</option>
                </select>
                <div class="invalid-feedback">도시를 선택해주세요.</div>
            </div>
-
-           <!-- District -->
-           <div class="mb-3">
-               <label for="district" class="form-label">District (군/구)</label>
+  <!-- District -->
+           <div class="my-3 col-md-6">
+               <label for="district" class="form-label">활동 지역구</label>
                <select name="district" id="district" class="form-select" required >
-                   <option value="">선택하세요</option>
+                   <option value="">지역구 선택하기</option>
                </select>
            </div>
+
+</div>
+
+
+<div class="row">
 <!-- Age Restriction -->
-        <div class="mb-3">
-            <label for="ageRestriction" class="form-label">Age Restriction</label>
+        <div class="my-3  col-md-6">
+            <label for="ageRestriction" class="form-label">가입 조건의 나이는요?</label>
             <input required type="number" name="ageRestriction" id="ageRestriction" class="form-control"
                    min="20" placeholder="20세 이상 입력" step="1">
             <div class="invalid-feedback">20세 이상의 나이를 입력해주세요.</div>
         </div>
 
         <!-- Theme -->
-        <div class="mb-3">
-            <label for="theme" class="form-label">Theme (카테고리)</label>
+        <div class="my-3 col-md-6">
+            <label for="theme" class="form-label">우리는 어떤 모임인가요?</label>
             <select name="theme" id="theme" class="form-select" required>
                 <option value="">선택하세요</option>
                 <option value="액티비티">액티비티</option>
@@ -60,8 +84,11 @@
                 <option value="푸드/드링크">푸드/드링크</option>
             </select>
         </div>
+</div>
+
+
         <!-- Submit -->
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary my-3">크루 만들기</button>
     </form>
 </div>
     <th:block th:replace="~{layouts/main-layout :: club-scripts}" />

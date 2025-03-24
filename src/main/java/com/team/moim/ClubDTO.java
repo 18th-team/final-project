@@ -3,6 +3,7 @@ package com.team.moim;
 import com.team.moim.entity.Club;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,12 @@ public class ClubDTO {
     // 작성자 정보
     private Long hostId;    // 작성자의 ID
     private String hostName; // 작성자의 이름
+
+    //note 단일 이미지 파일 받기
+private MultipartFile clubFile;
+private String originalFileName;
+private String storedFileName;
+private int fileAttached;//파일 첨부 여부(1:첨부,0:미첨부)
 
     // Entity -> DTO로 변환
     public static ClubDTO toDTO(Club club) {
