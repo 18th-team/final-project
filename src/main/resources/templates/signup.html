@@ -102,6 +102,19 @@
 </div>
 <script layout:fragment="script">
     $(function (){
+
+        $('#profile-upload').on('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#profile-preview').attr('src', e.target.result); // 이미지 src 변경
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+
         let clientKey = $('#clientKey').val();
         let _csrf = $('input[name=_csrf]').val();
 

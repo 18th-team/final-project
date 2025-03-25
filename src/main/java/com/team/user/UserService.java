@@ -109,6 +109,8 @@ public class UserService {
         return userRepository.save(siteUser);
     }
 
-
-
+    public SiteUser getUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+    }
 }

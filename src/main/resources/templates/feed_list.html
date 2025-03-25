@@ -1,0 +1,296 @@
+<html layout:decorate="~{layouts/main-layout}" layout:fragment="content">
+<link rel="stylesheet" th:href="@{/css/community.css}">
+<body class="bg-light">
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
+        <div>
+            <a class="feed-tab active" th:href="@{/feed/list}">지금 피드</a>
+            <a class="feed-tab" th:href="@{/review/list}">모임 후기</a>
+        </div>
+        <a th:href="@{/feed/create}" class="btn" id="write-btn">피드 쓰기</a>
+    </div>
+
+
+    <!-- 검색 창 -->
+    <div class="row">
+        <div class="col mt-3">
+            <input type="text" class="form-control search-bar" placeholder="제목, 내용, 작성자, 태그로 검색하기">
+        </div>
+    </div>
+
+    <!-- 탭 컨텐츠 -->
+    <div class="tab-content" id="communityTabContent">
+        <!-- 지금 피드 -->
+        <div class="tab-pane fade show active" id="feed-tab-pane" role="tabpanel" aria-labelledby="feed-tab"
+             tabindex="0">
+            <div class="row row-cols-1 row-cols-md-2 g-4 mt-3" data-masonry='{"percentPosition": true }'>
+                <div class="col" th:each="feed : ${feedList}">
+                    <div class="post-card">
+                        <div class="d-flex align-items-center">
+                            <img th:src="${feed.author.profileImage != null ? feed.author.profileImage : '/img/default-profile.png'}"
+                                 class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
+                            <div>
+                                <div class="post-author" th:text="${feed.author.name}">작성자</div>
+                                <div class="post-time"
+                                     th:text="${#temporals.format(feed.createDate, 'yyyy-MM-dd HH:mm')}">작성일
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <img th:src="${feed.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지"
+                                 style="width: 100%; height:auto;">
+                            <h5 th:text="${feed.title}">제목</h5>
+                            <p class="mb-2" th:text="${feed.content}">내용</p>
+                            <div class="hashtags">
+                                <span th:each="tag : ${feed.tagList}" th:text="'#' + ${tag}" class="me-1"></span>
+
+
+                            </div>
+                        </div>
+                        <div class="icons mt-3">
+                            <a th:href="@{'/feed/vote/' + ${feed.postID}}"
+                               th:class="${feed.voter.contains(loginUser)} ? 'text-warning fw-bold text-decoration-none' : 'text-dark text-decoration-none'">
+                                <span th:if="${feed.voter.contains(loginUser)}"
+                                      th:text="'🧡' + ${#lists.size(feed.voter)}"
+                                      class="heart-icon"></span>
+
+                                <span th:unless="${feed.voter.contains(loginUser)}"
+                                      th:text="'🤍' + ${#lists.size(feed.voter)}"
+                                      class="heart-icon"></span>
+
+                            </a>
+
+                            <span class="ms-3 comment-toggle" th:attr="data-post-id=${feed.postID}">
+
+                                💬 <span th:text="${commentCountMap[feed.postID]}">0</span>
+                            </span>
+
+                        </div>
+
+                        <!-- icons 아래에 추가 -->
+                        <div class="mt-2 d-flex justify-content-end" th:if="${loginUser != null and loginUser.id == feed.author.id}">
+                            <a th:href="@{'/feed/modify/' + ${feed.postID}}" class="btn btn-sm btn-outline-secondary me-2">수정</a>
+                            <a th:href="@{'/feed/delete/' + ${feed.postID}}" class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 댓글 모달 -->
+        <div class="modal fade" id="commentModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">댓글</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 댓글 목록 -->
+                        <div id="commentListContainer">
+                            <div th:each="feed : ${feedList}" class="comment-list d-none" th:id="'comment-list-' + ${feed.postID}">
+                                <div th:each="comment : ${allComments[feed.postID]}">
+                                    <img th:src="${comment.author.profileImage != null ? comment.author.profileImage : '/img/default-profile.png'}"
+                                         class="rounded-circle me-2" style="width: 35px; height: 35px; object-fit: cover;">
+                                    <strong th:text="${comment.author.name}">작성자</strong>
+                                    <div th:text="${comment.content}">내용</div>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-link reply-btn"
+                                            th:data-parent-id="${comment.id}"
+                                            th:data-post-id="${feed.postID}">
+                                        답글 달기
+                                    </button>
+
+                                    <div class="reply-form mt-2 d-none" th:id="'reply-form-' + ${comment.id}">
+                                        <textarea class="form-control mb-2 reply-content" rows="2" placeholder="답글 입력"></textarea>
+                                        <button type="button" class="btn btn-sm btn-primary submit-reply">등록</button>
+                                    </div>
+
+                                    <div th:each="reply : ${comment.children}" class="ms-4 border-start ps-2 mt-2">
+                                    <img th:src="${reply.author.profileImage != null ? reply.author.profileImage : '/img/default-profile.png'}"
+                                         class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                    <strong th:text="${reply.author.name}">작성자</strong>
+                                    <div th:text="${reply.content}">답글</div>
+
+                                    <!-- 답글 삭제 버튼 -->
+                                    <div class="text-end" th:if="${loginUser != null and reply.author.id == loginUser.id}">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger delete-comment-btn"
+                                                th:data-comment-id="${reply.id}"
+                                                th:data-post-id="${feed.postID}">
+                                            삭제
+                                        </button>
+                                    </div>
+
+                                    <div class="text-muted" th:text="${#temporals.format(reply.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
+                                    <hr>
+                                </div>
+
+
+                                    <div class="text-end" th:if="${loginUser != null and comment.author.id == loginUser.id}">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger delete-comment-btn"
+                                                th:data-comment-id="${comment.id}"
+                                                th:data-post-id="${feed.postID}">
+                                            삭제
+                                        </button>
+
+                                    </div>
+                                    <div class="text-muted" th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 댓글 작성 폼 -->
+                        <form id="commentForm">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <input type="hidden" name="postID" id="commentPostID">
+                            <textarea class="form-control mb-2" name="content" id="commentContent" placeholder="댓글 입력"></textarea>
+                            <button type="submit" class="btn btn-primary">등록</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <!-- 모임 후기 -->
+        <div class="tab-pane fade" id="review-tab-pane" role="tabpanel" aria-labelledby="review-tab" tabindex="0">
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script layout:fragment="script">
+    $(document).ready(function () {
+        // 댓글 모달 열기
+        $(".comment-toggle").on("click", function () {
+            const postID = $(this).data("post-id");
+            $("#commentPostID").val(postID);
+
+            $(".comment-list").addClass("d-none");
+            $(`#comment-list-${postID}`).removeClass("d-none");
+
+            const modal = new bootstrap.Modal(document.getElementById('commentModal'));
+            modal.show();
+        });
+
+        // 댓글 등록
+        $("#commentForm").on("submit", function (e) {
+            e.preventDefault();
+
+            const postID = $("#commentPostID").val();
+            const content = $("#commentContent").val();
+            const csrfToken = $("input[name='_csrf']").val();
+
+            $.ajax({
+                url: "/comment/feed",
+                type: "POST",
+                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                data: {
+                    postID: postID,
+                    content: content,
+                    _csrf: csrfToken
+                },
+                success: function () {
+                    const commentHtml = `
+                        <strong>나</strong>
+                        <div>${content}</div>
+                        <div class="text-muted">${new Date().toLocaleString()}</div>
+                        <hr>
+                    `;
+                    $(`#comment-list-${postID}`).append(commentHtml);
+                    $("#commentContent").val(""); // 입력창 비우기
+                },
+                error: function () {
+                    alert("댓글 등록 실패");
+                }
+            });
+        });
+    });
+
+    $(document).on("click", ".delete-comment-btn", function () {
+        if (!confirm("삭제할까요?")) return;
+
+        const commentId = $(this).data("comment-id");
+        const postId = $(this).data("post-id");
+        const csrfToken = $("input[name='_csrf']").val();
+
+        $.ajax({
+            url: `/comment/feed/delete/${commentId}`,
+            type: "POST",
+            data: {
+                _csrf: csrfToken
+            },
+            success: function () {
+                // 해당 댓글 DOM 제거
+                $(`#comment-list-${postId} .delete-comment-btn[data-comment-id='${commentId}']`)
+                    .closest("div").parent().remove(); // 댓글 div 전체 삭제
+            },
+            error: function () {
+                alert("댓글 삭제 실패");
+            }
+        });
+    });
+
+    // 답글 달기 버튼 눌렀을 때 입력창 보여주기
+    $(document).on("click", ".reply-btn", function () {
+        const parentId = $(this).data("parent-id");
+        $(`#reply-form-${parentId}`).toggleClass("d-none");
+    });
+
+    // 답글 등록 처리
+    $(document).on("click", ".submit-reply", function () {
+        const $form = $(this).closest(".reply-form");
+        const parentId = $form.attr("id").split("-")[2];
+        const content = $form.find(".reply-content").val();
+        const postId = $("#commentPostID").val();
+        const csrfToken = $("input[name='_csrf']").val();
+
+        $.ajax({
+            url: "/comment/feed/reply",
+            type: "POST",
+            data: {
+                postId: postId,
+                parentId: parentId,
+                content: content,
+                _csrf: csrfToken
+            },
+            success: function () {
+                const replyHtml = `
+                <div class="ms-4 border-start ps-2 mt-2">
+                    <img src="/img/default-profile.png" class="rounded-circle me-2" style="width:30px; height:30px;">
+                    <strong>나</strong>
+                    <div>${content}</div>
+                    <div class="text-muted">${new Date().toLocaleString()}</div>
+                    <hr>
+                </div>`;
+                $(`#reply-form-${parentId}`).before(replyHtml);
+                $form.find(".reply-content").val("");
+                $form.addClass("d-none");
+            },
+            error: function () {
+                alert("답글 등록 실패");
+            }
+        });
+    });
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,28 +1,19 @@
 package com.team.controller;
 
-import com.team.authentication.AuthenticationDTO;
-import com.team.authentication.AuthenticationService;
 import com.team.user.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Controller
@@ -49,6 +40,9 @@ public class HomeController {
     public String logout() {
         return "redirect:/";
     }
+    
+    @GetMapping("/community")
+    public String community() { return "feed_list"; }
 
     @GetMapping("/signup")
     public String signUp(Model model) {

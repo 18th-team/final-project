@@ -55,13 +55,15 @@ body {
     object-fit: cover;
     cursor: pointer;
 }
-
 .upload-icon {
+    width: 20px;
+    height: 20px;
     position: absolute;
-    top: 480px;
+    top: 460px;
     left: 52%;
-    height: auto;
     cursor: pointer;
+    z-index: 99999;
+
 }
 
 .form-label {
@@ -96,33 +98,46 @@ body {
 }
 
 /* 태블릿 조정 */
-@media (min-width: 768px) {
+@media (min-width: 769px) {
     .profile-card {
         padding: 20px;
     }
+
     .profile-card h4 {
         font-size: 1.5rem; /* 태블릿: 24px */
     }
+
     .profile-card img {
         width: 80px;
         height: 80px;
         margin-bottom: 15px;
     }
-    .upload-icon {
-        width: 20px;
-        height: 20px;
-    }
+
     .form-label {
         font-size: 0.9rem;
     }
+
     .form-control {
         padding: 10px;
     }
+
     .form-control::placeholder {
         font-size: 0.8rem;
     }
+
     .btn-save {
         padding: 10px;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .upload-icon {
+        position: relative;
+        top: -100px;
+        left: 60%;
+        height: auto;
+        cursor: pointer;
     }
 }
 
@@ -131,26 +146,41 @@ body {
     .profile-card {
         padding: 40px;
     }
+
     .profile-card h4 {
         font-size: 2.2rem; /* 데스크톱: 32px */
     }
+
     .profile-card img {
         width: 220px;
         height: 240px;
     }
+
     .form-label {
         font-size: 1.3rem;
     }
+
     .form-control {
         padding: 22px;
     }
+
     .form-control::placeholder {
         font-size: 1.3rem;
     }
+
     .btn-save {
         padding: 18px;
         font-size: 1.2rem;
 
     }
 
+}
+
+@media (min-width: 769px) and (max-width: 991px) {
+    .upload-icon {
+        position: relative;
+        top: -100px;
+        cursor: pointer;
+        z-index: 99999;
+    }
 }
