@@ -1,7 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"><head>
     <title>Club Detail</title>
-
+<style>
+        /* 캐러셀 컨트롤 버튼 색상 */
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #e36d1d;
+            border-radius: 50%;
+        }
+        /* 인디케이터 색상 */
+        .carousel-indicators [data-bs-target] {
+            background-color: #e36d1d;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .carousel-indicators .active {
+            background-color: #e36d1d;
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -12,31 +30,77 @@
         <div class="card-body">
             <h5 class="card-title">크루 상세 보기</h5>
             <dl class="row">
-                <dt class="col-sm-3">ID</dt>
-                <dd class="col-sm-9" th:text="${clubDTO.id}">1</dd>
+            <!-- 크루 사진 (캐러셀 + 인디케이터) -->
+                            <dt class="col-sm-3">크루 사진</dt>
+                            <dd class="col-sm-9">
+                                <div th:if="${clubDTO.fileAttached == 1}">
+                                    <div id="clubCarousel" class="carousel slide" data-bs-ride="carousel">
+                                        <!-- 인디케이터 -->
+                                        <div class="carousel-indicators">
+                                            <button th:each="fileName, iterStat : ${clubDTO.storedFileName}"
+                                                    th:attr="data-bs-target='#clubCarousel', data-bs-slide-to=${iterStat.index}"
+                                                    th:classappend="${iterStat.first} ? 'active' : ''"
+                                                    aria-current="true"
+                                                    th:attrappend="aria-label='Slide ' + ${iterStat.count}"></button>
+                                        </div>
+                                        <!-- 캐러셀 이미지 -->
+                                        <div class="carousel-inner">
+                                            <div th:each="fileName, iterStat : ${clubDTO.storedFileName}"
+                                                 th:classappend="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
+                                                <img th:src="@{|/upload/${fileName}|}"
+                                                     class="d-block w-100"
+                                                     style="max-height: 400px; object-fit: cover;"
+                                                     alt="크루 사진">
+                                            </div>
+                                        </div>
+                                        <!-- 컨트롤 버튼 -->
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#clubCarousel" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Previous</span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#clubCarousel" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Next</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div th:unless="${clubDTO.fileAttached == 1}">
+                                    등록된 사진이 없습니다.
+                                </div>
+                            </dd>
 
+                            <!-- ID -->
+                              <dt class="col-sm-3">ID</dt>
+                              <dd class="col-sm-9" th:text="${clubDTO.id}">1</dd>
 
-                <dt class="col-sm-3">Content</dt>
-                <dd class="col-sm-9" th:text="${clubDTO.content != null ? clubDTO.content : '내용 없음'}">Content goes here</dd>
+                              <!-- Content -->
+                              <dt class="col-sm-3">Content</dt>
+                              <dd class="col-sm-9" th:text="${clubDTO.content != null ? clubDTO.content : '내용 없음'}">Content goes here</dd>
 
-                <dt class="col-sm-3">Location</dt>
-                <dd class="col-sm-9" th:text="${clubDTO.city + ' ' + (clubDTO.district != null ? clubDTO.district : '')}">City District</dd>
+                              <!-- Location -->
+                              <dt class="col-sm-3">Location</dt>
+                              <dd class="col-sm-9" th:text="${clubDTO.city + ' ' + (clubDTO.district != null ? clubDTO.district : '')}">City District</dd>
 
-                <dt class="col-sm-3">Theme</dt>
-                <dd class="col-sm-9" th:text="${clubDTO.theme != null ? clubDTO.theme : '미정'}">Theme</dd>
+                              <!-- Theme -->
+                              <dt class="col-sm-3">Theme</dt>
+                              <dd class="col-sm-9" th:text="${clubDTO.theme != null ? clubDTO.theme : '미정'}">Theme</dd>
 
-                <dt class="col-sm-3">Age Restriction</dt>
-                <dd class="col-sm-9" th:text="${clubDTO.ageRestriction != null ? clubDTO.ageRestriction + '세 이상' : '제한 없음'}">Age</dd>
+                              <!-- Age Restriction -->
+                              <dt class="col-sm-3">Age Restriction</dt>
+                              <dd class="col-sm-9" th:text="${clubDTO.ageRestriction != null ? clubDTO.ageRestriction + '세 이상' : '제한 없음'}">Age</dd>
 
-                <dt class="col-sm-3">Host</dt>
-                <dd class="col-sm-9" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
+                              <!-- Host -->
+                              <dt class="col-sm-3">Host</dt>
+                              <dd class="col-sm-9" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
 
-                <dt class="col-sm-3">Created At</dt>
-                <dd class="col-sm-9" th:text="${#temporals.format(clubDTO.createdAt, 'yyyy-MM-dd HH:mm')}">Created Date</dd>
+                              <!-- Created At -->
+                              <dt class="col-sm-3">Created At</dt>
+                              <dd class="col-sm-9" th:text="${#temporals.format(clubDTO.createdAt, 'yyyy-MM-dd HH:mm')}">Created Date</dd>
 
-                <dt class="col-sm-3">Updated At</dt>
-                <dd class="col-sm-9" th:text="${clubDTO.updatedAt != null ? #temporals.format(clubDTO.updatedAt, 'yyyy-MM-dd HH:mm') : '수정 없음'}">Updated Date</dd>
-            </dl>
+                              <!-- Updated At -->
+                              <dt class="col-sm-3">Updated At</dt>
+                              <dd class="col-sm-9" th:text="${clubDTO.updatedAt != null ? #temporals.format(clubDTO.updatedAt, 'yyyy-MM-dd HH:mm') : '수정 없음'}">Updated Date</dd>
+                          </dl>
         </div>
         <div class="card-footer">
       <!-- 수정/삭제 버튼: 작성자만 볼 수 있도록 -->

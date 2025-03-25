@@ -22,6 +22,16 @@
             <textarea name="content" id="content" class="form-control" rows="4" th:text="${clubUpdate.content}" required></textarea>
         </div>
 
+      <!-- image 다중파일은 multi  -->
+                <div class="mb-3">
+                    <label for="clubFile" class="form-label">사진 수정🍳</label>
+                     <input type="file" name="clubFile" id="clubFile" class="form-control" required multiple>
+                                <div class="invalid-feedback">사진을 등록해주세요</div>
+                                <!-- 미리보기 영역 -->
+                                            <div id="preview" class="mt-3 d-flex flex-wrap gap-3"></div>
+                </div>
+
+
        <!-- City -->
                <div class="mb-3">
                    <label for="city" class="form-label">City (시)</label>

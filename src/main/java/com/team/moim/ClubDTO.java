@@ -1,11 +1,14 @@
 package com.team.moim;
 
 import com.team.moim.entity.Club;
+import com.team.moim.entity.ClubFileEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,10 +27,10 @@ public class ClubDTO {
     private Long hostId;    // 작성자의 ID
     private String hostName; // 작성자의 이름
 
-    //note 단일 이미지 파일 받기
-private MultipartFile clubFile;
-private String originalFileName;
-private String storedFileName;
+    //note 단일 이미지 파일 받기 --> 다중파일 받기 List
+private List<MultipartFile> clubFile;
+private List<String> originalFileName;
+private List<String> storedFileName;
 private int fileAttached;//파일 첨부 여부(1:첨부,0:미첨부)
 
     // Entity -> DTO로 변환
@@ -48,15 +51,21 @@ private int fileAttached;//파일 첨부 여부(1:첨부,0:미첨부)
             clubDTO.setHostName(club.getHost().getName());
         }
 
+        //note 사진 가져오기
         if (club.getFileAttached() == 0) {
             clubDTO.setFileAttached(club.getFileAttached()); //0이 세팅
-        }else{
+        }else {
+            List<String> originalFileName = new ArrayList<>();
+            List<String> storedFileName = new ArrayList<>();
             clubDTO.setFileAttached(club.getFileAttached()); //1이 세팅
-            //파일 이름 가지고와 ( original과 stored는 어디에? clubFile테이블에 저장되어있음 아직. )
-            clubDTO.setOriginalFileName(club.getClubFileEntityList().get(0).getOriginalFilename());
-            clubDTO.setStoredFileName(club.getClubFileEntityList().get(0).getStoredFileName());
+            //반복하여 하나씩 저장하기
+            for (ClubFileEntity clubFileEntity : club.getClubFileEntityList()) {
+                originalFileName.add(clubFileEntity.getOriginalFilename());
+                storedFileName.add(clubFileEntity.getStoredFileName());
+            }
+            clubDTO.setOriginalFileName(originalFileName);
+            clubDTO.setStoredFileName(storedFileName);
         }
-
         return clubDTO;
     }
-}
+    }

@@ -39,16 +39,19 @@ public class ClubService {
             clubRepository.save(clubEntity);
 
         }else{
-            MultipartFile clubFile = clubDTO.getClubFile();
-            String originalFilename = clubFile.getOriginalFilename();
-            String storedFilename = UUID.randomUUID().toString()+"_"+originalFilename;
-String savePath = "C:/springBoot_img/"+storedFilename;
-            clubFile.transferTo(new File(savePath));
-         Club clubEntity=   Club.toSaveFileEntity(clubDTO,host); //엔티티로 변환해서 저장
+            //note 부모엔티티에서 자식엔티티꺼내오는거 먼저.
+            Club clubEntity=   Club.toSaveFileEntity(clubDTO,host); //엔티티로 변환해서 저장
             Long saveId=clubRepository.save(clubEntity).getId(); //아이디값 얻어오기
             Club club= clubRepository.findById(saveId).get(); //부모엔티티에 DB로 부터 가져와
+
+            //note 파일이 여러개일때? 반복문 돌리기
+            for(MultipartFile clubFile : clubDTO.getClubFile()) {
+            String originalFilename = clubFile.getOriginalFilename();
+            String storedFilename = UUID.randomUUID().toString()+"_"+originalFilename;
+            String savePath = "C:/springBoot_img/"+storedFilename;
+            clubFile.transferTo(new File(savePath));
             ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
-            clubFileRepository.save(clubFileEntity);
+            clubFileRepository.save(clubFileEntity);  }
         }
     }
 
