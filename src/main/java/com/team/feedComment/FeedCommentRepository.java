@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface FeedCommentRepository extends JpaRepository<FeedComment, Integer> {
     List<FeedComment> findByFeedPost(FeedPost feedPost);
+    void deleteByFeedPost(FeedPost post);
+
 }

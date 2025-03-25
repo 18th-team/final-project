@@ -11,6 +11,7 @@ a.feed-tab {
     border: none !important;
     border-radius: 15px !important;
     text-decoration: none;
+    transition: all 0.3s ease;
 }
 
 #write-btn {
@@ -32,6 +33,16 @@ a.feed-tab {
 a.active {
     background-color: #E36D1D;
     color: white;
+}
+
+a.non-active:hover {
+    color: #E36D1D;
+}
+
+a.active:hover {
+    border: 1px solid #E36D1D !important;
+    background-color: white;
+    color: #E36D1D;
 }
 
 /* 검색창 스타일 */
@@ -70,7 +81,7 @@ a.active {
 }
 
 /* 해시태그 스타일 */
-.hashtags span {
+.hashtag {
     background: #f1f1f1;
     border-radius: 12px;
     padding: 5px 10px;

@@ -21,6 +21,8 @@ public interface FeedPostRepository extends JpaRepository<FeedPost, Integer> {
     // 태그로 검색
     FeedPost findByTags (String tags);
 
+    Page<FeedPost> findAll(Pageable pageable);
+
     // 전체 검색 (제목, 내용, 태그)
     @Query("SELECT f FROM FeedPost f " +
             "WHERE f.title LIKE CONCAT('%', :kw, '%') " +

@@ -6,6 +6,7 @@ import com.team.user.SiteUser;
 import com.team.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +28,21 @@ public class FeedPostController {
 
 
     @GetMapping("/list")
-    public String feedList(Model model, Principal principal) {
-        List<FeedPost> feedList = feedPostService.findAll();
+    public String feedList(@RequestParam(value="keyword", required = false) String keyword, Model model, Principal principal) {
+        int offset = 0;
+        int limit = 4;
+
+        List<FeedPost> feedList = (keyword != null && !keyword.isEmpty()) ?
+                feedPostService.searchByKeyword(keyword, offset, limit) :
+                feedPostService.findLimited(offset, limit);
+
+        long totalCount = (keyword != null && !keyword.isEmpty()) ?
+                feedPostService.countByKeyword(keyword) :
+                feedPostService.count();
+
         model.addAttribute("feedList", feedList);
+        model.addAttribute("hasMore", totalCount > limit); // 더보기 버튼 표시 여부
+        model.addAttribute("keyword", keyword); // 검색어 유지용
 
         // 로그인 사용자 정보 전달
         if (principal != null) {
@@ -44,6 +57,13 @@ public class FeedPostController {
 
         return "feed_list";
     }
+
+    @GetMapping("/more")
+    @ResponseBody
+    public List<FeedPost> loadMorePosts(@RequestParam int offset, @RequestParam int limit) {
+        return feedPostService.findLimited(offset, limit);
+    }
+
 
     @GetMapping("/create")
     public String feedForm(Model model) {
@@ -131,5 +151,6 @@ public class FeedPostController {
         feedPostService.delete(post);
         return "redirect:/feed/list";
     }
+
 
 }

@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
         <div>
             <a class="feed-tab active" th:href="@{/feed/list}">지금 피드</a>
-            <a class="feed-tab" th:href="@{/review/list}">모임 후기</a>
+            <a class="feed-tab non-active" th:href="@{/review/list}">모임 후기</a>
         </div>
         <a th:href="@{/feed/create}" class="btn" id="write-btn">피드 쓰기</a>
     </div>
@@ -16,7 +16,9 @@
     <!-- 검색 창 -->
     <div class="row">
         <div class="col mt-3">
-            <input type="text" class="form-control search-bar" placeholder="제목, 내용, 작성자, 태그로 검색하기">
+            <form class="d-flex align-items-right" role="search" action="/feed/list" method="get">
+                <input type="text" class="form-control search-bar" name="keyword" placeholder="제목, 내용, 작성자, 태그로 검색하기">
+            </form>
         </div>
     </div>
 
@@ -25,7 +27,8 @@
         <!-- 지금 피드 -->
         <div class="tab-pane fade show active" id="feed-tab-pane" role="tabpanel" aria-labelledby="feed-tab"
              tabindex="0">
-            <div class="row row-cols-1 row-cols-md-2 g-4 mt-3" data-masonry='{"percentPosition": true }'>
+            <div class="row row-cols-1 row-cols-md-2 g-4 mt-3" id="feed-container"
+                 data-masonry='{"percentPosition": true }'>
                 <div class="col" th:each="feed : ${feedList}">
                     <div class="post-card">
                         <div class="d-flex align-items-center">
@@ -44,22 +47,28 @@
                             <h5 th:text="${feed.title}">제목</h5>
                             <p class="mb-2" th:text="${feed.content}">내용</p>
                             <div class="hashtags">
-                                <span th:each="tag : ${feed.tagList}" th:text="'#' + ${tag}" class="me-1"></span>
+                                <div class="hashtags">
+                                    <a th:each="tag : ${feed.tagList}"
+                                       th:href="@{'/feed/list?keyword=' + ${tag}}"
+                                       th:text="'#' + ${tag}"
+                                       class="me-1 text-decoration-none text-muted hashtag">
+                                    </a>
+                                </div>
+
 
 
                             </div>
                         </div>
                         <div class="icons mt-3">
-                            <a th:href="@{'/feed/vote/' + ${feed.postID}}"
-                               th:class="${feed.voter.contains(loginUser)} ? 'text-warning fw-bold text-decoration-none' : 'text-dark text-decoration-none'">
-                                <span th:if="${feed.voter.contains(loginUser)}"
-                                      th:text="'🧡' + ${#lists.size(feed.voter)}"
-                                      class="heart-icon"></span>
-
+                            <a href="javascript:void(0);"
+                               class="like-btn text-decoration-none"
+                               th:data-post-id="${feed.postID}"
+                               th:data-liked="${feed.voter.contains(loginUser)}"
+                               th:data-like-count="${#lists.size(feed.voter)}">
+    <span th:if="${feed.voter.contains(loginUser)}"
+          th:text="'🧡' + ${#lists.size(feed.voter)}"></span>
                                 <span th:unless="${feed.voter.contains(loginUser)}"
-                                      th:text="'🤍' + ${#lists.size(feed.voter)}"
-                                      class="heart-icon"></span>
-
+                                      th:text="'🤍' + ${#lists.size(feed.voter)}"></span>
                             </a>
 
                             <span class="ms-3 comment-toggle" th:attr="data-post-id=${feed.postID}">
@@ -70,14 +79,20 @@
                         </div>
 
                         <!-- icons 아래에 추가 -->
-                        <div class="mt-2 d-flex justify-content-end" th:if="${loginUser != null and loginUser.id == feed.author.id}">
-                            <a th:href="@{'/feed/modify/' + ${feed.postID}}" class="btn btn-sm btn-outline-secondary me-2">수정</a>
+                        <div class="mt-2 d-flex justify-content-end"
+                             th:if="${loginUser != null and loginUser.id == feed.author.id}">
+                            <a th:href="@{'/feed/modify/' + ${feed.postID}}"
+                               class="btn btn-sm btn-outline-secondary me-2">수정</a>
                             <a th:href="@{'/feed/delete/' + ${feed.postID}}" class="btn btn-sm btn-outline-danger"
                                onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
                         </div>
 
                     </div>
                 </div>
+            </div>
+
+            <div class="text-center mt-4" th:if="${hasMore}">
+                <button id="loadMoreBtn" class="btn btn-outline-primary">더보기</button>
             </div>
         </div>
 
@@ -92,10 +107,12 @@
                     <div class="modal-body">
                         <!-- 댓글 목록 -->
                         <div id="commentListContainer">
-                            <div th:each="feed : ${feedList}" class="comment-list d-none" th:id="'comment-list-' + ${feed.postID}">
+                            <div th:each="feed : ${feedList}" class="comment-list d-none"
+                                 th:id="'comment-list-' + ${feed.postID}">
                                 <div th:each="comment : ${allComments[feed.postID]}">
                                     <img th:src="${comment.author.profileImage != null ? comment.author.profileImage : '/img/default-profile.png'}"
-                                         class="rounded-circle me-2" style="width: 35px; height: 35px; object-fit: cover;">
+                                         class="rounded-circle me-2"
+                                         style="width: 35px; height: 35px; object-fit: cover;">
                                     <strong th:text="${comment.author.name}">작성자</strong>
                                     <div th:text="${comment.content}">내용</div>
 
@@ -107,32 +124,38 @@
                                     </button>
 
                                     <div class="reply-form mt-2 d-none" th:id="'reply-form-' + ${comment.id}">
-                                        <textarea class="form-control mb-2 reply-content" rows="2" placeholder="답글 입력"></textarea>
+                                        <textarea class="form-control mb-2 reply-content" rows="2"
+                                                  placeholder="답글 입력"></textarea>
                                         <button type="button" class="btn btn-sm btn-primary submit-reply">등록</button>
                                     </div>
 
                                     <div th:each="reply : ${comment.children}" class="ms-4 border-start ps-2 mt-2">
-                                    <img th:src="${reply.author.profileImage != null ? reply.author.profileImage : '/img/default-profile.png'}"
-                                         class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
-                                    <strong th:text="${reply.author.name}">작성자</strong>
-                                    <div th:text="${reply.content}">답글</div>
+                                        <img th:src="${reply.author.profileImage != null ? reply.author.profileImage : '/img/default-profile.png'}"
+                                             class="rounded-circle me-2"
+                                             style="width: 30px; height: 30px; object-fit: cover;">
+                                        <strong th:text="${reply.author.name}">작성자</strong>
+                                        <div th:text="${reply.content}">답글</div>
 
-                                    <!-- 답글 삭제 버튼 -->
-                                    <div class="text-end" th:if="${loginUser != null and reply.author.id == loginUser.id}">
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-danger delete-comment-btn"
-                                                th:data-comment-id="${reply.id}"
-                                                th:data-post-id="${feed.postID}">
-                                            삭제
-                                        </button>
+                                        <!-- 답글 삭제 버튼 -->
+                                        <div class="text-end"
+                                             th:if="${loginUser != null and reply.author.id == loginUser.id}">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger delete-comment-btn"
+                                                    th:data-comment-id="${reply.id}"
+                                                    th:data-post-id="${feed.postID}">
+                                                삭제
+                                            </button>
+                                        </div>
+
+                                        <div class="text-muted"
+                                             th:text="${#temporals.format(reply.createDate, 'yyyy-MM-dd HH:mm')}">작성일
+                                        </div>
+                                        <hr>
                                     </div>
 
-                                    <div class="text-muted" th:text="${#temporals.format(reply.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
-                                    <hr>
-                                </div>
 
-
-                                    <div class="text-end" th:if="${loginUser != null and comment.author.id == loginUser.id}">
+                                    <div class="text-end"
+                                         th:if="${loginUser != null and comment.author.id == loginUser.id}">
                                         <button type="button"
                                                 class="btn btn-sm btn-outline-danger delete-comment-btn"
                                                 th:data-comment-id="${comment.id}"
@@ -141,7 +164,9 @@
                                         </button>
 
                                     </div>
-                                    <div class="text-muted" th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
+                                    <div class="text-muted"
+                                         th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}">작성일
+                                    </div>
                                     <hr>
                                 </div>
                             </div>
@@ -149,22 +174,15 @@
 
                         <!-- 댓글 작성 폼 -->
                         <form id="commentForm">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <input type="hidden" name="postID" id="commentPostID">
-                            <textarea class="form-control mb-2" name="content" id="commentContent" placeholder="댓글 입력"></textarea>
+                            <textarea class="form-control mb-2" name="content" id="commentContent"
+                                      placeholder="댓글 입력"></textarea>
                             <button type="submit" class="btn btn-primary">등록</button>
                         </form>
                     </div>
                 </div>
             </div>
-        </div>
-
-
-
-
-        <!-- 모임 후기 -->
-        <div class="tab-pane fade" id="review-tab-pane" role="tabpanel" aria-labelledby="review-tab" tabindex="0">
-
         </div>
     </div>
 </div>
@@ -172,9 +190,91 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script layout:fragment="script">
+
+    let msnry;
+
+    // Masonry 수동 초기화 (페이지 처음 로드될 때)
+    $(window).on('load', function () {
+        msnry = new Masonry('#feed-container', {
+            itemSelector: '.col',
+            percentPosition: true
+        });
+    });
+
+    let offset = 4;
+    const limit = 4;
+
+    document.getElementById("loadMoreBtn").addEventListener("click", function () {
+        $.ajax({
+            url: "/feed/more",
+            type: "GET",
+            data: {offset, limit},
+            success: function (posts) {
+                if (posts.length === 0) {
+                    $("#loadMoreBtn").hide();
+                    return;
+                }
+
+                const newElems = [];
+
+                posts.forEach(post => {
+                    const $newCard = $(`
+                    <div class="col">
+                        <div class="post-card">
+                            <div class="d-flex align-items-center">
+                                <img src="${post.author.profileImage || '/img/default-profile.png'}" class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
+                                <div>
+                                    <div class="post-author">${post.author.name}</div>
+                                    <div class="post-time">${new Date(post.createDate).toLocaleString()}</div>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <img src="${post.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지" style="width: 100%; height:auto;">
+                                <h5>${post.title}</h5>
+                                <p class="mb-2">${post.content}</p>
+                                <div class="hashtags">
+  ${
+                        post.tags.split(',').map(tag =>
+                            `<a href="/feed/list?keyword=${tag.trim()}" class="me-1 text-decoration-none text-muted hashtag">#${tag.trim()}</a>`
+                        ).join('')
+                    }
+</div>
+
+                            </div>
+                            <div class="icons mt-3">
+                                <span>🤍 0</span>
+                                <span class="ms-3">💬 0</span>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+                    $("#feed-container").append($newCard);
+                    newElems.push($newCard[0]);
+                });
+
+                imagesLoaded('#feed-container', function () {
+                    msnry.appended(newElems);
+                    msnry.layout(); // 이때 정확한 높이 계산됨 → 겹침 없음
+                });
+
+                offset += posts.length;
+
+                if (posts.length < limit) {
+                    $("#loadMoreBtn").hide();
+                }
+            },
+            error: function () {
+                alert("피드를 더 불러오는 데 실패했습니다.");
+            }
+        });
+    });
+
+
     $(document).ready(function () {
         // 댓글 모달 열기
         $(".comment-toggle").on("click", function () {
@@ -288,8 +388,39 @@
         });
     });
 
-</script>
+    $(document).on("click", ".like-btn", function () {
+        const $btn = $(this);
+        const postId = $btn.data("post-id");
 
+        $.ajax({
+            url: `/feed/vote/${postId}`,
+            type: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            success: function () {
+                // 현재 하트 상태 읽기
+                const liked = $btn.data("liked");
+                let count = parseInt($btn.data("like-count"));
+
+                // 상태 토글
+                const newLiked = !liked;
+                const newCount = newLiked ? count + 1 : count - 1;
+
+                // 상태 업데이트
+                $btn.data("liked", newLiked);
+                $btn.data("like-count", newCount);
+
+                // 텍스트 업데이트
+                $btn.html(`${newLiked ? "🧡" : "🤍"} ${newCount}`);
+            },
+            error: function () {
+                alert("좋아요 처리 실패!");
+            }
+        });
+    });
+
+</script>
 
 
 </body>
