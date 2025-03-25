@@ -5,6 +5,7 @@ import com.team.moim.ClubDTO;
 import com.team.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +93,22 @@ public class Club extends BaseEntity {
                 .theme(clubDTO.getTheme())
                 .host(host)
                 .fileAttached(1) //파일 있으니깐
+                .build();
+    }
+
+    //파일이미지 -> 엔티티로 저장 -> 어태치1로 변환
+    public static Club toUpdateFileEntity(ClubDTO clubDTO, SiteUser host, Club existingClub) {
+        return Club.builder()
+                .id(existingClub.getId()) // 기존 ID 유지
+                .title(clubDTO.getTitle())
+                .content(clubDTO.getContent())
+                .city(clubDTO.getCity())
+                .district(clubDTO.getDistrict())
+                .ageRestriction(clubDTO.getAgeRestriction())
+                .theme(clubDTO.getTheme())
+                .host(host)
+                .fileAttached(clubDTO.getClubFile() != null && !clubDTO.getClubFile().stream().allMatch(MultipartFile::isEmpty) ? 1 : existingClub.getFileAttached())
+
                 .build();
     }
 

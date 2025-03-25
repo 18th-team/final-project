@@ -1,13 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"><head>
-    <title>Club Detail</title>
-<style>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <title>크루상세보기</title>
+    <link th:href="@{/css/custom_category_badge.css}" rel="stylesheet"/>
+    <link th:href="@{/font/font.css}" rel="stylesheet"/>
+    <style>
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff; /* 카드 배경 흰색 */
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
         /* 캐러셀 컨트롤 버튼 색상 */
         .carousel-control-prev-icon,
         .carousel-control-next-icon {
             background-color: #e36d1d;
             border-radius: 50%;
         }
+
         /* 인디케이터 색상 */
         .carousel-indicators [data-bs-target] {
             background-color: #e36d1d;
@@ -15,104 +31,184 @@
             height: 12px;
             border-radius: 50%;
         }
+
         .carousel-indicators .active {
             background-color: #e36d1d;
             opacity: 1;
         }
+
+        dt {
+            font-family: 'Pretendard-SemiBold';
+            font-size: 1.3rem;
+
+
+        }
+
+        dd {
+            font-family: 'Pretendard-ExtraLight';
+            font-size: 1.2rem;
+
+        }
+
+        /* 파스텔톤 버튼 스타일 */
+
+        .btn-warning {
+            background-color: #ffe066; /* 파스텔 옐로우 */
+            color: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-warning:hover {
+            background-color: #ffd700; /* 옐로우 */
+        }
+
+        .btn-danger {
+            background-color: #ff6363; /* 파스텔 레드 */
+            color: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff1e1e; /* 레드 */
+            color: #333333;
+        }
+
+        /* "Back to List" 버튼 */
+        .btn-secondary {
+            background-color: #b0e0e6; /* 파스텔 블루 */
+            color: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #98c9d1; /* 밝은 파스텔 블루 */
+            color: #333333;
+
+        }
+
+
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="mb-4" th:text="${clubDTO.title}">Club Title</h1>
+<div class="container my-5">
 
     <!-- 모임 상세 정보 -->
-    <div class="card">
+    <div class="card" style="overflow: hidden">
+        <dd class="col-12 mb-4 ">
+            <div th:if="${clubDTO.fileAttached == 1}">
+                <div id="clubCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <!-- 인디케이터 -->
+                    <div class="carousel-indicators">
+                        <button th:each="fileName, iterStat : ${clubDTO.storedFileName}"
+                                th:attr="data-bs-target='#clubCarousel', data-bs-slide-to=${iterStat.index}"
+                                th:classappend="${iterStat.first} ? 'active' : ''"
+                                aria-current="true"
+                                th:attrappend="aria-label='Slide ' + ${iterStat.count}"></button>
+                    </div>
+                    <!-- 캐러셀 이미지 -->
+                    <div class="carousel-inner">
+                        <div th:each="fileName, iterStat : ${clubDTO.storedFileName}"
+                             th:classappend="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
+                            <img th:src="@{|/upload/${fileName}|}"
+                                 class="d-block w-100"
+                                 style="max-height: 400px; object-fit: cover;"
+                                 alt="크루 사진">
+                        </div>
+                    </div>
+                    <!-- 컨트롤 버튼 -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#clubCarousel"
+                            data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#clubCarousel"
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+            <div th:unless="${clubDTO.fileAttached == 1}">
+                등록된 사진이 없습니다.
+            </div>
+        </dd>
         <div class="card-body">
-            <h5 class="card-title">크루 상세 보기</h5>
-            <dl class="row">
+            <div class="row mb-3 d-flex justify-content-between">
+                <div class="col-lg-8">
+                    <h2 th:text="${clubDTO.title}"></h2>
+                </div>
+                <div class="col-lg-4 d-flex justify-content-end mt-3">
+                    <div th:if="${#authentication.authenticated and #authentication.principal.siteUser.id == clubDTO.hostId}"
+                         class="">
+                        <a th:href="@{/clubs/update/{id}(id=${clubDTO.id})}"
+                           class="btn btn-warning btn-sm">수정하기</a>
+                        <form th:action="@{/clubs/delete/{id}(id=${clubDTO.id})}" method="post"
+                              style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                        </form>
+                        <a th:href="@{/clubs}" class="btn btn-secondary btn-sm">목록으로</a>
+
+                    </div>
+                </div>
+            </div>
+
+
             <!-- 크루 사진 (캐러셀 + 인디케이터) -->
-                            <dt class="col-sm-3">크루 사진</dt>
-                            <dd class="col-sm-9">
-                                <div th:if="${clubDTO.fileAttached == 1}">
-                                    <div id="clubCarousel" class="carousel slide" data-bs-ride="carousel">
-                                        <!-- 인디케이터 -->
-                                        <div class="carousel-indicators">
-                                            <button th:each="fileName, iterStat : ${clubDTO.storedFileName}"
-                                                    th:attr="data-bs-target='#clubCarousel', data-bs-slide-to=${iterStat.index}"
-                                                    th:classappend="${iterStat.first} ? 'active' : ''"
-                                                    aria-current="true"
-                                                    th:attrappend="aria-label='Slide ' + ${iterStat.count}"></button>
-                                        </div>
-                                        <!-- 캐러셀 이미지 -->
-                                        <div class="carousel-inner">
-                                            <div th:each="fileName, iterStat : ${clubDTO.storedFileName}"
-                                                 th:classappend="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
-                                                <img th:src="@{|/upload/${fileName}|}"
-                                                     class="d-block w-100"
-                                                     style="max-height: 400px; object-fit: cover;"
-                                                     alt="크루 사진">
-                                            </div>
-                                        </div>
-                                        <!-- 컨트롤 버튼 -->
-                                        <button class="carousel-control-prev" type="button" data-bs-target="#clubCarousel" data-bs-slide="prev">
-                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                            <span class="visually-hidden">Previous</span>
-                                        </button>
-                                        <button class="carousel-control-next" type="button" data-bs-target="#clubCarousel" data-bs-slide="next">
-                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                            <span class="visually-hidden">Next</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div th:unless="${clubDTO.fileAttached == 1}">
-                                    등록된 사진이 없습니다.
-                                </div>
-                            </dd>
+            <dl class="row">
 
-                            <!-- ID -->
-                              <dt class="col-sm-3">ID</dt>
-                              <dd class="col-sm-9" th:text="${clubDTO.id}">1</dd>
+                <!-- Content -->
+                <dt class="col-md-3">크루소개✍️</dt>
+                <dd class="col-md-9 mb-4" th:text="${clubDTO.content != null ? clubDTO.content : '내용 없음'}">Content goes
+                    here
+                </dd>
 
-                              <!-- Content -->
-                              <dt class="col-sm-3">Content</dt>
-                              <dd class="col-sm-9" th:text="${clubDTO.content != null ? clubDTO.content : '내용 없음'}">Content goes here</dd>
+                <!-- Location -->
+                <dt class="col-md-3">활동지역🏙️</dt>
+                <dd class="col-md-9 mb-4"
+                    th:text="${clubDTO.city + ' ' + (clubDTO.district != null ? clubDTO.district : '')}">City District
+                </dd>
 
-                              <!-- Location -->
-                              <dt class="col-sm-3">Location</dt>
-                              <dd class="col-sm-9" th:text="${clubDTO.city + ' ' + (clubDTO.district != null ? clubDTO.district : '')}">City District</dd>
+                <!-- Theme -->
+                <dt class="col-md-3">카테고리🎨</dt>
+                <dd class="col-md-9 mb-4"><h5>
+                                <span th:switch="${clubDTO.theme}">
+                                    <span th:case="'액티비티'" class="badge custom-badge custom-badge-success"
+                                          th:text="${clubDTO.theme}">액티비티</span>
 
-                              <!-- Theme -->
-                              <dt class="col-sm-3">Theme</dt>
-                              <dd class="col-sm-9" th:text="${clubDTO.theme != null ? clubDTO.theme : '미정'}">Theme</dd>
+                                    <span th:case="'자기계발'" class="badge custom-badge custom-badge-info"
+                                          th:text="${clubDTO.theme}">자기계발</span>
+                                    <span th:case="'취미'" class="badge custom-badge custom-badge-warning"
+                                          th:text="${clubDTO.theme}">취미</span>
+                                    <span th:case="'여행'" class="badge custom-badge custom-badge-danger"
+                                          th:text="${clubDTO.theme}">여행</span>
+                                    <span th:case="'문화/예술'" class="badge custom-badge custom-badge-primary"
+                                          th:text="${clubDTO.theme}">문화/예술</span>
+                                    <span th:case="'푸드/드링크'" class="badge custom-badge custom-badge-secondary"
+                                          th:text="${clubDTO.theme}">푸드/드링크</span>
+                                    <span th:case="*" class="badge custom-badge custom-badge-light text-dark"
+                                          th:text="'미정'">미정</span>
+                                </span></h5></dd>
 
-                              <!-- Age Restriction -->
-                              <dt class="col-sm-3">Age Restriction</dt>
-                              <dd class="col-sm-9" th:text="${clubDTO.ageRestriction != null ? clubDTO.ageRestriction + '세 이상' : '제한 없음'}">Age</dd>
+                <!-- Age Restriction -->
+                <dt class="col-md-3">가입 조건🎂</dt>
+                <dd class="col-md-9 mb-4"
+                    th:text="${clubDTO.ageRestriction != null ? clubDTO.ageRestriction + '세 이상' : '제한 없음'}">Age
+                </dd>
 
-                              <!-- Host -->
-                              <dt class="col-sm-3">Host</dt>
-                              <dd class="col-sm-9" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
+                <!-- Host -->
+                <dt class="col-md-3">호스트 📚</dt>
+                <dd class="col-md-9 mb-4" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
 
-                              <!-- Created At -->
-                              <dt class="col-sm-3">Created At</dt>
-                              <dd class="col-sm-9" th:text="${#temporals.format(clubDTO.createdAt, 'yyyy-MM-dd HH:mm')}">Created Date</dd>
-
-                              <!-- Updated At -->
-                              <dt class="col-sm-3">Updated At</dt>
-                              <dd class="col-sm-9" th:text="${clubDTO.updatedAt != null ? #temporals.format(clubDTO.updatedAt, 'yyyy-MM-dd HH:mm') : '수정 없음'}">Updated Date</dd>
-                          </dl>
-        </div>
-        <div class="card-footer">
-      <!-- 수정/삭제 버튼: 작성자만 볼 수 있도록 -->
-               <div th:if="${#authentication.authenticated and #authentication.principal.siteUser.id == clubDTO.hostId}">
-                   <a th:href="@{/clubs/update/{id}(id=${clubDTO.id})}" class="btn btn-warning btn-sm">수정하기</a>
-                   <form th:action="@{/clubs/delete/{id}(id=${clubDTO.id})}" method="post" style="display: inline;">
-                       <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-                   </form>
-               </div>
-            <a th:href="@{/clubs}" class="btn btn-secondary btn-sm">Back to List</a>
+            </dl>
         </div>
     </div>
+
 </div>
 </body>
 </html>

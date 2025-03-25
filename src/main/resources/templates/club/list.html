@@ -1,47 +1,90 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title>Club List</title>
+    <link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/custom_category_badge.css}" rel="stylesheet" type="text/css"/>
+
+    <style>
+
+        /* 카드 그림자 효과 */
+        .card {
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* 카드 외부 그림자 */
+text-decoration: none;
+        }
+        span, p {
+            font-family: 'Pretendard-Light';
+
+        }
+
+    </style>
 
 </head>
 <body>
-<div class="container my-5">
-    <h1 class="mb-4">모락크루 리스트</h1>
-
+<div class="container my-5 shadow-lg p-4 rounded-3 w-80">
+    <h1 class="my-5 text-center fw-bold">모락 크루 리스트 🍳</h1>
 
     <!-- 클럽 목록 -->
-    <div class="row row-cols-1 row-cols-md-2 g-4" th:unless="${#lists.isEmpty(clubDTOList)}">
-        <div class="col" th:each="club : ${clubDTOList}">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="'타이틀 : '+ ${club.title}">Title</h5>
-                    <!--이미지 파일 -->
-                    <p class="card-text">
-   <img th:if="${club.fileAttached==1}" th:src="@{|/upload/${club.storedFileName[0]}|}" class="img-fluid">
-</p>
+    <div class="row mb-5" th:unless="${#lists.isEmpty(clubDTOList)}">
+        <div class="col-lg-6 my-3" th:each="club : ${clubDTOList}"
+             >
 
+            <a class="card mb-3 border-create py-2"  th:href="@{/clubs/{id}(id=${club.id})}" >
+                <div class="row g-0 h-100"  th:href="@{/clubs/{id}(id=${club.id})}">
+                    <div class="col-5 my-auto text-center">
+                        <img th:if="${club.fileAttached == 1}" th:src="@{|/upload/${club.storedFileName[0]}|}"
+                             class="rounded img-fluid m-2"
+                             style="height:200px;width:200px; object-fit: cover;"
+                             alt="크루 대표 사진">
+                    </div>
+                    <div class="col-7">
+                        <div class="card-body">
+                            <p class="card-text">
+                            <h5>
+                                <span th:switch="${club.theme}">
+                                    <span th:case="'액티비티'" class="badge custom-badge custom-badge-success" th:text="${club.theme}">액티비티</span>
 
-                    <!---->
-                    <p class="card-text" th:text="'내용 : '+ ${club.content }">Content</p>
-                    <p class="card-text"><strong>작성자:</strong> <span th:text="${club.hostName}">Host Name</span></p>
-                    <p class="card-text"><strong>Location:</strong> <span th:text="${club.city + ' ' + club.district}">City District</span></p>
-                    <p class="card-text"><strong>Theme:</strong> <span th:text="${club.theme != null ? club.theme : '미정'}">Theme</span></p>
-                    <p class="card-text"><strong>Age Restriction:</strong> <span th:text="${club.ageRestriction != null ? club.ageRestriction + '세 이상' : '제한 없음'}">Age</span></p>
-                    <p class="card-text"><small class="text-muted">Created: <span th:text="${#temporals.format(club.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span></small></p>
+                                    <span th:case="'자기계발'" class="badge custom-badge custom-badge-info"
+                                          th:text="${club.theme}">자기계발</span>
+                                    <span th:case="'취미'" class="badge custom-badge custom-badge-warning"
+                                          th:text="${club.theme}">취미</span>
+                                    <span th:case="'여행'" class="badge custom-badge custom-badge-danger"
+                                          th:text="${club.theme}">여행</span>
+                                    <span th:case="'문화/예술'" class="badge custom-badge custom-badge-primary" th:text="${club.theme}">문화/예술</span>
+                                    <span th:case="'푸드/드링크'" class="badge custom-badge custom-badge-secondary"
+                                          th:text="${club.theme}">푸드/드링크</span>
+                                    <span th:case="*" class="badge custom-badge custom-badge-light text-dark"
+                                          th:text="'미정'">미정</span>
+                                </span></h5>
+                            </p>
+                            <h4 class="card-title create-name mb-2 text-truncate" style="max-width: 100%;"
+                                th:text="${club.title}"></h4>
+
+                            <p class="card-text my-3"><i class="bi bi-geo-alt-fill"></i><span
+                                    th:text="${club.city + ' ' + club.district}">지역</span></p>
+                            <p class="card-text" style="
+       font-family: 'Pretendard-Medium';
+">가입 조건 : <span
+                                    th:text="${club.ageRestriction != null ? club.ageRestriction + '세 이상' : '제한 없음'}">나이</span>
+                            </p>
+
+<!--                            <a th:href="@{/clubs/{id}(id=${club.id})}" class="btn btn-light text-light btn-sm px-3"-->
+<!--                            style="background-color: #d55e0e">상세보기 👀</a>-->
+                        </div>
+                    </div>
                 </div>
-                <div class="card-footer">
-                    <a th:href="@{/clubs/{id}(id=${club.id})}" class="btn btn-info btn-sm">상세보기</a>
-
-                    </form>
-                </div>
-            </div>
+            </a>
         </div>
     </div>
 
     <!-- 목록이 비었을 때 -->
-    <div th:if="${#lists.isEmpty(clubDTOList)}" class="alert alert-info">
-        등록된 모임이 없습니다. 새 모임을 만들어 보세요!
+    <div th:if="${#lists.isEmpty(clubDTOList)}" class="alert alert-info text-center">
+        등록된 모임이 없습니다. 새 모임을 만들어 보세요! 😢
     </div>
+
+
 </div>
 </body>
 </html>

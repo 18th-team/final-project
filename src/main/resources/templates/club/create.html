@@ -1,122 +1,138 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title>크루 만들기</title>
+    <link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
+
     <style>
-            .container-800 {
-                max-width: 800px !important; /* 최대 너비 600px */
-                width: 100%; /* 화면이 600px보다 작을 때 반응형 유지 */
-                margin-right: auto; /* mx-auto와 동일 */
-                margin-left: auto;
-                padding-right: var(--bs-gutter-x, 0.75rem); /* Bootstrap 기본 패딩 유지 */
-                padding-left: var(--bs-gutter-x, 0.75rem);
-            }
-        </style>
+        h1 {
+            font-family: 'Pretendard-Medium';
+        }
+
+        .create-name {
+            font-family: 'Pretendard-SemiBold';
+            font-size: 1.3rem;
+        }
+
+        .form-control {
+            font-family: 'Pretendard-Light';
+        }
+
+        .btn-primary:hover {
+            background-color: #d55e0e;
+            border-color: #d55e0e;
+        }
+    </style>
 </head>
 <body>
-<div class="container-800 my-5">
-
-    <h1 class="mb-5">모락 크루 만들기🍳</h1>
-    <form th:action="@{/clubs/insert}" method="post" id="clubForm" class="needs-validation" novalidate enctype="multipart/form-data">
+<div class="container my-5 shadow-lg p-4 rounded-3 w-80">
+    <h1 class="mb-5 text-center fw-bold">모락 크루 만들기 🍳</h1>
+    <form th:action="@{/clubs/insert}" method="post" id="clubForm" class="needs-validation" novalidate
+          enctype="multipart/form-data">
         <!-- Title -->
-        <div class="mb-3">
-            <label for="title" class="form-label">크루명🍳</label>
-            <input type="text" name="title" id="title" class="form-control" required>
-            <div class="invalid-feedback">크루명 입력해주세요</div>
+        <div class="mb-4">
+            <label for="title" class="form-label create-name text-dark">크루명 🍳</label>
+            <input type="text" name="title" id="title" class="form-control border-primary" required
+                   placeholder="멋진 크루명을 지어주세요!">
+            <div class="invalid-feedback">크루명을 입력해주세요! 😓</div>
         </div>
 
         <!-- Content -->
-        <div class="mb-3">
-            <label for="content" class="form-label">크루설명🍳</label>
-            <textarea name="content" id="content" class="form-control" rows="4" required></textarea>
+        <div class="mb-4">
+            <label for="content" class="form-label create-name text-dark">크루 설명 ✍️</label>
+            <textarea name="content" id="content" class="form-control border-primary" rows="4" required
+                      placeholder="우리 크루를 소개해주세요!"></textarea>
+            <div class="invalid-feedback">크루 설명을 적어주세요! 😅</div>
         </div>
 
-      <!-- image 다중파일은 multi  -->
-                <div class="mb-3">
-                    <label for="clubFile" class="form-label">사진업로드🍳</label>
-                     <input type="file" name="clubFile" id="clubFile" class="form-control" required multiple>
-                                <div class="invalid-feedback">사진을 등록해주세요</div>
-                                <!-- 미리보기 영역 -->
-                                            <div id="preview" class="mt-3 d-flex flex-wrap gap-3"></div>
-                </div>
-
-
-<div class="row">
-<!-- City -->
-           <div class="my-3 col-md-6">
-               <label for="city" class="form-label">활동 지역(서울/수원시)</label>
-               <select name="city" id="city" class="form-select" required>
-                   <option value="">지역 선택하기</option>
-                   <option value="서울시">서울시</option>
-                   <option value="수원시">수원시</option>
-               </select>
-               <div class="invalid-feedback">도시를 선택해주세요.</div>
-           </div>
-  <!-- District -->
-           <div class="my-3 col-md-6">
-               <label for="district" class="form-label">활동 지역구</label>
-               <select name="district" id="district" class="form-select" required >
-                   <option value="">지역구 선택하기</option>
-               </select>
-           </div>
-
-</div>
-
-
-<div class="row">
-<!-- Age Restriction -->
-        <div class="my-3  col-md-6">
-            <label for="ageRestriction" class="form-label">가입 조건의 나이는요?</label>
-            <input required type="number" name="ageRestriction" id="ageRestriction" class="form-control"
-                   min="20" placeholder="20세 이상 입력" step="1">
-            <div class="invalid-feedback">20세 이상의 나이를 입력해주세요.</div>
+        <!-- Image Upload -->
+        <div class="mb-4">
+            <label for="clubFile" class="form-label create-name text-dark">사진 업로드 📸</label>
+            <input type="file" name="clubFile" id="clubFile" class="form-control border-primary" required multiple
+                   accept="image/*">
+            <div class="invalid-feedback">사진을 등록해주세요! 🖼️</div>
+            <!-- 미리보기 영역 -->
+            <div id="preview" class="mt-3 d-flex flex-wrap gap-3"></div>
         </div>
 
-        <!-- Theme -->
-        <div class="my-3 col-md-6">
-            <label for="theme" class="form-label">우리는 어떤 모임인가요?</label>
-            <select name="theme" id="theme" class="form-select" required>
-                <option value="">선택하세요</option>
-                <option value="액티비티">액티비티</option>
-                <option value="자기계발">자기계발</option>
-                <option value="취미">취미</option>
-                <option value="여행">여행</option>
-                <option value="문화/예술">문화/예술</option>
-                <option value="푸드/드링크">푸드/드링크</option>
-            </select>
+        <!-- City & District -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label for="city" class="form-label create-name text-dark">활동 지역 (서울/수원시) 🌆</label>
+                <select name="city" id="city" class="form-select border-primary" required>
+                    <option value="">지역 선택하기</option>
+                    <option value="서울시">서울시</option>
+                    <option value="수원시">수원시</option>
+                </select>
+                <div class="invalid-feedback">도시를 선택해주세요! 🏙️</div>
+            </div>
+            <div class="col-md-6">
+                <label for="district" class="form-label create-name text-dark">활동 지역구 🏡</label>
+                <select name="district" id="district" class="form-select border-primary" required>
+                    <option value="">지역구 선택하기</option>
+                </select>
+                <div class="invalid-feedback">지역구를 선택해주세요! 🗺️</div>
+            </div>
         </div>
-</div>
 
+        <!-- Age Restriction & Theme -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label for="ageRestriction" class="form-label create-name text-dark">가입 조건 나이 🎂</label>
+                <input type="number" name="ageRestriction" id="ageRestriction" class="form-control border-primary"
+                       min="20" placeholder="20세 이상 입력" step="1" required>
+                <div class="invalid-feedback">20세 이상 나이를 입력해주세요! 👶</div>
+            </div>
+            <div class="col-md-6">
+                <label for="theme" class="form-label create-name text-dark">우리 모임 테마는? 🎨</label>
+                <select name="theme" id="theme" class="form-select border-primary" required>
+                    <option value="">선택하세요</option>
+                    <option value="액티비티">액티비티 🏃</option>
+                    <option value="자기계발">자기계발 📚</option>
+                    <option value="취미">취미 🎮</option>
+                    <option value="여행">여행 ✈️</option>
+                    <option value="문화/예술">문화/예술 🎭</option>
+                    <option value="푸드/드링크">푸드/드링크 🍔</option>
+                </select>
+                <div class="invalid-feedback">테마를 골라주세요! 🤔</div>
+            </div>
+        </div>
 
-        <!-- Submit -->
-        <button type="submit" class="btn btn-primary my-3">크루 만들기</button>
+        <!-- Submit Button -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg my-3 px-5"
+                    style="background-color: #e36d1d; border-color: #e36d1d;">
+                크루 만들기 🚀
+            </button>
+        </div>
     </form>
 </div>
-    <th:block th:replace="~{layouts/main-layout :: club-scripts}" />
-    <script>
-    $(document).ready(function() {
-                // 파일 선택 시 미리보기
-                $('#clubFile').on('change', function(event) {
-                    var preview = $('#preview');
-                    preview.empty(); // 기존 미리보기 초기화
+<th:block th:replace="~{layouts/main-layout :: club-scripts}"/>
+<script>
+    $(document).ready(function () {
+        // 파일 선택 시 미리보기
+        $('#clubFile').on('change', function (event) {
+            var preview = $('#preview');
+            preview.empty(); // 기존 미리보기 초기화
 
-                    var files = event.target.files;
-                    if (files) {
-                        $.each(files, function(index, file) {
-                            if (file.type.match('image.*')) { // 이미지 파일만 처리
-                                var reader = new FileReader();
-                                reader.onload = function(e) {
-                                    var img = $('<img>').attr('src', e.target.result)
-                                        .addClass('img-thumbnail')
-                                        .css({ 'max-width': '150px', 'max-height': '150px' });
-                                    preview.append(img);
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        });
+            var files = event.target.files;
+            if (files) {
+                $.each(files, function (index, file) {
+                    if (file.type.match('image.*')) { // 이미지 파일만 처리
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            var img = $('<img>').attr('src', e.target.result)
+                                // .addClass('img-fluid')
+                                .css({'max-width': '200px', 'max-height': '200px'});
+                            preview.append(img);
+                        };
+                        reader.readAsDataURL(file);
                     }
                 });
-            });
+            }
+        });
+    });
 </script>
 </body>
 </html>

@@ -81,15 +81,51 @@ public class ClubService {
 
 
     //3. CRUD 업데이트
-    public ClubDTO update(ClubDTO clubDTO,SiteUser host) {
-        //entity로 변환하는 작업
-        Club clubEntity = Club.toUpdateEntity(clubDTO,host);
+    @Transactional
+    public ClubDTO update(ClubDTO clubDTO, SiteUser host) throws IOException {
+        Club clubEntity = clubRepository.findById(clubDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+        clubEntity = Club.toUpdateFileEntity(clubDTO, host, clubEntity);
         clubRepository.save(clubEntity);
+
+        if (clubDTO.getClubFile() != null && !clubDTO.getClubFile().stream().allMatch(MultipartFile::isEmpty)) {
+            if (clubEntity.getFileAttached() == 1) {
+                List<ClubFileEntity> existingFiles = clubFileRepository.findByClub(clubEntity);
+                for (ClubFileEntity file : existingFiles) {
+                    File storedFile = new File("C:/springBoot_img/" + file.getStoredFileName());
+                    if (storedFile.exists()) storedFile.delete();
+                    clubFileRepository.delete(file);
+                }
+            }
+            for (MultipartFile clubFile : clubDTO.getClubFile()) {
+                if (!clubFile.isEmpty()) {
+                    String originalFilename = clubFile.getOriginalFilename();
+                    String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
+                    String savePath = "C:/springBoot_img/" + storedFilename;
+                    clubFile.transferTo(new File(savePath));
+                    ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(clubEntity, originalFilename, storedFilename);
+                    clubFileRepository.save(clubFileEntity);
+                }
+            }
+            clubEntity.setFileAttached(1);
+            clubRepository.save(clubEntity);
+        }
+
         return findById(clubDTO.getId());
     }
 
-    //4. CRUD 삭제
+    @Transactional
     public void delete(Long id) {
+        Club club = clubRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+        if (club.getFileAttached() == 1) {
+            List<ClubFileEntity> files = clubFileRepository.findByClub(club);
+            for (ClubFileEntity file : files) {
+                File storedFile = new File("C:/springBoot_img/" + file.getStoredFileName());
+                if (storedFile.exists()) storedFile.delete();
+                clubFileRepository.delete(file);
+            }
+        }
         clubRepository.deleteById(id);
     }
 }

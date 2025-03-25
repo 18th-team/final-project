@@ -1,0 +1,42 @@
+/*    커스텀뱃지*/
+/* 타원형 배지 스타일 */
+/* 파스텔톤 배지 스타일 */
+.custom-badge {
+    padding: 0.4em 1em;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+/* 각 색상에 맞는 파스텔 배경색 */
+.custom-badge-success {
+    background-color: #a3d8a3; /* 파스텔 초록색 */
+    color: white;
+}
+
+.custom-badge-info {
+    background-color: #a3c6e2; /* 파스텔 파란색 */
+    color: white;
+}
+
+.custom-badge-warning {
+    background-color: #f7c6a0; /* 파스텔 주황색 */
+    color: white;
+}
+
+.custom-badge-danger {
+    background-color: #f7a3c6; /* 파스텔 핑크색 */
+    color: white;
+}
+
+.custom-badge-primary {
+    background-color: #d0a3e0; /* 파스텔 보라색 */
+    color: white;
+}
+
+.custom-badge-secondary {
+    background-color: #d0e2e0; /* 파스텔 민트색 */
+    color: white;
+}

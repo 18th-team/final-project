@@ -74,12 +74,12 @@ public class ClubController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute ClubDTO clubDTO, Model model,Authentication authentication) {
+    public String update(@ModelAttribute ClubDTO clubDTO, Model model,Authentication authentication) throws IOException {
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
         ClubDTO club = clubService.update(clubDTO,host);
         model.addAttribute("clubUpdate", club);
-        return "club/detail";
+        return "redirect:/clubs/" + club.getId();
     }
 
     //삭제하기
