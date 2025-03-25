@@ -333,7 +333,9 @@
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 6px;
+    max-height: 445.56px;
+    overflow-y: auto;
 }
 
 .chat-item {

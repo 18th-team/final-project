@@ -73,9 +73,8 @@ public class CustomSecurityUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        return siteUser.getProviderId(); // 소셜 로그인 사용자 식별자
+        return siteUser.getEmail(); // 이메일로 통일
     }
-
     public SiteUser getSiteUser() {
         return siteUser;
     }

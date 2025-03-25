@@ -21,30 +21,42 @@ public class AddPublicChatController {
             System.out.println("userDetails is null in /addpublicchat");
             return "redirect:/login";
         }
-        System.out.println("Logged in user: " + userDetails.getSiteUser().getName());
-        model.addAttribute("currentUser", userDetails.getSiteUser().getName());
+        System.out.println("Logged in user: " + userDetails.getSiteUser().getEmail());
+        model.addAttribute("currentUser", userDetails.getSiteUser().getEmail());
         return "addpublicchat";
     }
 
     @PostMapping("/addpublicchat/requestchat")
-    public String requestPersonalChat(@RequestParam("email") String email, @RequestParam("reason") String reason,
+    public String requestPersonalChat(@RequestParam("email") String email,
+                                      @RequestParam("reason") String reason,
                                       @AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
         if (userDetails == null) {
-            System.out.println("userDetails is null in /addpublicchat/requestChat");
+            System.out.println("userDetails is null in /addpublicchat/requestchat");
             return "redirect:/login";
         }
-        chatRoomService.requestPersonalChat(userDetails.getSiteUser(), email, reason);
-        return "redirect:/addpublicchat";
+        try {
+            System.out.println("Requesting personal chat with email: " + email + ", reason: " + reason);
+            chatRoomService.requestPersonalChat(userDetails, email, reason);
+            return "redirect:/addpublicchat";
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error requesting personal chat for user " + userDetails.getSiteUser().getName() + ": " + e.getMessage());
+            return "redirect:/addpublicchat?error=userNotFound";
+        }
     }
 
-    @PostMapping("/addpublicchat/creategroup")
-    public String createGroupChat(@RequestParam String groupName,
+    /*@PostMapping("/addpublicchat/creategroup")
+    public String createGroupChat(@RequestParam("groupName") String groupName,
                                   @AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
         if (userDetails == null) {
-            System.out.println("userDetails is null in /addpublicchat/createGroup");
+            System.out.println("userDetails is null in /addpublicchat/creategroup");
             return "redirect:/login";
         }
-        chatRoomService.createGroupChat(userDetails.getSiteUser(), groupName);
-        return "redirect:/chat";
-    }
+        try {
+            chatRoomService.createGroupChat(userDetails.getSiteUser(), groupName);
+            return "redirect:/"; // /chat 대신 /로 리다이렉트 (일관성 유지)
+        } catch (Exception e) {
+            System.out.println("Error creating group chat: " + e.getMessage());
+            return "redirect:/addpublicchat?error=groupCreationFailed";
+        }
+    }*/
 }
