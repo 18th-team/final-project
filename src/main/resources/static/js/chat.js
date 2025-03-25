@@ -1,9 +1,28 @@
 let stompClient = null;
-let activeTab = 'personal';// 전역 변수 선언
+let activeTab = 'personal';
 
 function connect() {
-    const socket = new SockJS('/chat');
+    if (!currentUser) {
+        console.error('currentUser is not set. Redirecting to login.');
+        window.location.href = "/login";
+        return;
+    }
+
+    // JSESSIONID 확인 및 로그
+    const jsessionId = document.cookie.match(/JSESSIONID=([^;]+)/)?.[1];
+    console.log("Extracted JSESSIONID: " + jsessionId);
+    if (!jsessionId) {
+        console.error("JSESSIONID not found, redirecting to login.");
+        window.location.href = "/login";
+        return;
+    }
+
+    const socket = new SockJS('/chat', null, {
+        transports: ['websocket'],
+        debug: true
+    });
     stompClient = Stomp.over(socket);
+
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
         console.log('Subscribing with currentUser:', currentUser);
@@ -13,8 +32,6 @@ function connect() {
             const chatRooms = JSON.parse(message.body);
             console.log('Received chat rooms:', chatRooms);
             renderChatList(chatRooms);
-        }, function (error) {
-            console.error('Chat rooms subscription error:', error);
         });
 
         stompClient.subscribe('/user/' + currentUser + '/topic/notification', function (message) {
@@ -22,17 +39,16 @@ function connect() {
             alert(message.body);
         });
 
-        setTimeout(function () {
+        if (stompClient.connected) {
             console.log('Sending refresh request with user:', currentUser);
             stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ email: currentUser }));
-        }, 500);
+        }
     }, function (error) {
         console.error('WebSocket connection failed:', error);
         alert("채팅 연결에 실패했습니다. 다시 로그인해주세요.");
         window.location.href = "/login";
     });
 }
-
 function renderChatList(chatRooms) {
     const chatList = document.getElementById('chatList');
     if (!chatList) {
@@ -80,7 +96,7 @@ function renderChatList(chatRooms) {
                         <button class="action-button reject" onclick="handleRequest(${chat.id}, 'REJECT')">거부</button>
                         <button class="action-button block" onclick="handleRequest(${chat.id}, 'BLOCK')">차단</button>
                     </div>
-                ` : (chat.type === 'GROUP' && !chat.participants.includes(currentUser) ? `
+                ` : (chat.type === 'GROUP' && !chat.participants.some(p => p.email === currentUser) ? `
                     <button class="action-button accept" onclick="requestGroupJoin(${chat.id})">가입 요청</button>
                 ` : '')}
             </div>

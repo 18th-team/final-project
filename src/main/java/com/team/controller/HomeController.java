@@ -35,9 +35,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model, @AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
         if (userDetails != null) { // sec:authorize로 보호되므로 null 체크는 선택적
-            String username = userDetails.getSiteUser().getEmail();
-            System.out.println("Logged in user: " + username);
-            model.addAttribute("currentUser", username);
+            model.addAttribute("currentUser", userDetails.getUsername()); // 이메일 추가
         }
         return "index";
     }

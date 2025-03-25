@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class ChatRoomService {
     private final UserRepository userRepository;
 
     @Transactional
-    public ChatRoomDTO requestPersonalChat(CustomSecurityUserDetails userDetails, String receiverEmail, String reason) {
+    public ChatRoom requestPersonalChat(CustomSecurityUserDetails userDetails, String receiverEmail, String reason) {
         if (userDetails == null) {
             throw new IllegalArgumentException("인증된 사용자가 필요합니다.");
         }
@@ -41,7 +40,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = ChatRoom.builder()
                 .type("PERSONAL")
                 .name(receiver.getName())
-                .requesterEmail(requester.getEmail()) // 수정
+                .requesterEmail(requester.getEmail())
                 .receiverEmail(receiver.getEmail())
                 .participants(List.of(requester))
                 .requestReason(reason)
@@ -49,8 +48,7 @@ public class ChatRoomService {
                 .lastMessageTime(LocalDateTime.now())
                 .build();
 
-        chatRoom = chatRoomRepository.save(chatRoom);
-        return toDTO(chatRoom, requester);
+        return chatRoomRepository.save(chatRoom);
     }
 
     @Transactional
@@ -80,41 +78,10 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomDTO> getChatRoomsForUser(SiteUser user) {
-      /*  List<ChatRoom> chatRooms = chatRoomRepository.findByParticipantsContainingOrPendingForUser(user, user.getEmail());
-        return chatRooms.stream().map(chatRoom -> toDTO(chatRoom, user)).collect(Collectors.toList());*/
+    public List<ChatRoom> getChatRoomsForUser(SiteUser user) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByParticipantsContainingOrPendingForUser(user, user.getEmail());
         System.out.println("Chat rooms for user " + user.getEmail() + ": " + chatRooms.size()); // 디버깅 로그
         chatRooms.forEach(chat -> System.out.println("Chat: " + chat.getId() + ", Status: " + chat.getStatus() + ", Type: " + chat.getType()));
-        return chatRooms.stream().map(chatRoom -> toDTO(chatRoom, user)).collect(Collectors.toList());
-    }
-
-    private ChatRoomDTO toDTO(ChatRoom chatRoom, SiteUser currentUser) {
-        String displayName = chatRoom.getName();
-        if ("PERSONAL".equals(chatRoom.getType())) {
-            String currentUserEmail = currentUser.getEmail();
-            if (currentUserEmail.equals(chatRoom.getRequesterEmail())) {
-                displayName = userRepository.findByEmail(chatRoom.getReceiverEmail())
-                        .map(SiteUser::getName)
-                        .orElse(chatRoom.getName());
-            } else if (currentUserEmail.equals(chatRoom.getReceiverEmail())) {
-                displayName = userRepository.findByEmail(chatRoom.getRequesterEmail())
-                        .map(SiteUser::getName)
-                        .orElse(chatRoom.getName());
-            }
-        }
-        return new ChatRoomDTO(
-                chatRoom.getId(),
-                displayName,
-                chatRoom.getType(),
-                chatRoom.getLastMessage(),
-                chatRoom.getLastMessageTime(),
-                chatRoom.getParticipants().stream().map(SiteUser::getName).collect(Collectors.toList()),
-                chatRoom.getOwner() != null ? chatRoom.getOwner().getName() : null,
-                chatRoom.getUnreadCount(),
-                chatRoom.getRequestReason(),
-                chatRoom.getStatus(),
-                chatRoom.getRequesterEmail()
-        );
+        return chatRooms;
     }
 }

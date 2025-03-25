@@ -19,7 +19,7 @@ import java.util.List;
 public class AddPublicChatController {
 
     private final ChatRoomService chatRoomService;
-    private final SimpMessagingTemplate messagingTemplate; // 추가
+    private final SimpMessagingTemplate messagingTemplate;
     private final UserRepository userRepository;
 
     @GetMapping("/addpublicchat")
@@ -43,13 +43,13 @@ public class AddPublicChatController {
         }
         try {
             System.out.println("Requesting personal chat with email: " + email + ", reason: " + reason);
-            ChatRoomDTO chatRoomDTO = chatRoomService.requestPersonalChat(userDetails, email, reason);
+            ChatRoom chatRoom = chatRoomService.requestPersonalChat(userDetails, email, reason); // ChatRoomDTO -> ChatRoom
             String requesterEmail = userDetails.getSiteUser().getEmail();
             SiteUser receiver = userRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("수신자 조회 실패: " + email));
 
-            List<ChatRoomDTO> requesterChatRooms = chatRoomService.getChatRoomsForUser(userDetails.getSiteUser());
-            List<ChatRoomDTO> receiverChatRooms = chatRoomService.getChatRoomsForUser(receiver);
+            List<ChatRoom> requesterChatRooms = chatRoomService.getChatRoomsForUser(userDetails.getSiteUser()); // ChatRoomDTO -> ChatRoom
+            List<ChatRoom> receiverChatRooms = chatRoomService.getChatRoomsForUser(receiver); // ChatRoomDTO -> ChatRoom
 
             System.out.println("Sending to requester: " + requesterEmail + ", Chat rooms: " + requesterChatRooms.size());
             System.out.println("Sending to receiver: " + email + ", Chat rooms: " + receiverChatRooms.size());

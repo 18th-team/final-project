@@ -2,11 +2,19 @@ package com.team.chat;
 
 import com.team.security.SecurityHandshakeInterceptor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -23,33 +31,38 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat")
                 .addInterceptors(new SecurityHandshakeInterceptor())
+/*                .addInterceptors(new HttpSessionHandshakeInterceptor())*/
                 .setAllowedOrigins("http://localhost:8080")
                 .withSockJS();
     }
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new org.springframework.messaging.support.ChannelInterceptor() {
+        registration.interceptors(new ChannelInterceptor() {
             @Override
-            public org.springframework.messaging.Message<?> preSend(org.springframework.messaging.Message<?> message,
-                                                                    org.springframework.messaging.MessageChannel channel) {
-                org.springframework.messaging.simp.stomp.StompHeaderAccessor accessor = org.springframework.messaging.simp.stomp.StompHeaderAccessor.wrap(message);
-                org.springframework.messaging.simp.stomp.StompCommand command = accessor.getCommand();
-                System.out.println("STOMP Command: " + command);
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+                System.out.println("STOMP Command: " + accessor.getCommand());
+                System.out.println("Session ID from accessor: " + accessor.getSessionId());
 
-                if (command != null && command.equals(org.springframework.messaging.simp.stomp.StompCommand.DISCONNECT)) {
+                if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+                    System.out.println("Disconnect request, skipping authentication");
                     return message;
                 }
 
-                org.springframework.security.core.Authentication auth = (org.springframework.security.core.Authentication) accessor.getSessionAttributes().get("authentication");
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                System.out.println("Authentication from SecurityContextHolder: " +
+                        (auth != null ? auth.getName() : "null"));
+                System.out.println("IsAuthenticated: " +
+                        (auth != null && auth.isAuthenticated()));
+
                 if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
                     accessor.setUser(auth);
-                    System.out.println("Set Principal from session attributes: " + auth.getName());
+                    System.out.println("Principal set: " + auth.getName());
                 } else {
-                    System.out.println("No valid authentication found in session attributes");
-                    throw new org.springframework.security.access.AccessDeniedException("Authentication required");
+                    System.err.println("No valid authentication found for session: " + accessor.getSessionId());
+                    throw new SecurityException("Authentication required");
                 }
-
                 return message;
             }
         });
