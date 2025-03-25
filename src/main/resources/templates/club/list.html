@@ -10,11 +10,15 @@
 
 
     <!-- 클럽 목록 -->
-    <div class="row row-cols-1 row-cols-md-3 g-4" th:unless="${#lists.isEmpty(clubDTOList)}">
+    <div class="row row-cols-1 row-cols-md-2 g-4" th:unless="${#lists.isEmpty(clubDTOList)}">
         <div class="col" th:each="club : ${clubDTOList}">
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title" th:text="'타이틀 : '+ ${club.title}">Title</h5>
+                    <!--이미지 파일 -->
+                    <img th:if="${club.fileAttached==1}" th:src="@{|/upload/${club.storedFileName}|}" class="img-fluid">
+
+                    <!---->
                     <p class="card-text" th:text="'내용 : '+ ${club.content }">Content</p>
                     <p class="card-text"><strong>작성자:</strong> <span th:text="${club.hostName}">Host Name</span></p>
                     <p class="card-text"><strong>Location:</strong> <span th:text="${club.city + ' ' + club.district}">City District</span></p>

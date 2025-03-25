@@ -6,11 +6,11 @@ import com.team.user.SiteUser;
 import com.team.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -28,7 +28,7 @@ public class ClubController {
     }
 
     @PostMapping("/insert")
-    public String createClub(@ModelAttribute ClubDTO clubDTO, Authentication authentication) {
+    public String createClub(@ModelAttribute ClubDTO clubDTO, Authentication authentication) throws IOException {
 
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();

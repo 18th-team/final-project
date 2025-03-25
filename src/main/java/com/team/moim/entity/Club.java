@@ -6,6 +6,9 @@ import com.team.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "club")
 @Getter
@@ -36,11 +39,18 @@ public class Club extends BaseEntity {
     private String theme; //카테고리
 
     /*
-    * todo 외래키로 연결하기
-    *  */
+     * todo 외래키로 연결하기
+     *  */
     @ManyToOne
     @JoinColumn(name = "host_id") // 외래키로 host_id 컬럼 사용
     private SiteUser host; // 로그인한 사용자 (SiteUser와 관계)
+
+    @Column
+    private int fileAttached; //1 or 0
+
+    //이미지 테이블과 연결하는 테이블
+    @OneToMany(mappedBy = "club", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ClubFileEntity> clubFileEntityList = new ArrayList<>();
 
 
     //note DTO -> Entity로 저장
@@ -53,6 +63,7 @@ public class Club extends BaseEntity {
                 .ageRestriction(clubDTO.getAgeRestriction())
                 .theme(clubDTO.getTheme())
                 .host(host) // 로그인한 사용자를 host로 설정
+                .fileAttached(0) //파일 없음 초기화
                 .build();
     }
 
@@ -69,6 +80,21 @@ public class Club extends BaseEntity {
                 .host(host) // 업데이트 시에도 host 유지
                 .build();
     }
+
+    //파일이미지 -> 엔티티로 저장 -> 어태치1로 변환
+    public static Club toSaveFileEntity(ClubDTO clubDTO, SiteUser host) {
+        return Club.builder()
+                .title(clubDTO.getTitle())
+                .content(clubDTO.getContent())
+                .city(clubDTO.getCity())
+                .district(clubDTO.getDistrict())
+                .ageRestriction(clubDTO.getAgeRestriction())
+                .theme(clubDTO.getTheme())
+                .host(host)
+                .fileAttached(1) //파일 있으니깐
+                .build();
+    }
+
 
     //note hostName을 동적으로 가져오는 메서드 (필요 시)
     public String getHostName() {

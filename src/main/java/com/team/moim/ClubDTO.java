@@ -48,6 +48,15 @@ private int fileAttached;//파일 첨부 여부(1:첨부,0:미첨부)
             clubDTO.setHostName(club.getHost().getName());
         }
 
+        if (club.getFileAttached() == 0) {
+            clubDTO.setFileAttached(club.getFileAttached()); //0이 세팅
+        }else{
+            clubDTO.setFileAttached(club.getFileAttached()); //1이 세팅
+            //파일 이름 가지고와 ( original과 stored는 어디에? clubFile테이블에 저장되어있음 아직. )
+            clubDTO.setOriginalFileName(club.getClubFileEntityList().get(0).getOriginalFilename());
+            clubDTO.setStoredFileName(club.getClubFileEntityList().get(0).getStoredFileName());
+        }
+
         return clubDTO;
     }
 }
