@@ -1,7 +1,9 @@
 package com.team.feedPost;
 
 import com.team.DataNotFoundException;
+import com.team.feedComment.FeedCommentRepository;
 import com.team.user.SiteUser;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +20,7 @@ import java.util.Optional;
 @Service
 public class FeedPostService {
     private final FeedPostRepository feedPostRepository;
+    private final FeedCommentRepository feedCommentRepository;
 
     public List<FeedPost> findAll() {
         return feedPostRepository.findAll(Sort.by(Sort.Direction.DESC, "createDate"));
@@ -60,7 +63,9 @@ public class FeedPostService {
     }
 
     // 삭제
+    @Transactional
     public void delete(FeedPost fp) {
+        feedCommentRepository.deleteByFeedPost(fp);
         this.feedPostRepository.delete(fp);
     }
 
@@ -76,8 +81,23 @@ public class FeedPostService {
         feedPostRepository.save(post);
     }
 
+    public List<FeedPost> findLimited(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by(Sort.Direction.DESC, "createDate"));
+        return feedPostRepository.findAll(pageable).getContent();
+    }
 
+    public long count() {
+        return feedPostRepository.count();
+    }
 
+    public List<FeedPost> searchByKeyword(String keyword, int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by(Sort.Direction.DESC, "createDate"));
+        return feedPostRepository.findAllByKeyword(keyword, pageable).getContent();
+    }
+
+    public long countByKeyword(String keyword) {
+        return feedPostRepository.findAllByKeyword(keyword, Pageable.unpaged()).getTotalElements();
+    }
 
     /*
     // 검색
