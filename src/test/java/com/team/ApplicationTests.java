@@ -23,11 +23,11 @@ class ApplicationTests {
 	void contextLoads() {
 		SiteUser user1 = SiteUser.builder()
 				.name("김테스트")
-				.email("test1@test.com")
+				.email("test2@test.com")
 				.password(passwordEncoder.encode(""))
 				.age(25)
 				.gender("남성")
-				.phone("010-1234-5678")
+				.phone("010-1234-5671")
 				.profileImage("/images/test1.jpg")
 				.money(10000)
 				.createdAt(LocalDate.now())

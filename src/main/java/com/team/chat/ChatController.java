@@ -1,95 +1,69 @@
 package com.team.chat;
 
 import com.team.user.CustomSecurityUserDetails;
-import lombok.Data;
+import com.team.user.SiteUser;
+import com.team.user.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-
-import java.security.Principal;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
+@RequiredArgsConstructor
 public class ChatController {
 
     private final ChatRoomService chatRoomService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepository;
 
-    public ChatController(ChatRoomService chatRoomService, SimpMessagingTemplate messagingTemplate) {
-        this.chatRoomService = chatRoomService;
-        this.messagingTemplate = messagingTemplate;
+    @MessageMapping("/handleChatRequest")
+    @Transactional
+    public void handleChatRequest(@AuthenticationPrincipal CustomSecurityUserDetails userDetails,
+                                  @Payload ChatRequestDTO request) {
+        if (userDetails == null) {
+            throw new SecurityException("인증되지 않은 사용자입니다.");
+        }
+        SiteUser currentUser = userDetails.getSiteUser();
+
+        ChatRoom chatRoom = chatRoomService.handleChatRequest(currentUser, request.getChatRoomId(), request.getAction());
+
+        SiteUser requester = userRepository.findByEmail(chatRoom.getRequesterEmail())
+                .orElseThrow(() -> new IllegalArgumentException("요청자를 찾을 수 없습니다: " + chatRoom.getRequesterEmail()));
+
+        messagingTemplate.convertAndSend("/user/" + chatRoom.getRequesterEmail() + "/topic/chatrooms",
+                chatRoomService.getChatRoomsForUser(requester));
+        messagingTemplate.convertAndSend("/user/" + chatRoom.getReceiverEmail() + "/topic/chatrooms",
+                chatRoomService.getChatRoomsForUser(currentUser));
     }
 
     @MessageMapping("/refreshChatRooms")
-    public void refreshChatRooms(SimpMessageHeaderAccessor headerAccessor) {
-        Principal principal = headerAccessor.getUser();
-        if (principal instanceof Authentication auth && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomSecurityUserDetails userDetails) {
-            System.out.println("Refreshing chat rooms for user: " + principal.getName());
-            List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(userDetails.getSiteUser());
-            String destination = "/user/" + principal.getName() + "/topic/chatrooms";
-            System.out.println("Sending chat rooms to " + destination + ": " + chatRooms);
-            messagingTemplate.convertAndSend(destination, chatRooms);
-        } else {
-            System.out.println("No authenticated user found for /refreshChatRooms, Principal: " + (principal != null ? principal.getName() : "null"));
-        }
+    public void refreshChatRooms(@Payload RefreshChatRoomsDTO payload) {
+        String email = payload.getEmail();
+        System.out.println("Refreshing chat rooms for: " + email);
+        SiteUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+        messagingTemplate.convertAndSend("/user/" + email + "/topic/chatrooms",
+                chatRoomService.getChatRoomsForUser(user));
     }
 
-    @MessageMapping("/handleChatRequest")
-    public void handleChatRequest(ChatRequest chatRequest, SimpMessageHeaderAccessor headerAccessor) {
-        Principal principal = headerAccessor.getUser();
-        if (principal instanceof Authentication auth && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomSecurityUserDetails userDetails && chatRequest != null) {
-            chatRoomService.handleChatRequest(chatRequest.getChatRoomId(), chatRequest.getAction());
-            List<ChatRoomDTO> updatedChatRooms = chatRoomService.getChatRoomsForUser(userDetails.getSiteUser());
-            String destination = "/user/" + principal.getName() + "/topic/chatrooms";
-            messagingTemplate.convertAndSend(destination, updatedChatRooms);
-            // 상대방에게도 업데이트 전송 (필요 시)
-            ChatRoom chatRoom = chatRoomService.getChatRoomById(chatRequest.getChatRoomId());
-            chatRoom.getParticipants().forEach(participant -> {
-                if (!participant.getEmail().equals(principal.getName())) {
-                    List<ChatRoomDTO> participantChatRooms = chatRoomService.getChatRoomsForUser(participant);
-                    messagingTemplate.convertAndSend("/user/" + participant.getEmail() + "/topic/chatrooms", participantChatRooms);
-                }
-            });
-        }
-    }
-
-    @MessageMapping("/requestGroupJoin")
-    public void requestGroupJoin(GroupJoinRequest request, SimpMessageHeaderAccessor headerAccessor) {
-        Principal principal = headerAccessor.getUser();
-        if (principal instanceof Authentication auth && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomSecurityUserDetails userDetails && request != null) {
-            chatRoomService.requestGroupJoin(userDetails.getSiteUser(), request.getGroupId(), request.getReason());
-            List<ChatRoomDTO> updatedChatRooms = chatRoomService.getChatRoomsForUser(userDetails.getSiteUser());
-            String destination = "/user/" + principal.getName() + "/topic/chatrooms";
-            messagingTemplate.convertAndSend(destination, updatedChatRooms);
-            // 그룹 소유자에게도 업데이트 전송
-            ChatRoom chatRoom = chatRoomService.getChatRoomById(request.getGroupId());
-            if (chatRoom.getOwner() != null && !chatRoom.getOwner().getEmail().equals(principal.getName())) {
-                List<ChatRoomDTO> ownerChatRooms = chatRoomService.getChatRoomsForUser(chatRoom.getOwner());
-                messagingTemplate.convertAndSend("/user/" + chatRoom.getOwner().getEmail() + "/topic/chatrooms", ownerChatRooms);
-            }
-        }
-    }
-
-    private ChatRoom getChatRoomById(Long chatRoomId) {
-        return chatRoomService.getChatRoomById(chatRoomId);
+    @MessageExceptionHandler
+    public void handleException(Exception e) {
+        messagingTemplate.convertAndSendToUser("system", "/topic/errors", e.getMessage());
     }
 }
-@Data
-class ChatRequest {
-    private Long chatRoomId;
-    private String action;
 
-    public Long getChatRoomId() { return chatRoomId; }
-    public String getAction() { return action; }
-}
+class RefreshChatRoomsDTO {
+    private String email;
 
-@Data
-class GroupJoinRequest {
-    private Long groupId;
-    private String reason;
+    public String getEmail() {
+        return email;
+    }
 
-    public Long getGroupId() { return groupId; }
-    public String getReason() { return reason; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
