@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,7 +63,9 @@ public class HomeController {
     public String signUp(
             @Valid UserCreateForm userCreateForm,
             BindingResult bindingResult,
-            @RequestParam("profileImage") MultipartFile profileImage, HttpSession session) {
+            @RequestParam("profileImage") MultipartFile profileImage,
+            @RequestParam(value = "theme[]", required = false) List<String> keywordNames,
+            HttpSession session) {
         // 폼 검증 에러 체크
         System.out.println(userCreateForm);
         if (bindingResult.hasErrors()) {
@@ -95,7 +98,8 @@ public class HomeController {
                         userCreateForm.getBirthDay2(),
                         userCreateForm.getPhone(),
                         profileImage,
-                        userCreateForm.getIntroduction()
+                        userCreateForm.getIntroduction(),
+                        keywordNames
                 );
                 return "redirect:/login";
             } else {
@@ -118,13 +122,15 @@ public class HomeController {
                         userCreateForm.getPhone(),
                         profileImage
                         ,
-                        userCreateForm.getIntroduction());
+                        userCreateForm.getIntroduction(), keywordNames
+                );
                 return "redirect:/login";
             } else {
                 bindingResult.rejectValue("phone", "duplicate.phone", "이미 가입된 전화번호입니다.");
                 return "signup";
             }
         }
+        //신규 사용자 생성
         userService.createSiteUser(
                 userCreateForm.getName(),
                 userCreateForm.getEmail(),
@@ -134,7 +140,8 @@ public class HomeController {
                 userCreateForm.getPhone(),
                 profileImage
                 ,
-                userCreateForm.getIntroduction());
+                userCreateForm.getIntroduction(),
+                keywordNames);
         return "redirect:/login";
     }
 

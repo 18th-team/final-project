@@ -1,12 +1,15 @@
 package com.team.user;
 
 import com.team.moim.entity.Club;
+import com.team.moim.entity.Keyword;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -68,5 +71,15 @@ public class SiteUser {
         hostedClubs.add(club);
         club.setHost(this);
     }
+
+    // 키워드 연결 추가
+    @ManyToMany
+    @JoinTable(
+            name = "user_keyword",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "keyword_id")
+    )
+    private Set<Keyword> keywords = new HashSet<>();
+
 
 }

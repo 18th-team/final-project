@@ -3,8 +3,10 @@ package com.team.moim.service;
 import com.team.moim.ClubDTO;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.ClubFileEntity;
+import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubFileRepository;
 import com.team.moim.repository.ClubRepository;
+import com.team.moim.repository.KeywordRepository; // 추가
 import com.team.user.SiteUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,50 +15,50 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-/*
- * todo
- *  DTO->Entity (Entity클래스)
- *  (사용자가 입력한 값이 DTO에 저장되어있으니 -> 리포지토리로 Entity로 저장해야함)
- *  Entity -> DTO (DTO클래스)
- *  (컨트롤러에서 넘겨 받을때엔 DTO로 받고)
- * */
 @Service
 @RequiredArgsConstructor
 public class ClubService {
     private final ClubRepository clubRepository;
     private final ClubFileRepository clubFileRepository;
+    private final KeywordRepository keywordRepository; // 의존성 추가
 
-    //1. CRUD 생성
+    // 1. 클럽 저장
+    @Transactional
     public void save(ClubDTO clubDTO, SiteUser host) throws IOException {
-        //note 첨부파일 여부에 따라 로직 분리
-        if (clubDTO.getClubFile().isEmpty()) {
-            Club clubEntity = Club.toSaveEntity(clubDTO, host);
+        // theme을 Keyword로 변환
+        Set<Keyword> keywords = new HashSet<>();
+        if (clubDTO.getSelectedTheme() != null && !clubDTO.getSelectedTheme().isEmpty()) {
+            Keyword keyword = keywordRepository.findByName(clubDTO.getSelectedTheme())
+                    .orElseGet(() -> keywordRepository.save(new Keyword(null, clubDTO.getSelectedTheme())));
+            keywords.add(keyword);
+        }
+
+        // 첨부파일 여부에 따라 로직 분리
+        if (clubDTO.getClubFile() == null || clubDTO.getClubFile().isEmpty()) {
+            Club clubEntity = Club.toSaveEntity(clubDTO, host, keywords);
             clubRepository.save(clubEntity);
-
         } else {
-            //note 부모엔티티에서 자식엔티티꺼내오는거 먼저.
-            Club clubEntity = Club.toSaveFileEntity(clubDTO, host); //엔티티로 변환해서 저장
-            Long saveId = clubRepository.save(clubEntity).getId(); //아이디값 얻어오기
-            Club club = clubRepository.findById(saveId).get(); //부모엔티티에 DB로 부터 가져와
+            Club clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords);
+            Long saveId = clubRepository.save(clubEntity).getId();
+            Club club = clubRepository.findById(saveId).get();
 
-            //note 파일이 여러개일때? 반복문 돌리기
+            // 파일 처리
             for (MultipartFile clubFile : clubDTO.getClubFile()) {
-                String originalFilename = clubFile.getOriginalFilename();
-                String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
-                String savePath = "C:/springBoot_img/" + storedFilename;
-                clubFile.transferTo(new File(savePath));
-                ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
-                clubFileRepository.save(clubFileEntity);
+                if (!clubFile.isEmpty()) {
+                    String originalFilename = clubFile.getOriginalFilename();
+                    String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
+                    String savePath = "C:/springBoot_img/" + storedFilename;
+                    clubFile.transferTo(new File(savePath));
+                    ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
+                    clubFileRepository.save(clubFileEntity);
+                }
             }
         }
     }
 
-    //2-1. CRUD 전체 목록 조회
+    // 2-1. 전체 목록 조회
     @Transactional(readOnly = true)
     public List<ClubDTO> findAll() {
         List<Club> clubEntityList = clubRepository.findAll();
@@ -65,32 +67,38 @@ public class ClubService {
             clubDTOList.add(ClubDTO.toDTO(clubEntity));
         }
         return clubDTOList;
-
     }
 
-    //2-1. ID별로 조회(상세보기)
+    // 2-2. ID별 조회 (상세보기)
     @Transactional
     public ClubDTO findById(Long id) {
         Optional<Club> optionalClub = clubRepository.findById(id);
         if (optionalClub.isPresent()) {
             Club club = optionalClub.get();
-            ClubDTO clubDTO = ClubDTO.toDTO(club);
-            return clubDTO;
+            return ClubDTO.toDTO(club);
         } else {
             return null;
         }
     }
 
-
-    //3. CRUD 업데이트
+    // 3. 업데이트
     @Transactional
     public ClubDTO update(ClubDTO clubDTO, SiteUser host) throws IOException {
         Club clubEntity = clubRepository.findById(clubDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
-        clubEntity = Club.toUpdateFileEntity(clubDTO, host, clubEntity);
-        clubRepository.save(clubEntity);
 
-        if (clubDTO.getClubFile() != null && !clubDTO.getClubFile().stream().allMatch(MultipartFile::isEmpty)) {
+        // theme을 Keyword로 변환
+        Set<Keyword> keywords = new HashSet<>();
+        if (clubDTO.getSelectedTheme() != null && !clubDTO.getSelectedTheme().isEmpty()) {
+            Keyword keyword = keywordRepository.findByName(clubDTO.getSelectedTheme())
+                    .orElseGet(() -> keywordRepository.save(new Keyword(null, clubDTO.getSelectedTheme())));
+            keywords.add(keyword);
+        }
+
+        // 새 파일 처리
+        boolean hasNewFiles = clubDTO.getClubFile() != null && !clubDTO.getClubFile().stream().allMatch(MultipartFile::isEmpty);
+        if (hasNewFiles) {
+            // 기존 파일 삭제
             if (clubEntity.getFileAttached() == 1) {
                 List<ClubFileEntity> existingFiles = clubFileRepository.findByClub(clubEntity);
                 for (ClubFileEntity file : existingFiles) {
@@ -98,7 +106,9 @@ public class ClubService {
                     if (storedFile.exists()) storedFile.delete();
                     clubFileRepository.delete(file);
                 }
+                clubEntity.getClubFileEntityList().clear(); // 리스트 비우기
             }
+            // 새 파일 저장
             for (MultipartFile clubFile : clubDTO.getClubFile()) {
                 if (!clubFile.isEmpty()) {
                     String originalFilename = clubFile.getOriginalFilename();
@@ -106,16 +116,23 @@ public class ClubService {
                     String savePath = "C:/springBoot_img/" + storedFilename;
                     clubFile.transferTo(new File(savePath));
                     ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(clubEntity, originalFilename, storedFilename);
-                    clubFileRepository.save(clubFileEntity);
+                    clubEntity.getClubFileEntityList().add(clubFileEntity); // 새 파일 추가
                 }
             }
             clubEntity.setFileAttached(1);
-            clubRepository.save(clubEntity);
+        } else {
+            // 새 파일이 없으면 기존 clubFileEntityList와 fileAttached 유지
+            // toUpdateFileEntity에서 이미 처리됨
         }
+
+        // 엔티티 업데이트
+        Club updatedClub = Club.toUpdateFileEntity(clubDTO, host, clubEntity, keywords);
+        clubRepository.save(updatedClub);
 
         return findById(clubDTO.getId());
     }
 
+    // 4. 삭제
     @Transactional
     public void delete(Long id) {
         Club club = clubRepository.findById(id)
@@ -131,4 +148,3 @@ public class ClubService {
         clubRepository.deleteById(id);
     }
 }
-

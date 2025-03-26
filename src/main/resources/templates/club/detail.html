@@ -183,20 +183,20 @@
                 <!-- Theme -->
                 <dt class="col-md-3">카테고리🎨</dt>
                 <dd class="col-md-9 mb-4"><h5>
-                                <span th:switch="${clubDTO.theme}">
+                                <span th:switch="${clubDTO.selectedTheme}">
                                     <span th:case="'액티비티'" class="badge custom-badge custom-badge-success"
-                                          th:text="${clubDTO.theme}">액티비티</span>
+                                          th:text="${clubDTO.selectedTheme}">액티비티</span>
 
                                     <span th:case="'자기계발'" class="badge custom-badge custom-badge-info"
-                                          th:text="${clubDTO.theme}">자기계발</span>
+                                          th:text="${clubDTO.selectedTheme}">자기계발</span>
                                     <span th:case="'취미'" class="badge custom-badge custom-badge-warning"
-                                          th:text="${clubDTO.theme}">취미</span>
+                                          th:text="${clubDTO.selectedTheme}">취미</span>
                                     <span th:case="'여행'" class="badge custom-badge custom-badge-danger"
-                                          th:text="${clubDTO.theme}">여행</span>
+                                          th:text="${clubDTO.selectedTheme}">여행</span>
                                     <span th:case="'문화/예술'" class="badge custom-badge custom-badge-primary"
-                                          th:text="${clubDTO.theme}">문화/예술</span>
+                                          th:text="${clubDTO.selectedTheme}">문화/예술</span>
                                     <span th:case="'푸드/드링크'" class="badge custom-badge custom-badge-secondary"
-                                          th:text="${clubDTO.theme}">푸드/드링크</span>
+                                          th:text="${clubDTO.selectedTheme}">푸드/드링크</span>
                                     <span th:case="*" class="badge custom-badge custom-badge-light text-dark"
                                           th:text="'미정'">미정</span>
                                 </span></h5></dd>
