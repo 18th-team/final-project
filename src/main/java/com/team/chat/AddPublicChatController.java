@@ -28,13 +28,13 @@ public class AddPublicChatController {
             System.out.println("userDetails is null in /addpublicchat");
             return "redirect:/login";
         }
-        System.out.println("Logged in user: " + userDetails.getSiteUser().getEmail());
-        model.addAttribute("currentUser", userDetails.getSiteUser().getEmail());
+        System.out.println("Logged in user: " + userDetails.getSiteUser().getUuid());
+        model.addAttribute("currentUser", userDetails.getSiteUser().getUuid()); // uuid로 변경
         return "addpublicchat";
     }
 
     @PostMapping("/addpublicchat/requestchat")
-    public String requestPersonalChat(@RequestParam("email") String email,
+    public String requestPersonalChat(@RequestParam("uuid") String uuid, // email -> uuid
                                       @RequestParam("reason") String reason,
                                       @AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
         if (userDetails == null) {
@@ -42,20 +42,19 @@ public class AddPublicChatController {
             return "redirect:/login";
         }
         try {
-            System.out.println("Requesting personal chat with email: " + email + ", reason: " + reason);
-            ChatRoom chatRoom = chatRoomService.requestPersonalChat(userDetails, email, reason); // ChatRoomDTO -> ChatRoom
-            String requesterEmail = userDetails.getSiteUser().getEmail();
-            SiteUser receiver = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new IllegalArgumentException("수신자 조회 실패: " + email));
+            System.out.println("Requesting personal chat with uuid: " + uuid + ", reason: " + reason);
+            ChatRoom chatRoom = chatRoomService.requestPersonalChat(userDetails, uuid, reason); // uuid로 전달
+            SiteUser requester = userDetails.getSiteUser();
+            SiteUser receiver = userRepository.findByUuid(uuid) // uuid로 조회
+                    .orElseThrow(() -> new IllegalArgumentException("수신자 조회 실패: " + uuid));
+            List<ChatRoomDTO> requesterChatRooms = chatRoomService.getChatRoomsForUser(requester);
+            List<ChatRoomDTO> receiverChatRooms = chatRoomService.getChatRoomsForUser(receiver);
 
-            List<ChatRoom> requesterChatRooms = chatRoomService.getChatRoomsForUser(userDetails.getSiteUser()); // ChatRoomDTO -> ChatRoom
-            List<ChatRoom> receiverChatRooms = chatRoomService.getChatRoomsForUser(receiver); // ChatRoomDTO -> ChatRoom
+            System.out.println("Sending to requester: " + requester.getUuid() + ", Chat rooms: " + requesterChatRooms.size());
+            System.out.println("Sending to receiver: " + uuid + ", Chat rooms: " + receiverChatRooms.size());
 
-            System.out.println("Sending to requester: " + requesterEmail + ", Chat rooms: " + requesterChatRooms.size());
-            System.out.println("Sending to receiver: " + email + ", Chat rooms: " + receiverChatRooms.size());
-
-            messagingTemplate.convertAndSend("/user/" + requesterEmail + "/topic/chatrooms", requesterChatRooms);
-            messagingTemplate.convertAndSend("/user/" + email + "/topic/chatrooms", receiverChatRooms);
+            messagingTemplate.convertAndSend("/user/" + requester.getUuid() + "/topic/chatrooms", requesterChatRooms);
+            messagingTemplate.convertAndSend("/user/" + receiver.getUuid() + "/topic/chatrooms", receiverChatRooms);
 
             return "redirect:/addpublicchat";
         } catch (Exception e) {

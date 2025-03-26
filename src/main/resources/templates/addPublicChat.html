@@ -11,8 +11,8 @@
     <h1>1:1 채팅 요청</h1>
     <form th:action="@{/addpublicchat/requestchat}" method="post">
         <div class="mb-3">
-            <label for="email" class="form-label">상대방 이메일</label>
-            <input type="email" class="form-control" id="email" name="email" required placeholder="example@domain.com">
+            <label for="uuid" class="form-label">상대방 UUID</label>
+            <input type="text" class="form-control" id="uuid" name="uuid" required placeholder="예: 123e4567-e89b-12d3-a456-426614174000">
         </div>
         <div class="mb-3">
             <label for="reason" class="form-label">채팅 요청 이유</label>
@@ -22,5 +22,9 @@
     </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script th:inline="javascript">
+    var currentUser = /*[[${currentUser}]]*/ 'unknown';
+    console.log('Current user UUID:', currentUser);
+</script>
 </body>
 </html>

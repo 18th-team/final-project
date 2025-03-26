@@ -19,4 +19,5 @@ public interface UserRepository extends JpaRepository<SiteUser, Long> {
 
     // 이름과 이메일로 사용자 존재 여부 확인
     boolean existsByNameAndEmail(String name, String email);
+    Optional<SiteUser> findByUuid(String uuid);
 }

@@ -4,12 +4,16 @@ import com.team.user.SiteUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
- boolean existsByRequesterEmailAndReceiverEmailAndType(String requesterEmail, String receiverEmail, String type);
+ // 개인 채팅 중복 체크: requester와 owner 기준
+ boolean existsByRequesterAndOwnerAndType(SiteUser requester, SiteUser owner, String type);
 
- @Query("SELECT c FROM ChatRoom c WHERE :user MEMBER OF c.participants OR (c.status = 'PENDING' AND (c.requesterEmail = :email OR c.receiverEmail = :email))")
- List<ChatRoom> findByParticipantsContainingOrPendingForUser(@Param("user") SiteUser user, @Param("email") String email);
+ // 사용자가 참여 중이거나 PENDING 상태인 채팅방 조회
+ @Query("SELECT c FROM ChatRoom c WHERE :user MEMBER OF c.participants OR (c.status = 'PENDING' AND (c.requester = :user OR c.owner = :user))")
+ List<ChatRoom> findByParticipantsContainingOrPendingForUser(@Param("user") SiteUser user);
 }

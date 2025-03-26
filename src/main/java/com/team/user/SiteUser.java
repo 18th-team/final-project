@@ -52,5 +52,7 @@ public class SiteUser {
     @Column
     private String providerId; // OAuth 제공자에서 발급한 사용자 ID
 
+    @Column(nullable = false, unique = true)
+    private String uuid; // 유저 구분
 
 }

@@ -69,6 +69,7 @@ public class UserService {
                 .email(email)
                 .password(passwordEncoder.encode(password)) // 비밀번호 암호화
                 .phone(phone)
+                .uuid(String.valueOf(UUID.randomUUID()))
                 .role(MemberRole.USER);
 
         // 성별 계산
