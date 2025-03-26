@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +21,8 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
+    private final ChatMessageService chatMessageService;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
     public ChatRoom requestPersonalChat(CustomSecurityUserDetails userDetails, String receiverUuid, String reason) { // email -> uuid
@@ -55,27 +60,56 @@ public class ChatRoomService {
     }
     @Transactional
     public ChatRoom handleChatRequest(SiteUser currentUser, Long chatRoomId, String action) {
+        System.out.println("currentUser : " + currentUser.getEmail());
+        // 입력값 검증
+        if (currentUser == null) {
+            throw new IllegalArgumentException("사용자 정보가 없습니다.");
+        }
+        if (chatRoomId == null) {
+            throw new IllegalArgumentException("채팅방 ID가 유효하지 않습니다.");
+        }
+        if (action == null) {
+            throw new IllegalArgumentException("액션이 지정되지 않았습니다.");
+        }
+
+        // 채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
 
-        if (!chatRoom.getOwner().equals(currentUser)) {
-            throw new SecurityException("요청을 승인, 거부, 차단할 권한이 없습니다.");
+        // 권한 확인
+        System.out.println("getOwner : " + chatRoom.getOwner().getEmail());
+        if (!chatRoom.getOwner().getEmail().equals(currentUser.getEmail())) {
+            throw new SecurityException("채팅 요청을 승인, 거부, 또는 차단할 권한이 없습니다. 소유자: " + chatRoom.getOwner().getEmail());
         }
 
-        switch (action.toUpperCase()) {
+        // 상태 검증
+        if (!"PENDING".equals(chatRoom.getStatus())) {
+            throw new IllegalStateException("현재 상태(" + chatRoom.getStatus() + ")에서는 요청을 처리할 수 없습니다. PENDING 상태에서만 가능합니다.");
+        }
+
+        // 액션 처리
+        String upperAction = action.toUpperCase();
+        switch (upperAction) {
             case "APPROVE":
                 chatRoom.setStatus("ACTIVE");
-                chatRoom.getParticipants().add(currentUser); // 수신자도 참여자로 추가
+                if (!chatRoom.getParticipants().contains(currentUser)) {
+                    chatRoom.getParticipants().add(currentUser); //수신자 추가
+                }
+                // 수락 메시지 생성
+                chatMessageService.createMessage(chatRoom, currentUser,
+                        currentUser.getName() + "님이 채팅을 수락하셨습니다.", MessageType.SYSTEM);
                 break;
             case "REJECT":
-                chatRoom.setStatus("REJECTED");
-                break;
+                chatRoomRepository.delete(chatRoom);
+                return null; // 삭제 후 null 반환 (클라이언트에서 제외되도록)
             case "BLOCK":
                 chatRoom.setStatus("BLOCKED");
                 break;
             default:
-                throw new IllegalArgumentException("잘못된 작업입니다: " + action);
+                throw new IllegalArgumentException("지원하지 않는 액션입니다: " + action);
         }
+
+        // 변경사항 저장
         return chatRoomRepository.save(chatRoom);
     }
 
@@ -100,6 +134,26 @@ public class ChatRoomService {
             dto.setUnreadCount(chat.getUnreadCount());
             dto.setRequestReason(chat.getRequestReason());
             dto.setStatus(chat.getStatus());
+
+            // 마지막 메시지 설정
+            Optional<ChatMessage> lastMessage = chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat);
+            lastMessage.ifPresent(msg -> {
+                dto.setLastMessage(msg.getContent());
+                dto.setLastMessageTime(msg.getTimestamp());
+            });
+
+            // 메시지 목록 추가 (필요 시 제한)
+            List<ChatMessage> messages = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat);
+            dto.setMessages(messages.stream().map(msg -> {
+                ChatRoomDTO.ChatMessageDTO msgDto = new ChatRoomDTO.ChatMessageDTO();
+                msgDto.setId(msg.getId());
+                msgDto.setChatRoomId(chat.getId());
+                msgDto.setSender(new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()));
+                msgDto.setContent(msg.getContent());
+                msgDto.setTimestamp(msg.getTimestamp().toInstant(ZoneId.systemDefault().getRules().getOffset(msg.getTimestamp())).toEpochMilli());
+                msgDto.setType(msg.getType().name());
+                return msgDto;
+            }).collect(Collectors.toList()));
             return dto;
         }).collect(Collectors.toList());
     }

@@ -8,10 +8,13 @@ import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -24,14 +27,27 @@ public class ChatController {
 
     @MessageMapping("/handleChatRequest")
     @Transactional
-    public void handleChatRequest(@AuthenticationPrincipal CustomSecurityUserDetails userDetails,
+    public void handleChatRequest(Principal principal,
                                   @Payload ChatRequestDTO request) {
-        if (userDetails == null) {
+        if (principal == null || !(principal instanceof Authentication)) {
+            messagingTemplate.convertAndSend("/user/system/topic/errors", "인증되지 않은 사용자입니다.");
             throw new SecurityException("인증되지 않은 사용자입니다.");
         }
+        Authentication auth = (Authentication) principal;
+        if (!(auth.getPrincipal() instanceof CustomSecurityUserDetails)) {
+            messagingTemplate.convertAndSend("/user/system/topic/errors", "잘못된 사용자 정보입니다.");
+            throw new SecurityException("잘못된 사용자 정보입니다.");
+        }
+        CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) auth.getPrincipal();
         SiteUser currentUser = userDetails.getSiteUser();
 
-        ChatRoom chatRoom = chatRoomService.handleChatRequest(currentUser, request.getChatRoomId(), request.getAction());
+        String action = request.getAction();
+        if (!Arrays.asList("APPROVE", "REJECT", "BLOCK").contains(action)) {
+            messagingTemplate.convertAndSend("/user/system/topic/errors", "잘못된 액션입니다: " + action);
+            throw new IllegalArgumentException("잘못된 액션입니다: " + action);
+        }
+
+        ChatRoom chatRoom = chatRoomService.handleChatRequest(currentUser, request.getChatRoomId(), action);
 
         SiteUser requester = chatRoom.getRequester();
         SiteUser owner = chatRoom.getOwner();
@@ -55,6 +71,7 @@ public class ChatController {
 
     @MessageExceptionHandler
     public void handleException(Exception e) {
+        System.out.println("handleException : " + e.getMessage());
         messagingTemplate.convertAndSendToUser("system", "/topic/errors", e.getMessage());
     }
 }

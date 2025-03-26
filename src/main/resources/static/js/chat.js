@@ -1,6 +1,7 @@
 let stompClient = null;
 let activeTab = 'PRIVATE'; // 기본 탭: 개인 채팅
 
+
 function connect() {
     if (!currentUser) {
         console.error('currentUser is not set. Redirecting to login.');
@@ -61,19 +62,20 @@ function renderChatList(chatRooms) {
         if (activeTab === 'GROUP' && chat.type !== 'GROUP') return;
         if (activeTab === 'PRIVATE' && chat.type !== 'PRIVATE') return;
 
+        // 먼저 isRequester와 isOwner 정의
         const isRequest = chat.status === 'PENDING';
         const isRequester = chat.requester && chat.requester.uuid === currentUser;
         const isOwner = chat.owner && chat.owner.uuid === currentUser;
 
-        console.log('isRequest:', isRequest);
-        console.log('isRequester:', isRequester);
-        console.log('isOwner:', isOwner);
-
         const item = document.createElement('article');
         item.className = `chat-item ${isRequest ? 'request-item' : ''}`;
 
-        // chat.owner가 null일 경우 대비
-        const chatName = chat.name || (chat.type === 'PRIVATE' ? (chat.owner && chat.owner.name ? chat.owner.name : 'Unknown') : 'Unnamed Chat');
+        // chatName 계산
+        let chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group Chat') :
+            (isRequester ? chat.owner?.name : chat.requester?.name) || 'Unknown';
+
+        let lastMessageTime = chat.lastMessageTime ?
+            new Date(chat.lastMessageTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '';
 
         item.innerHTML = `
             <div class="chat-avatar">
@@ -88,7 +90,7 @@ function renderChatList(chatRooms) {
                         ${chat.type === 'GROUP' && chat.participants ? `<span class="member-count">${chat.participants.length}</span>` : ''}
                     </div>
                     <div class="chat-meta">
-                        <span class="chat-time">${chat.lastMessageTime ? new Date(chat.lastMessageTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                        <span class="chat-time">${lastMessageTime}</span>
                         ${chat.unreadCount > 0 ? `<span class="unread-count">${chat.unreadCount}</span>` : ''}
                     </div>
                 </div>
@@ -110,12 +112,12 @@ function renderChatList(chatRooms) {
         else personalUnread += chat.unreadCount || 0;
     });
 
+    // 올바른 DOM 요소에 할당
     const groupUnreadElement = document.getElementById('groupUnreadCount');
     const personalUnreadElement = document.getElementById('personalUnreadCount');
     if (groupUnreadElement) groupUnreadElement.textContent = groupUnread || '';
     if (personalUnreadElement) personalUnreadElement.textContent = personalUnread || '';
 }
-
 function handleRequest(chatId, action) {
     if (stompClient && stompClient.connected) {
         stompClient.send("/app/handleChatRequest", {}, JSON.stringify({ chatRoomId: chatId, action: action }));
@@ -124,6 +126,7 @@ function handleRequest(chatId, action) {
     }
 }
 
+// 나머지 이벤트 리스너 및 초기화 코드 유지
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Current user set to:', currentUser);
 
