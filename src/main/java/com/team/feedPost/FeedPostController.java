@@ -127,15 +127,21 @@ public class FeedPostController {
     @PostMapping("/modify/{id}")
     public String modifySubmit(@PathVariable Integer id,
                                @ModelAttribute FeedPostForm form,
+                               @RequestParam("imageURL") MultipartFile imageFile,
                                Principal principal) {
         FeedPost post = feedPostService.getFeedPost(id);
         SiteUser user = userService.getUser(principal.getName());
+
+        String imagePath = null;
+        if (!imageFile.isEmpty()) {
+            imagePath = fileService.saveImage(imageFile); // 이미지 저장 후 경로 반환
+        }
 
         if (!post.getAuthor().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        feedPostService.modify(post, form.getTitle(), form.getContent());
+        feedPostService.modify(post, form.getTitle(), form.getContent(), form.getTags(), imagePath);
         return "redirect:/feed/list";
     }
 

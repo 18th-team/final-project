@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         <div class="mt-2">
-                            <img th:src="${feed.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지"
+                            <img th:if="${feed.imageURL != null and !feed.imageURL.isEmpty()}" th:src="${feed.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지"
                                  style="width: 100%; height:auto;">
                             <h5 th:text="${feed.title}">제목</h5>
                             <p class="mb-2" th:text="${feed.content}">내용</p>
@@ -276,6 +276,8 @@
 
 
     $(document).ready(function () {
+        
+
         // 댓글 모달 열기
         $(".comment-toggle").on("click", function () {
             const postID = $(this).data("post-id");

@@ -13,11 +13,4 @@ import java.util.List;
 public class ReviewPostService {
     private final ReviewPostRepository reviewPostRepository;
 
-    public List<ReviewPost> findAll() {
-        return reviewPostRepository.findAll(Sort.by(Sort.Direction.DESC, "createDate"));
-    }
-
-    public Page<ReviewPost> getList(Pageable pageable) {
-        return reviewPostRepository.findAll(pageable);
-    }
 }
