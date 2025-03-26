@@ -1,5 +1,6 @@
 package com.team.reviewPost;
 
+import com.team.moim.entity.Club;
 import com.team.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -37,6 +38,9 @@ public class ReviewPost {
     private Set<SiteUser> voter;
 
     private String imageURL;
+
+    @ManyToOne
+    private Club club; // 후기를 쓰려고 선택한 모임
 
     @Transient // DB에는 저장하지 않음
     public List<String> getTagList() {

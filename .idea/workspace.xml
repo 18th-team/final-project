@@ -5,8 +5,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="커뮤니티 - 피드 페이지 완성&#10;커뮤니티 - 후기 페이지 시작">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/review_form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18__3_31__Changes_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18__3_40__Changes_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18__3_40__Changes_2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18__3_43__Changes_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18__3_44__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_31_[Changes]1/buildOutputCleanup.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_31_[Changes]1/executionHistory.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_31_[Changes]1/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_31_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_40_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_40_[Changes]2/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_43_[Changes]1/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_43_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_44_[Changes]/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2025-03-18_오후_3_44_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-03-18__3_47__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-03-18__4_29__Changes_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-03-18_오후_3_47_[Changes]/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-03-18_오후_3_47_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-03-18_오후_4_29_[Changes]1/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-03-18_오후_4_29_[Changes]1/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPost.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostForm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/feed_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/feed_form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/feed_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/feed_list.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,10 +70,10 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="CSS File" />
-        <option value="HTML File" />
         <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -106,7 +137,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;jy&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/GREEN/final-project/src/main/java/com/team/reviewPost&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
@@ -213,6 +244,7 @@
       <workItem from="1742546916716" duration="959000" />
       <workItem from="1742547903024" duration="121000" />
       <workItem from="1742776060488" duration="28271000" />
+      <workItem from="1742949193299" duration="17196000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -463,7 +495,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>74</line>
-          <properties class="com.team.user.CustomSecurityUserDetails" method="getName">
+          <properties class="com.team.user.CustomSecurityUserDetails">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -472,7 +504,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>69</line>
-          <properties class="com.team.user.CustomSecurityUserDetails" method="getAttributes">
+          <properties class="com.team.user.CustomSecurityUserDetails">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -517,7 +549,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>43</line>
-          <properties class="com.team.user.CustomSecurityUserDetails" method="getUsername">
+          <properties class="com.team.user.CustomSecurityUserDetails">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -526,7 +558,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomSecurityUserDetails.java</url>
           <line>38</line>
-          <properties class="com.team.user.CustomSecurityUserDetails" method="getPassword">
+          <properties class="com.team.user.CustomSecurityUserDetails">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>

@@ -56,9 +56,11 @@ public class FeedPostService {
     }
 
     // 수정
-    public void modify(FeedPost fp, String title, String content) {
+    public void modify(FeedPost fp, String title, String content, String tags, String imageURL) {
         fp.setTitle(title);
         fp.setContent(content);
+        fp.setTags(tags);
+        fp.setImageURL(imageURL);
         this.feedPostRepository.save(fp);
     }
 

@@ -22,10 +22,11 @@ public interface ReviewPostRepository extends JpaRepository<ReviewPost, Integer>
     // 태그로 검색
     ReviewPost findByTags(String tags);
 
-    // 전체 검색 (제목, 내용, 태그)
+    // 전체 검색
     @Query("SELECT r FROM ReviewPost r " +
             "WHERE r.title LIKE CONCAT('%', :kw, '%') " +
             "OR r.content LIKE CONCAT('%', :kw, '%') " +
-            "OR r.tags LIKE CONCAT('%', :kw, '%')")
+            "OR r.tags LIKE CONCAT('%', :kw, '%') " +
+            "OR r.club.title LIKE CONCAT('%', :kw, '%')")
     Page<ReviewPost> findAllByKeyword(@Param("kw") String keyword, Pageable pageable);
 }
