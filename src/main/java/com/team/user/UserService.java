@@ -26,7 +26,7 @@ public class UserService {
         if (existingUserByEmail.isPresent()) {
             SiteUser existingUser = existingUserByEmail.get();
             // provider와 providerId가 없는 경우 (일반 계정)만 true 반환
-            return existingUser.getProvider() == null && existingUser.getProviderId() == null&& existingUser.getPassword() == null;
+            return existingUser.getProvider() == null && existingUser.getProviderId() == null && existingUser.getPassword() == null;
         }
         return false;
     }
@@ -36,7 +36,8 @@ public class UserService {
         return userRepository.findByPhone(phone).isPresent();
     }
 
-    public SiteUser createSiteUser(String name, String email, String password, String birthDay1, String birthDay2, String phone, MultipartFile profileImage){
+    //회원정보 생성 로직
+    public SiteUser createSiteUser(String name, String email, String password, String birthDay1, String birthDay2, String phone, MultipartFile profileImage, String introduction) {
         // 이메일 중복 확인
         Optional<SiteUser> existingUserByEmail = userRepository.findByEmail(email);
         if (existingUserByEmail.isPresent()) {
@@ -59,6 +60,7 @@ public class UserService {
                     }
                 }
                 existingUser.setPassword(passwordEncoder.encode(password));
+                existingUser.setIntroduction(introduction); // 자기소개 업데이트
                 return userRepository.save(existingUser);
             }
             // provider와 providerId가 없는 경우 (일반 계정) -> 컨트롤러에서 처리
@@ -69,7 +71,8 @@ public class UserService {
                 .email(email)
                 .password(passwordEncoder.encode(password)) // 비밀번호 암호화
                 .phone(phone)
-                .role(MemberRole.USER);
+                .role(MemberRole.USER)
+                .introduction(introduction); // 자기소개 추가
 
         // 성별 계산
         if (birthDay2.equals("1") || birthDay2.equals("3")) {
