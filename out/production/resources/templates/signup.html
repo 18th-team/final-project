@@ -4,7 +4,32 @@
       layout:decorate="~{layouts/main-layout}"
       layout:fragment="content">
 <link th:href="@{/css/signup.css}" rel="stylesheet"/>
+<style>
+    .form-check {
+        margin: 0; /* 기본 마진 제거 */
+    }
 
+    .form-check-input.custom-check {
+        display: none; /* 기본 체크박스 숨김 */
+    }
+
+    .form-check-label.btn {
+        transition: all 0.2s;
+        user-select: none; /* 텍스트 선택 방지 */
+    }
+
+    .form-check-input:checked + .form-check-label.btn, .btn-custom-signup:hover {
+        background-color: #d55e0e; /* 선택 시 배경색 */
+        color: white; /* 선택 시 글자색 */
+        border: #d55e0e solid; /* 선택 시 배경색 */
+
+    }
+
+    .btn-custom-signup {
+        border: #d55e0e solid; /* 선택 시 배경색 */
+
+    }
+</style>
 <body>
 <div class="container d-flex justify-content-center align-items-center min-vh-80 my-5">
     <div class="profile-card  col-md-8 col-lg-11 p-4 ">
@@ -66,6 +91,43 @@
                 </div>
                 <span th:if="${#fields.hasErrors('birthDay1')}" th:errors="*{birthDay1}" class="text-danger"></span>
                 <span th:if="${#fields.hasErrors('birthDay2')}" th:errors="*{birthDay2}" class="text-danger"></span>
+            </div>
+
+            <!-- 관심 키워드 선택 -->
+            <div class="mb-4 text-start">
+                <label class="form-label create-name text-dark">나의 관심 키워드</label>
+                <div class="d-flex flex-wrap gap-2 justify-content-between">
+                    <div class="form-check">
+                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="액티비티"
+                               id="theme1">
+                        <label class="form-check-label btn btn-custom-signup" for="theme1">액티비티 🏃</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="자기계발"
+                               id="theme2">
+                        <label class="form-check-label btn btn-custom-signup" for="theme2">자기계발 📚</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="취미"
+                               id="theme3">
+                        <label class="form-check-label btn btn-custom-signup" for="theme3">취미 🎮</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="여행"
+                               id="theme4">
+                        <label class="form-check-label btn btn-custom-signup" for="theme4">여행 ✈️</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="문화/예술"
+                               id="theme5">
+                        <label class="form-check-label btn btn-custom-signup" for="theme5">문화/예술 🎭</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="푸드/드링크"
+                               id="theme6">
+                        <label class="form-check-label btn btn-custom-signup" for="theme6">푸드/드링크 🍔</label>
+                    </div>
+                </div>
             </div>
 
             <!-- 전화번호 및 통신사 선택 -->
