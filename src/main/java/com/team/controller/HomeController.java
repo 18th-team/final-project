@@ -37,13 +37,16 @@ public class HomeController {
     public String login(Model model) {
         return "login";
     }
+
     @GetMapping("/logout")
     public String logout() {
         return "redirect:/";
     }
-    
+
     @GetMapping("/community")
-    public String community() { return "feed_list"; }
+    public String community() {
+        return "feed_list";
+    }
 
     @GetMapping("/signup")
     public String signUp(Model model) {
@@ -54,6 +57,7 @@ public class HomeController {
         model.addAttribute("userCreateForm", userCreateForm);
         return "signup";
     }
+
     @PostMapping("/signup")
     public String signUp(
             @Valid UserCreateForm userCreateForm,
@@ -90,7 +94,9 @@ public class HomeController {
                         userCreateForm.getBirthDay1(),
                         userCreateForm.getBirthDay2(),
                         userCreateForm.getPhone(),
-                        profileImage);
+                        profileImage,
+                        userCreateForm.getIntroduction()
+                );
                 return "redirect:/login";
             } else {
                 bindingResult.rejectValue("email", "duplicate.email", "이미 가입된 이메일입니다.");
@@ -110,7 +116,9 @@ public class HomeController {
                         userCreateForm.getBirthDay1(),
                         userCreateForm.getBirthDay2(),
                         userCreateForm.getPhone(),
-                        profileImage);
+                        profileImage
+                        ,
+                        userCreateForm.getIntroduction());
                 return "redirect:/login";
             } else {
                 bindingResult.rejectValue("phone", "duplicate.phone", "이미 가입된 전화번호입니다.");
@@ -124,7 +132,9 @@ public class HomeController {
                 userCreateForm.getBirthDay1(),
                 userCreateForm.getBirthDay2(),
                 userCreateForm.getPhone(),
-                profileImage);
+                profileImage
+                ,
+                userCreateForm.getIntroduction());
         return "redirect:/login";
     }
 
