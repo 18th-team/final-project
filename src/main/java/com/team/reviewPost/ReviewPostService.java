@@ -18,6 +18,6 @@ public class ReviewPostService {
     }
 
     public Page<ReviewPost> getList(Pageable pageable) {
-
+        return reviewPostRepository.findAll(pageable);
     }
 }
