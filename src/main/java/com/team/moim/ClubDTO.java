@@ -19,7 +19,7 @@ public class ClubDTO {
     private String city; // 모임 장소 (시)
     private String district; // 모임 장소 (군/구)
     private String ageRestriction; // 나이 제한 (예: "20세 이상")
-    private String theme; // 카테고리
+    private String selectedTheme; // 클럽 카테고리 선택 (단일 선택)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -44,7 +44,7 @@ public class ClubDTO {
         clubDTO.setCity(club.getCity());
         clubDTO.setDistrict(club.getDistrict());
         clubDTO.setAgeRestriction(club.getAgeRestriction());
-        clubDTO.setTheme(club.getTheme());
+        clubDTO.setSelectedTheme(club.getKeywords().isEmpty() ? null : club.getKeywords().iterator().next().getName());
         clubDTO.setCreatedAt(club.getCreatedAt()); // BaseEntity에서 상속
         clubDTO.setUpdatedAt(club.getUpdatedAt()); // BaseEntity에서 상속
         //note 로그인한사용자 세팅하기

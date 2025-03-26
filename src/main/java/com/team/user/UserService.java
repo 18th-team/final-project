@@ -1,5 +1,7 @@
 package com.team.user;
 
+import com.team.moim.entity.Keyword;
+import com.team.moim.repository.KeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,14 +12,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KeywordRepository keywordRepository;
     private static final String UPLOAD_DIR = "src/main/resources/static/img/user/";
 
     // 이메일 중복 확인 메서드
@@ -37,7 +40,7 @@ public class UserService {
     }
 
     //회원정보 생성 로직
-    public SiteUser createSiteUser(String name, String email, String password, String birthDay1, String birthDay2, String phone, MultipartFile profileImage, String introduction) {
+    public SiteUser createSiteUser(String name, String email, String password, String birthDay1, String birthDay2, String phone, MultipartFile profileImage, String introduction, List<String> keywordNames) {
         // 이메일 중복 확인
         Optional<SiteUser> existingUserByEmail = userRepository.findByEmail(email);
         if (existingUserByEmail.isPresent()) {
@@ -59,20 +62,35 @@ public class UserService {
                         throw new RuntimeException(e);
                     }
                 }
-                existingUser.setPassword(passwordEncoder.encode(password));
-                existingUser.setIntroduction(introduction); // 자기소개 업데이트
+// 키워드 업데이트 (name 중복 해결)
+                Set<Keyword> keywords = keywordNames != null
+                        ? keywordNames.stream()
+                        .map(keywordName -> keywordRepository.findByName(keywordName)
+                                .orElseGet(() -> keywordRepository.save(new Keyword(null, keywordName))))
+                        .collect(Collectors.toSet())
+                        : new HashSet<>();
+                existingUser.setKeywords(keywords);
                 return userRepository.save(existingUser);
             }
-            // provider와 providerId가 없는 경우 (일반 계정) -> 컨트롤러에서 처리
         }
-        // 빌더 시작
+
+        // 키워드 변환 (여기도 동일하게 수정)
+        Set<Keyword> keywords = keywordNames != null
+                ? keywordNames.stream()
+                .map(keywordName -> keywordRepository.findByName(keywordName)
+                        .orElseGet(() -> keywordRepository.save(new Keyword(null, keywordName))))
+                .collect(Collectors.toSet())
+                : new HashSet<>();
+
+        // 신규 사용자 생성
         SiteUser.SiteUserBuilder builder = SiteUser.builder()
                 .name(name)
                 .email(email)
-                .password(passwordEncoder.encode(password)) // 비밀번호 암호화
+                .password(passwordEncoder.encode(password))
                 .phone(phone)
-                .role(MemberRole.USER)
-                .introduction(introduction); // 자기소개 추가
+                .introduction(introduction)
+                .keywords(keywords)
+                .role(MemberRole.USER);
 
         // 성별 계산
         if (birthDay2.equals("1") || birthDay2.equals("3")) {

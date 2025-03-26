@@ -95,7 +95,7 @@
 
             <!-- 관심 키워드 선택 -->
             <div class="mb-4 text-start">
-                <label class="form-label create-name text-dark">나의 관심 키워드</label>
+                <label class="form-label create-name text-dark">나의 관심 키워드(최대3개 선택가능)</label>
                 <div class="d-flex flex-wrap gap-2 justify-content-between">
                     <div class="form-check">
                         <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="액티비티"
@@ -330,6 +330,16 @@
                 },
                 error: function (xhr) {
                     $('#otpError').text(xhr.responseText).show();
+                }
+            });
+        });
+
+        document.querySelectorAll('.custom-check').forEach(check => {
+            check.addEventListener('change', () => {
+                const checkedCount = document.querySelectorAll('.custom-check:checked').length;
+                if (checkedCount > 3) { // 최대 3개 제한 예시
+                    check.checked = false;
+                    alert('최대 3개까지 선택 가능합니다!');
                 }
             });
         });
