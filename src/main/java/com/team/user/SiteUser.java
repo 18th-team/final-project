@@ -22,6 +22,10 @@ public class SiteUser {
     @Column(nullable = false)
     private String name;
 
+    // 새로 추가할 자기소개 컬럼
+    @Column(length = 50, nullable = false) // 50자 제한
+    private String introduction;
+
     @Column(nullable = false, unique = true)
     private String email;
 

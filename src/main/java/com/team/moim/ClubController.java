@@ -46,7 +46,7 @@ public class ClubController {
 
     //상세보기 (사용자정보 저장하기)
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id, Model model,Authentication authentication) {
+    public String findById(@PathVariable Long id, Model model, Authentication authentication) {
         if (id == null) {
             return "redirect:/clubs";
         }
@@ -74,10 +74,10 @@ public class ClubController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute ClubDTO clubDTO, Model model,Authentication authentication) throws IOException {
+    public String update(@ModelAttribute ClubDTO clubDTO, Model model, Authentication authentication) throws IOException {
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
-        ClubDTO club = clubService.update(clubDTO,host);
+        ClubDTO club = clubService.update(clubDTO, host);
         model.addAttribute("clubUpdate", club);
         return "redirect:/clubs/" + club.getId();
     }

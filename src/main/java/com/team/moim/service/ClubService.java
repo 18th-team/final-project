@@ -35,23 +35,24 @@ public class ClubService {
     public void save(ClubDTO clubDTO, SiteUser host) throws IOException {
         //note 첨부파일 여부에 따라 로직 분리
         if (clubDTO.getClubFile().isEmpty()) {
-            Club clubEntity = Club.toSaveEntity(clubDTO,host);
+            Club clubEntity = Club.toSaveEntity(clubDTO, host);
             clubRepository.save(clubEntity);
 
-        }else{
+        } else {
             //note 부모엔티티에서 자식엔티티꺼내오는거 먼저.
-            Club clubEntity=   Club.toSaveFileEntity(clubDTO,host); //엔티티로 변환해서 저장
-            Long saveId=clubRepository.save(clubEntity).getId(); //아이디값 얻어오기
-            Club club= clubRepository.findById(saveId).get(); //부모엔티티에 DB로 부터 가져와
+            Club clubEntity = Club.toSaveFileEntity(clubDTO, host); //엔티티로 변환해서 저장
+            Long saveId = clubRepository.save(clubEntity).getId(); //아이디값 얻어오기
+            Club club = clubRepository.findById(saveId).get(); //부모엔티티에 DB로 부터 가져와
 
             //note 파일이 여러개일때? 반복문 돌리기
-            for(MultipartFile clubFile : clubDTO.getClubFile()) {
-            String originalFilename = clubFile.getOriginalFilename();
-            String storedFilename = UUID.randomUUID().toString()+"_"+originalFilename;
-            String savePath = "C:/springBoot_img/"+storedFilename;
-            clubFile.transferTo(new File(savePath));
-            ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
-            clubFileRepository.save(clubFileEntity);  }
+            for (MultipartFile clubFile : clubDTO.getClubFile()) {
+                String originalFilename = clubFile.getOriginalFilename();
+                String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
+                String savePath = "C:/springBoot_img/" + storedFilename;
+                clubFile.transferTo(new File(savePath));
+                ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
+                clubFileRepository.save(clubFileEntity);
+            }
         }
     }
 
@@ -66,7 +67,8 @@ public class ClubService {
         return clubDTOList;
 
     }
-//2-1. ID별로 조회(상세보기)
+
+    //2-1. ID별로 조회(상세보기)
     @Transactional
     public ClubDTO findById(Long id) {
         Optional<Club> optionalClub = clubRepository.findById(id);
