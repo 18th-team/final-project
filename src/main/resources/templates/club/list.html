@@ -34,12 +34,12 @@ text-decoration: none;
             <a class="card mb-3 border-create py-2"  th:href="@{/clubs/{id}(id=${club.id})}" >
                 <div class="row g-0 h-100"  th:href="@{/clubs/{id}(id=${club.id})}">
                     <!-- 크루리스트 이미지-->
-                    <div class="col-5 my-auto text-center">
+                    <div class="col-4 col-md-5 my-auto text-center mx-auto p-2">
                         <img th:if="${club.storedFileName != null and #lists.size(club.storedFileName) > 0}"
                              th:src="@{/upload/{filename}(filename=${club.storedFileName[0]})}"
-                             alt="클럽 이미지" style="max-width: 220px;height: 200px">
+                             alt="클럽 이미지" class="rounded img-fluid" >
                     </div>
-                    <div class="col-7">
+                    <div class="col-8 col-md-7">
                         <div class="card-body">
                             <p class="card-text">
                             <h5>

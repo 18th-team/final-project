@@ -4,7 +4,10 @@
       layout:decorate="~{layouts/main-layout}"
       layout:fragment="content">
 <link th:href="@{/css/signup.css}" rel="stylesheet"/>
+<link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
+
 <style>
+
     .form-check {
         margin: 0; /* 기본 마진 제거 */
     }
@@ -21,14 +24,17 @@
     .form-check-input:checked + .form-check-label.btn, .btn-custom-signup:hover {
         background-color: #d55e0e; /* 선택 시 배경색 */
         color: white; /* 선택 시 글자색 */
-        border: #d55e0e solid; /* 선택 시 배경색 */
-
     }
 
-    .btn-custom-signup {
-        border: #d55e0e solid; /* 선택 시 배경색 */
-
+.btn-custom-signup {
+    font-family: 'Pretendard-Medium';
+        height:60px;width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
+
 </style>
 <body>
 <div class="container d-flex justify-content-center align-items-center min-vh-80 my-5">
@@ -38,17 +44,24 @@
         <form th:object="${userCreateForm}" th:action="@{/signup}" method="post" enctype="multipart/form-data">
             <input type="hidden" id="clientKey" name="clientKey" th:field="*{clientKey}"/>
             <input type="hidden" id="otpVerified" name="otpVerified" th:field="*{otpVerified}"/>
-            <div class="mb-4 text-center profile-container" style="border: #d55e0e solid 1px">
-                <label for="profile-upload" class="profile-label">
-                    <img id="profile-preview" th:src="@{/img/default-profile.png}" alt="프로필 이미지"
-                         class="profile-img img-fluid">
+            <div style="position: relative;">
+                <!--            프로필 사진 선택-->
+                <div class="mb-4 text-center profile-container " style="border: #d55e0e solid 1px;">
+                    <label for="profile-upload" class="profile-label">
+                        <img id="profile-preview" th:src="@{/img/default-profile.png}" alt="프로필 이미지"
+                             class="profile-img w-100 h-100">
+                    </label>
+                    <input type="file" id="profile-upload" name="profileImage" accept="image/*" style="display: none;">
+                </div>
+                <div><label for="profile-upload">
+                    <img th:src="@{/img/camera.svg}" alt="업로드 아이콘" class="upload-icon "
+                         style="width: 40px; height: 40px; position: absolute; top: 120px; right: 90px; z-index: 9999;">
+                </label></div>
 
-                </label>
-                <input type="file" id="profile-upload" name="profileImage" accept="image/*" style="display: none;">
+
             </div>
-            <label for="profile-upload">
-                <img th:src="@{/img/camera.svg}" alt="업로드 아이콘" class="upload-icon" style="width: 40px; height: 40px;">
-            </label>
+
+
             <div class="mb-4 text-start">
                 <label for="name" class="form-label">이름</label>
                 <input type="text" class="form-control" id="name" placeholder="이름을 입력하세요" th:field="*{name}">
@@ -94,38 +107,56 @@
             </div>
 
             <!-- 관심 키워드 선택 -->
+            <!-- 관심 키워드 선택 -->
             <div class="mb-4 text-start">
                 <label class="form-label create-name text-dark">나의 관심 키워드(최대3개 선택가능)</label>
-                <div class="d-flex flex-wrap gap-2 justify-content-between">
-                    <div class="form-check">
-                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="액티비티"
-                               id="theme1">
-                        <label class="form-check-label btn btn-custom-signup" for="theme1">액티비티 🏃</label>
+                <div class="row row-cols-3 row-cols-lg-6 g-2">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check shadow-sm" type="checkbox" name="theme[]" value="액티비티"
+                                   id="theme1">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2 " for="theme1">액티비티
+                                🏃</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="자기계발"
-                               id="theme2">
-                        <label class="form-check-label btn btn-custom-signup" for="theme2">자기계발 📚</label>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="자기계발"
+                                   id="theme2">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme2">자기계발
+                                📚</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="취미"
-                               id="theme3">
-                        <label class="form-check-label btn btn-custom-signup" for="theme3">취미 🎮</label>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="취미"
+                                   id="theme3">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme3">취미 🎮</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="여행"
-                               id="theme4">
-                        <label class="form-check-label btn btn-custom-signup" for="theme4">여행 ✈️</label>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="여행"
+                                   id="theme4">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme4">여행
+                                ✈️</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="문화/예술"
-                               id="theme5">
-                        <label class="form-check-label btn btn-custom-signup" for="theme5">문화/예술 🎭</label>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="문화/예술"
+                                   id="theme5">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme5">문화/예술
+                                🎭</label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="푸드/드링크"
-                               id="theme6">
-                        <label class="form-check-label btn btn-custom-signup" for="theme6">푸드/드링크 🍔</label>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="푸드/드링크"
+                                   id="theme6">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme6">푸드/드링크
+                                🍔</label>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -37,16 +37,16 @@
             opacity: 1;
         }
 
-        dt {
+        dt, .hostName {
             font-family: 'Pretendard-SemiBold';
-            font-size: 1.3rem;
+            font-size: calc(1rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
 
 
         }
 
-        dd, pre {
+        dd, .content-box{
             font-family: 'Pretendard-ExtraLight';
-            font-size: 1.2rem;
+            font-size: calc(0.9rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
 
         }
 
@@ -91,7 +91,9 @@
             color: #333333;
 
         }
-
+.custom-badge{
+    font-size: calc(0.9rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
+}
 
     </style>
 </head>
@@ -100,8 +102,8 @@
 
     <!-- 모임 상세 정보 -->
     <div class="card" style="overflow: hidden">
-        <dd class="col-12 mb-4 ">
-            <div th:if="${clubDTO.fileAttached == 1}">
+        <dd class="col-12 mb-md-5 mb-2">
+            <div th:if="${clubDTO.fileAttached == 1}" >
                 <div id="clubCarousel" class="carousel slide" data-bs-ride="carousel">
                     <!-- 인디케이터 -->
                     <div class="carousel-indicators">
@@ -142,7 +144,7 @@
             </div>
         </dd>
         <div class="card-body">
-            <div class="row mb-3 d-flex justify-content-between">
+            <div class="row my-3 d-flex justify-content-between">
                 <div class="col-lg-8">
                     <h2 th:text="${clubDTO.title}"></h2>
                 </div>
@@ -164,27 +166,27 @@
 
             <!-- 크루 사진 (캐러셀 + 인디케이터) -->
             <dl class="row">
-
                 <!-- Content -->
-                <dt class="col-md-3">크루소개✍️</dt>
-                <dd class="col-md-9 mb-4">
-    <pre th:utext="${clubDTO.content != null ? clubDTO.content : '내용 없음'}">
-        Content goes here
-    </pre>
+                <dt class="col-md-3 mt-5">크루소개✍️</dt>
+                <dd class="col-md-9 mb-4 mt-5 shadow">
+                    <div class="content-box p-4" style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;"
+                         th:utext="${clubDTO.content != null ? clubDTO.content : '내용 없음'}">
+                        Content goes here
+                    </div>
                 </dd>
 
 
                 <!-- Location -->
-                <dt class="col-md-3">활동지역🏙️</dt>
-                <dd class="col-md-9 mb-4"
+                <dt class="col-md-3 col-4 mt-5">활동지역🏙️</dt>
+                <dd class="col-md-9 col-8 mb-4 mt-5"
                     th:text="${clubDTO.city + ' ' + (clubDTO.district != null ? clubDTO.district : '')}">City District
                 </dd>
 
                 <!-- Theme -->
-                <dt class="col-md-3">카테고리🎨</dt>
-                <dd class="col-md-9 mb-4"><h5>
+                <dt class="col-md-3 col-4 mt-5">카테고리🎨</dt>
+                <dd class="col-md-9 col-8 mb-4 mt-5">
                                 <span th:switch="${clubDTO.selectedTheme}">
-                                    <span th:case="'액티비티'" class="badge custom-badge custom-badge-success"
+                                    <span th:case="'액티비티'" class="badge custom-badge custom-badge-success "
                                           th:text="${clubDTO.selectedTheme}">액티비티</span>
 
                                     <span th:case="'자기계발'" class="badge custom-badge custom-badge-info"
@@ -199,28 +201,41 @@
                                           th:text="${clubDTO.selectedTheme}">푸드/드링크</span>
                                     <span th:case="*" class="badge custom-badge custom-badge-light text-dark"
                                           th:text="'미정'">미정</span>
-                                </span></h5></dd>
+                                </span>
+
+                </dd>
 
                 <!-- Age Restriction -->
-                <dt class="col-md-3">가입 조건🎂</dt>
-                <dd class="col-md-9 mb-4"
+                <dt class="col-md-3 col-4 mt-5">가입 조건🎂</dt>
+                <dd class="col-md-9 col-8 mb-4 mt-5"
                     th:text="${clubDTO.ageRestriction != null ? clubDTO.ageRestriction + '세 이상' : '제한 없음'}">Age
                 </dd>
 
                 <!-- Host -->
-                <dt class="col-md-3">호스트 📚</dt>
-                <dd class="col-md-9 mb-4" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
-                <dt class="col-md-3">호스트 소개🧶</dt>
-                <dd class="col-md-9 mb-4" th:text="${clubDTO.hostIntro}">Host Name (ID)</dd>
-                <dt class="col-md-3">호스트 사진 📸</dt>
-                <dd class="col-md-9 mb-4">
-                    <img th:if="${clubDTO.hostImg != null}"
-                         th:src="${clubDTO.hostImg}"
-                         alt="프로필 사진"
-                         class="rounded-circle"
-                         style="width: 150px; height: 150px;"/>
-                    <span th:if="${clubDTO.hostImg == null}">이미지 없음</span>
-                </dd>
+                <dt class="col-4 col-md-3 mt-5">호스트 소개📚</dt>
+                <div class="col-8 col-md-9 mb-4 mt-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 "><img th:if="${clubDTO.hostImg != null}"
+                                                th:src="${clubDTO.hostImg}"
+                                                alt="프로필 사진"
+                                                class="rounded-circle img-fluid "
+                                                                   style="max-width: 150px;max-height: 150px"
+                            />
+                            <span th:if="${clubDTO.hostImg == null}">이미지 없음</span></div>
+                        <div class="col-md-9 ">
+                            <div class="row px-sm-4">
+                                <div class="col-12 mt-3 ">
+                                    <dd class="hostName" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
+                                </div>
+                                <div class="col-12 ">
+                                    <dd class="hostIntro" th:text="${clubDTO.hostIntro}">Host Introduction</dd>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
             </dl>
         </div>
