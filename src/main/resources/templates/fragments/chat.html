@@ -61,7 +61,28 @@
             </header>
 
             <div class="messages-container">
-                <!-- Messages will be dynamically added here -->
+                <article class="message-group">
+                    <div class="user-avatar" role="img" aria-label="김민수's avatar">MS</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="user-name">김민수</span>
+                            <time class="message-time" datetime="14:30">오후 2:30</time>
+                        </div>
+                        <p class="message-text">
+                            안녕하세요, 프로젝트 관련해서 이야기 나누고 싶습니다.
+                        </p>
+                    </div>
+                </article>
+
+                <div class="date-separator">
+                    <time class="date-text" datetime="2024-01-15">2024년 1월 15일</time>
+                </div>
+
+                <div class="system-notification-wrapper">
+                    <p class="system-notification" role="status" aria-live="polite">
+                        김민수님이 채팅방에 참여하셨습니다
+                    </p>
+                </div>
             </div>
 
             <footer class="chat-input">
@@ -95,7 +116,7 @@
 
 <!-- WebSocket 클라이언트 라이브러리 (프래그먼트 외부에서 로드 필요) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-<script src="https://cdnjs.cloudflar    e.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script th:inline="javascript">
     const currentUser = /*[[${currentUser}]]*/ null;
     console.log("Current User in chat.html: " + currentUser);
