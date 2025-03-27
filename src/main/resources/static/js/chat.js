@@ -70,6 +70,14 @@ function renderChatList(chatRooms) {
         const item = document.createElement('article');
         item.className = `chat-item ${isRequest ? 'request-item' : ''}`;
 
+        // 승인된 채팅방(ACTIVE)에만 클릭 이벤트 추가
+        if (chat.status === 'ACTIVE') {
+            item.addEventListener('click', () => openPersonalChat(chat));
+            item.style.cursor = 'pointer'; // 클릭 가능 표시
+        } else {
+            item.style.cursor = 'default'; // 클릭 불가 표시
+        }
+
         // chatName 계산
         let chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group Chat') :
             (isRequester ? chat.owner?.name : chat.requester?.name) || 'Unknown';
@@ -125,9 +133,78 @@ function handleRequest(chatId, action) {
         console.error('STOMP client is not connected');
     }
 }
+function openPersonalChat(chat) {
+    currentChatRoomId = chat.id;
+    const chatWindow = document.querySelector('.personal-chat');
+    chatWindow.classList.add('visible');
 
+    const chatNameElement = chatWindow.querySelector('.chat-name');
+    chatNameElement.textContent = chat.type === 'GROUP' ? chat.name :
+        (chat.requester.uuid === currentUser ? chat.owner.name : chat.requester.name);
+
+/*    const messagesContainer = chatWindow.querySelector('.messages-container');
+    messagesContainer.innerHTML = '';
+    chat.messages?.forEach(msg => renderMessage(msg));*/
+
+    chatWindow.querySelector('.back-button').onclick = closePersonalChat;
+}
+
+function closePersonalChat() {
+    const chatWindow = document.querySelector('.personal-chat');
+    chatWindow.classList.remove('visible');
+    currentChatRoomId = null;
+}
+function renderMessage(msg) {
+    const messagesContainer = document.querySelector('.messages-container');
+    const isOwnMessage = msg.sender.uuid === currentUser;
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${isOwnMessage ? 'own-message' : 'other-message'}`;
+    messageElement.innerHTML = `
+        <span class="sender">${msg.sender.name}</span>
+        <span class="content">${msg.content}</span>
+        <span class="timestamp">${new Date(msg.timestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
+    `;
+    messagesContainer.appendChild(messageElement);
+}
 // 나머지 이벤트 리스너 및 초기화 코드 유지
 document.addEventListener('DOMContentLoaded', function () {
+    const optionsButton = document.querySelector(".options-button");
+    const optionsMenu = document.querySelector(".options-menu");
+
+
+    // 옵션 버튼 클릭 시 메뉴 토글
+    optionsButton?.addEventListener("click", () => {
+        if (optionsMenu.style.display === "block") {
+            optionsMenu.style.display = "none";
+        } else {
+            optionsMenu.style.display = "block";
+        }
+    });
+
+    // 외부 클릭 시 메뉴 닫기
+    document.addEventListener("click", (event) => {
+        if (!optionsButton.contains(event.target) && !optionsMenu.contains(event.target)) {
+            optionsMenu.style.display = "none";
+        }
+    });
+    /*   const sendButton = document.querySelector('.send-button');
+    const messageInput = document.querySelector('.message-input');
+
+    sendButton.addEventListener('click', () => {
+        const content = messageInput.value.trim();
+        if (content && currentChatRoomId) {
+            stompClient.send("/app/sendMessage", {}, JSON.stringify({
+                chatRoomId: currentChatRoomId,
+                content: content
+            }));
+            messageInput.value = '';
+        }
+    });
+
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendButton.click();
+    });
+*/
     console.log('Current user set to:', currentUser);
 
     const tabGroup = document.querySelector('.tab-group');
