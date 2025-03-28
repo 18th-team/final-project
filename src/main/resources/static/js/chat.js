@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const messagesList = document.getElementById('messagesList');
     const openButton = document.getElementById('openChat');
     const closeButton = document.getElementById('closeChat');
-
+    const chatWindow = document.querySelector('.personal-chat');
     function update() {
         if (state.isChatOpen) {
             messagesList.classList.add('visible');
@@ -336,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
             connect();
         } else {
             messagesList.classList.remove('visible');
+            chatWindow.classList.remove('visible');
             openButton.classList.remove('hidden');
             closeButton.classList.add('hidden');
             if (stompClient && stompClient.connected) {
