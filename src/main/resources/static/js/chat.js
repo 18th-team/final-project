@@ -1,6 +1,8 @@
 let stompClient = null;
-let activeTab = 'PRIVATE'; // 기본 탭: 개인 채팅
-
+let activeTab = 'PRIVATE';
+let currentChatRoomId = null;
+let isConnected = false;
+let isScrollable = true;
 
 function connect() {
     if (!currentUser) {
@@ -8,18 +10,49 @@ function connect() {
         window.location.href = "/login";
         return;
     }
+    if (isConnected) {
+        console.log('Already connected, skipping connect.');
+        refreshMessages();
+        return;
+    }
+
     console.log('Connecting with currentUser:', currentUser);
     const socket = new SockJS('/chat', null, { transports: ['websocket'], debug: true });
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        console.log('Subscribing to: /user/' + currentUser + '/topic/chatrooms');
+        isConnected = true;
+
         stompClient.subscribe('/user/' + currentUser + '/topic/chatrooms', function (message) {
-            console.log('Raw message:', message);
+            console.log('Received chatrooms:', message.body);
             const chatRooms = JSON.parse(message.body);
-            console.log('Received chat rooms:', chatRooms);
             renderChatList(chatRooms);
+        });
+
+        stompClient.subscribe('/user/' + currentUser + '/topic/messages', function (message) {
+            console.log('Received raw message:', message); // 원시 메시지 객체 확인
+            console.log('Received message body:', message.body); // 메시지 본문 확인
+            const items = JSON.parse(message.body);
+            console.log('Parsed items:', items); // 파싱된 데이터 확인
+            if (Array.isArray(items)) {
+                console.log('Processing array of items:', items.length);
+                items.forEach(item => {
+                    console.log('Processing item:', item);
+                    if (item.chatRoomId === currentChatRoomId || item.date) {
+                        renderMessage(item);
+                    } else {
+                        console.log('Item skipped - chatRoomId mismatch:', item.chatRoomId, '!=', currentChatRoomId);
+                    }
+                });
+            } else if (items.chatRoomId === currentChatRoomId) {
+                console.log('Processing single item:', items);
+                renderMessage(items);
+            } else {
+                console.log('Single item skipped - chatRoomId mismatch:', items.chatRoomId, '!=', currentChatRoomId);
+            }
+        }, function (error) {
+            console.error('Subscription error:', error); // 구독 오류 확인
         });
 
         stompClient.subscribe('/user/' + currentUser + '/topic/notification', function (message) {
@@ -27,15 +60,23 @@ function connect() {
             alert(message.body);
         });
 
-        if (stompClient.connected) {
-            console.log('Sending refresh request with user:', currentUser);
-            stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
-        }
+        console.log('Sending refresh request with user:', currentUser);
+        stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
     }, function (error) {
         console.error('WebSocket connection failed:', error);
         alert("채팅 연결에 실패했습니다. 다시 로그인해주세요.");
         window.location.href = "/login";
+        isConnected = false;
     });
+}
+
+function refreshMessages() {
+    if (currentChatRoomId && stompClient && stompClient.connected) {
+        console.log('Requesting messages for chatRoomId:', currentChatRoomId);
+        stompClient.send("/app/getMessages", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
+    } else {
+        console.error('Cannot refresh messages: STOMP not connected or no chatRoomId');
+    }
 }
 
 function renderChatList(chatRooms) {
@@ -45,10 +86,7 @@ function renderChatList(chatRooms) {
         return;
     }
     chatList.innerHTML = '';
-    console.log('Rendering chat rooms:', chatRooms);
-
     if (!Array.isArray(chatRooms) || chatRooms.length === 0) {
-        console.warn('No chat rooms received or invalid data:', chatRooms);
         chatList.innerHTML = '<p>채팅방이 없습니다.</p>';
         return;
     }
@@ -57,31 +95,23 @@ function renderChatList(chatRooms) {
     let personalUnread = 0;
 
     chatRooms.forEach(chat => {
-        console.log('Processing chat:', chat);
-        if (chat.status === "BLOCKED") return;
-        if (activeTab === 'GROUP' && chat.type !== 'GROUP') return;
-        if (activeTab === 'PRIVATE' && chat.type !== 'PRIVATE') return;
+        if (chat.status === "BLOCKED" || (activeTab === 'GROUP' && chat.type !== 'GROUP') || (activeTab === 'PRIVATE' && chat.type !== 'PRIVATE')) return;
 
-        // 먼저 isRequester와 isOwner 정의
         const isRequest = chat.status === 'PENDING';
         const isRequester = chat.requester && chat.requester.uuid === currentUser;
         const isOwner = chat.owner && chat.owner.uuid === currentUser;
 
         const item = document.createElement('article');
         item.className = `chat-item ${isRequest ? 'request-item' : ''}`;
-
-        // 승인된 채팅방(ACTIVE)에만 클릭 이벤트 추가
         if (chat.status === 'ACTIVE') {
             item.addEventListener('click', () => openPersonalChat(chat));
-            item.style.cursor = 'pointer'; // 클릭 가능 표시
+            item.style.cursor = 'pointer';
         } else {
-            item.style.cursor = 'default'; // 클릭 불가 표시
+            item.style.cursor = 'default';
         }
 
-        // chatName 계산
         let chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group Chat') :
             (isRequester ? chat.owner?.name : chat.requester?.name) || 'Unknown';
-
         let lastMessageTime = chat.lastMessageTime ?
             new Date(chat.lastMessageTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '';
 
@@ -120,12 +150,12 @@ function renderChatList(chatRooms) {
         else personalUnread += chat.unreadCount || 0;
     });
 
-    // 올바른 DOM 요소에 할당
     const groupUnreadElement = document.getElementById('groupUnreadCount');
     const personalUnreadElement = document.getElementById('personalUnreadCount');
     if (groupUnreadElement) groupUnreadElement.textContent = groupUnread || '';
     if (personalUnreadElement) personalUnreadElement.textContent = personalUnread || '';
 }
+
 function handleRequest(chatId, action) {
     if (stompClient && stompClient.connected) {
         stompClient.send("/app/handleChatRequest", {}, JSON.stringify({ chatRoomId: chatId, action: action }));
@@ -133,104 +163,165 @@ function handleRequest(chatId, action) {
         console.error('STOMP client is not connected');
     }
 }
+
+function renderMessage(item) {
+    console.log('Rendering message:', item);
+    const messagesContainer = document.querySelector('.messages-container'); // .messages-inner 대신
+    if (!messagesContainer) {
+        console.error('Messages container not found');
+        return;
+    }
+
+    if (item.date) {
+        const dateElement = document.createElement('article');
+        dateElement.className = 'date-notification';
+        dateElement.innerHTML = `<time class="date-text">${item.date}</time>`;
+        messagesContainer.appendChild(dateElement);
+    } else if (item.type === 'SYSTEM') {
+        const systemElement = document.createElement('article');
+        systemElement.className = 'system-notification';
+        systemElement.innerHTML = `<p class="system-text">${item.content}</p>`;
+        messagesContainer.appendChild(systemElement);
+    } else {
+        const isOwnMessage = item.sender && item.sender.uuid === currentUser;
+        const messageElement = document.createElement('article');
+        messageElement.className = isOwnMessage ? 'message-sent' : 'message-received';
+
+        const timeStr = new Date(item.timestamp).toLocaleTimeString('ko-KR', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        if (!isOwnMessage && item.sender) {
+            messageElement.innerHTML = `
+                    <div class="avatar" aria-label="${item.sender.name}의 아바타">${item.sender.name.slice(0, 2)}</div>
+                    <div class="message-content">
+                        <header class="message-header">
+                            <h2 class="user-name">${item.sender.name}</h2>
+                            <time class="timestamp">${timeStr}</time>
+                        </header>
+                        <p class="message-text">${item.content}</p>
+                    </div>
+                `;
+        } else {
+            messageElement.innerHTML = `
+                    <header class="message-header">
+                        <time class="timestamp">${timeStr}</time>
+                    </header>
+                    <p class="message-text">${item.content}</p>
+                `;
+        }
+        messagesContainer.appendChild(messageElement);
+    }
+    // 스크롤이 맨 아래에 있는 경우에만 자동 스크롤
+    if (isScrollable) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+}
+
 function openPersonalChat(chat) {
     currentChatRoomId = chat.id;
     const chatWindow = document.querySelector('.personal-chat');
+    const messagesList = document.getElementById('messagesList');
+    messagesList.classList.remove('visible');
     chatWindow.classList.add('visible');
-
     const chatNameElement = chatWindow.querySelector('.chat-name');
-    chatNameElement.textContent = chat.type === 'GROUP' ? chat.name :
+    const chatName = chat.type === 'GROUP' ? chat.name :
         (chat.requester.uuid === currentUser ? chat.owner.name : chat.requester.name);
+    chatNameElement.textContent = chatName;
 
-/*    const messagesContainer = chatWindow.querySelector('.messages-container');
+    const avatarSpan = chatWindow.querySelector('.avatar span');
+    avatarSpan.textContent = chatName.slice(0, 2);
+
+    const messagesContainer = document.querySelector('.messages-container'); // .messages-inner 대신
     messagesContainer.innerHTML = '';
-    chat.messages?.forEach(msg => renderMessage(msg));*/
 
-    chatWindow.querySelector('.back-button').onclick = closePersonalChat;
+    console.log('Opening chat, requesting messages for:', currentChatRoomId);
+    refreshMessages();
 }
-
-function closePersonalChat() {
-    const chatWindow = document.querySelector('.personal-chat');
-    chatWindow.classList.remove('visible');
-    currentChatRoomId = null;
-}
-function renderMessage(msg) {
-    const messagesContainer = document.querySelector('.messages-container');
-    const isOwnMessage = msg.sender.uuid === currentUser;
-    const messageElement = document.createElement('div');
-    messageElement.className = `message ${isOwnMessage ? 'own-message' : 'other-message'}`;
-    messageElement.innerHTML = `
-        <span class="sender">${msg.sender.name}</span>
-        <span class="content">${msg.content}</span>
-        <span class="timestamp">${new Date(msg.timestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
-    `;
-    messagesContainer.appendChild(messageElement);
-}
-// 나머지 이벤트 리스너 및 초기화 코드 유지
 document.addEventListener('DOMContentLoaded', function () {
     const optionsButton = document.querySelector(".options-button");
     const optionsMenu = document.querySelector(".options-menu");
-
-
-    // 옵션 버튼 클릭 시 메뉴 토글
+    const sendButton = document.querySelector('.send-button');
+    const messageInput = document.querySelector('.message-input');
+    const backButton = document.querySelector('.back-button');
+    const blockButton = document.querySelector('.block-option');
+    const leaveButton = document.querySelector('.leave-option');
+    const messagescontainer = document.querySelector('.messages-container');
+    // 스크롤 이벤트 리스너
+    messagescontainer.addEventListener('scroll', (e) => {
+        const { scrollHeight, scrollTop, clientHeight } = e.target;
+        // 스크롤이 맨 아래에 있는지 확인 (약간의 여유를 둠)
+        isScrollable = Math.abs(scrollHeight - scrollTop - clientHeight) < 5; // 5px 오차 허용
+    });
     optionsButton?.addEventListener("click", () => {
-        if (optionsMenu.style.display === "block") {
-            optionsMenu.style.display = "none";
-        } else {
-            optionsMenu.style.display = "block";
-        }
+        optionsMenu.style.display = optionsMenu.style.display === "block" ? "none" : "block";
     });
 
-    // 외부 클릭 시 메뉴 닫기
     document.addEventListener("click", (event) => {
         if (!optionsButton.contains(event.target) && !optionsMenu.contains(event.target)) {
             optionsMenu.style.display = "none";
         }
     });
-    /*   const sendButton = document.querySelector('.send-button');
-    const messageInput = document.querySelector('.message-input');
 
     sendButton.addEventListener('click', () => {
         const content = messageInput.value.trim();
-        if (content && currentChatRoomId) {
+        if (content && currentChatRoomId && stompClient && stompClient.connected) {
             stompClient.send("/app/sendMessage", {}, JSON.stringify({
                 chatRoomId: currentChatRoomId,
                 content: content
             }));
             messageInput.value = '';
+            messagescontainer.scrollTop = messagescontainer.scrollHeight;
         }
     });
 
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendButton.click();
     });
-*/
-    console.log('Current user set to:', currentUser);
+
+    backButton?.addEventListener('click', () => {
+        document.querySelector('.personal-chat').classList.remove('visible');
+
+        currentChatRoomId = null;
+        document.querySelector('#messagesList').classList.add('visible');
+    });
+
+    blockButton?.addEventListener('click', () => {
+        if (currentChatRoomId) {
+            handleRequest(currentChatRoomId, 'BLOCK');
+            document.querySelector('.personal-chat').classList.remove('visible');
+        }
+    });
+
+    leaveButton?.addEventListener('click', () => {
+        if (currentChatRoomId) {
+            console.log('Leaving chat room:', currentChatRoomId);
+            document.querySelector('.personal-chat').classList.remove('visible');
+        }
+    });
 
     const tabGroup = document.querySelector('.tab-group');
     const tabPersonal = document.querySelector('.tab-personal');
 
-    if (tabGroup) {
-        tabGroup.addEventListener('click', () => {
-            activeTab = 'GROUP';
-            tabGroup.classList.add('active');
-            tabPersonal.classList.remove('active');
-            if (stompClient && stompClient.connected) {
-                stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
-            }
-        });
-    }
+    tabGroup?.addEventListener('click', () => {
+        activeTab = 'GROUP';
+        tabGroup.classList.add('active');
+        tabPersonal.classList.remove('active');
+        if (stompClient && stompClient.connected) {
+            stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
+        }
+    });
 
-    if (tabPersonal) {
-        tabPersonal.addEventListener('click', () => {
-            activeTab = 'PRIVATE';
-            tabPersonal.classList.add('active');
-            tabGroup.classList.remove('active');
-            if (stompClient && stompClient.connected) {
-                stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
-            }
-        });
-    }
+    tabPersonal?.addEventListener('click', () => {
+        activeTab = 'PRIVATE';
+        tabPersonal.classList.add('active');
+        tabGroup.classList.remove('active');
+        if (stompClient && stompClient.connected) {
+            stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
+        }
+    });
 
     const state = { isChatOpen: false };
     const messagesList = document.getElementById('messagesList');
@@ -250,23 +341,20 @@ document.addEventListener('DOMContentLoaded', function () {
             if (stompClient && stompClient.connected) {
                 stompClient.disconnect(() => console.log('Disconnected'));
                 stompClient = null;
+                isConnected = false;
             }
         }
     }
 
-    if (openButton) {
-        openButton.addEventListener('click', () => {
-            state.isChatOpen = true;
-            update();
-        });
-    }
+    openButton?.addEventListener('click', () => {
+        state.isChatOpen = true;
+        update();
+    });
 
-    if (closeButton) {
-        closeButton.addEventListener('click', () => {
-            state.isChatOpen = false;
-            update();
-        });
-    }
+    closeButton?.addEventListener('click', () => {
+        state.isChatOpen = false;
+        update();
+    });
 
     update();
 });

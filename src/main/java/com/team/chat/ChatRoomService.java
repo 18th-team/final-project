@@ -3,16 +3,16 @@ package com.team.chat;
 import com.team.user.CustomSecurityUserDetails;
 import com.team.user.SiteUser;
 import com.team.user.UserRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,8 +24,14 @@ public class ChatRoomService {
     private final ChatMessageService chatMessageService;
     private final ChatMessageRepository chatMessageRepository;
 
+    @Transactional(readOnly = true)
+    public ChatRoom findChatRoomById(Long chatRoomId) {
+        return chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
+    }
+
     @Transactional
-    public ChatRoom requestPersonalChat(CustomSecurityUserDetails userDetails, String receiverUuid, String reason) { // email -> uuid
+    public ChatRoom requestPersonalChat(CustomSecurityUserDetails userDetails, String receiverUuid, String reason) {
         if (userDetails == null) {
             throw new IllegalArgumentException("인증된 사용자가 필요합니다.");
         }
@@ -58,10 +64,32 @@ public class ChatRoomService {
 
         return chatRoomRepository.save(chatRoom);
     }
+
+    @Transactional
+    public List<Object> getMessagesWithDateNotifications(Long chatRoomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
+        List<ChatMessage> messages = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom);
+        System.out.println("Raw messages from DB: " + messages.size());
+
+        List<Object> result = new ArrayList<>();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREAN);
+        String lastDate = null;
+
+        for (ChatMessage msg : messages) {
+            String currentDate = dateFormat.format(Date.from(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
+            if (lastDate == null || !lastDate.equals(currentDate)) {
+                result.add(new DateNotificationDTO(currentDate));
+                lastDate = currentDate;
+            }
+            result.add(convertToChatMessageDTO(msg));
+        }
+        return result;
+    }
+
     @Transactional
     public ChatRoom handleChatRequest(SiteUser currentUser, Long chatRoomId, String action) {
         System.out.println("currentUser : " + currentUser.getEmail());
-        // 입력값 검증
         if (currentUser == null) {
             throw new IllegalArgumentException("사용자 정보가 없습니다.");
         }
@@ -72,36 +100,31 @@ public class ChatRoomService {
             throw new IllegalArgumentException("액션이 지정되지 않았습니다.");
         }
 
-        // 채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
 
-        // 권한 확인
         System.out.println("getOwner : " + chatRoom.getOwner().getEmail());
         if (!chatRoom.getOwner().getEmail().equals(currentUser.getEmail())) {
             throw new SecurityException("채팅 요청을 승인, 거부, 또는 차단할 권한이 없습니다. 소유자: " + chatRoom.getOwner().getEmail());
         }
 
-        // 상태 검증
         if (!"PENDING".equals(chatRoom.getStatus())) {
             throw new IllegalStateException("현재 상태(" + chatRoom.getStatus() + ")에서는 요청을 처리할 수 없습니다. PENDING 상태에서만 가능합니다.");
         }
 
-        // 액션 처리
         String upperAction = action.toUpperCase();
         switch (upperAction) {
             case "APPROVE":
                 chatRoom.setStatus("ACTIVE");
                 if (!chatRoom.getParticipants().contains(currentUser)) {
-                    chatRoom.getParticipants().add(currentUser); //수신자 추가
+                    chatRoom.getParticipants().add(currentUser);
                 }
-                // 수락 메시지 생성
                 chatMessageService.createMessage(chatRoom, currentUser,
                         currentUser.getName() + "님이 채팅을 수락하셨습니다.", MessageType.SYSTEM);
                 break;
             case "REJECT":
                 chatRoomRepository.delete(chatRoom);
-                return null; // 삭제 후 null 반환 (클라이언트에서 제외되도록)
+                return null;
             case "BLOCK":
                 chatRoom.setStatus("BLOCKED");
                 break;
@@ -109,7 +132,6 @@ public class ChatRoomService {
                 throw new IllegalArgumentException("지원하지 않는 액션입니다: " + action);
         }
 
-        // 변경사항 저장
         return chatRoomRepository.save(chatRoom);
     }
 
@@ -135,25 +157,14 @@ public class ChatRoomService {
             dto.setRequestReason(chat.getRequestReason());
             dto.setStatus(chat.getStatus());
 
-            // 마지막 메시지 설정
             Optional<ChatMessage> lastMessage = chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat);
             lastMessage.ifPresent(msg -> {
                 dto.setLastMessage(msg.getContent());
                 dto.setLastMessageTime(msg.getTimestamp());
             });
 
-            // 메시지 목록 추가 (필요 시 제한)
             List<ChatMessage> messages = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat);
-            dto.setMessages(messages.stream().map(msg -> {
-                ChatRoomDTO.ChatMessageDTO msgDto = new ChatRoomDTO.ChatMessageDTO();
-                msgDto.setId(msg.getId());
-                msgDto.setChatRoomId(chat.getId());
-                msgDto.setSender(new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()));
-                msgDto.setContent(msg.getContent());
-                msgDto.setTimestamp(msg.getTimestamp().toInstant(ZoneId.systemDefault().getRules().getOffset(msg.getTimestamp())).toEpochMilli());
-                msgDto.setType(msg.getType().name());
-                return msgDto;
-            }).collect(Collectors.toList()));
+            dto.setMessages(messages.stream().map(this::convertToChatMessageDTO).collect(Collectors.toList()));
             return dto;
         }).collect(Collectors.toList());
     }
@@ -163,6 +174,17 @@ public class ChatRoomService {
         ChatRoomDTO.SiteUserDTO dto = new ChatRoomDTO.SiteUserDTO();
         dto.setUuid(user.getUuid());
         dto.setName(user.getName());
+        return dto;
+    }
+
+    public ChatRoomDTO.ChatMessageDTO convertToChatMessageDTO(ChatMessage msg) {
+        ChatRoomDTO.ChatMessageDTO dto = new ChatRoomDTO.ChatMessageDTO();
+        dto.setId(msg.getId());
+        dto.setChatRoomId(msg.getChatRoom().getId());
+        dto.setSender(msg.getSender() != null ? new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()) : null);
+        dto.setContent(msg.getContent());
+        dto.setTimestamp(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        dto.setType(msg.getType().name());
         return dto;
     }
 }

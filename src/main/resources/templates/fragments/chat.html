@@ -29,7 +29,7 @@
         </section>
         <!-- Personal Chat Window -->
         <section class="chat-window personal-chat" aria-label="Personal Chat Window">
-            <header class="chat-header p-3 border-bottom-f0f0f0">
+            <header class="chat-header p-3 border-bottom-f0f0f0 justify-content-around">
                 <button class="back-button" aria-label="Go back">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M12.5 15L7.5 10L12.5 5" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -61,28 +61,57 @@
             </header>
 
             <div class="messages-container">
-                <article class="message-group">
-                    <div class="user-avatar" role="img" aria-label="김민수's avatar">MS</div>
+                <article class="date-notification">
+                    <time datetime="2024-01-15" class="date-text">2024년 1월 15일</time>
+                </article>
+
+                <article class="system-notification">
+                    <p class="approval-text">김민수님이 승인하셨습니다</p>
+                </article>
+
+                <article class="message-received">
+                    <div class="avatar" aria-label="김민수의 아바타">MS</div>
                     <div class="message-content">
-                        <div class="message-header">
-                            <span class="user-name">김민수</span>
-                            <time class="message-time" datetime="14:30">오후 2:30</time>
-                        </div>
+                        <header class="message-header">
+                            <h2 class="user-name">김민수</h2>
+                            <time datetime="14:30" class="timestamp">오후 2:30</time>
+                        </header>
                         <p class="message-text">
                             안녕하세요, 프로젝트 관련해서 이야기 나누고 싶습니다.
                         </p>
                     </div>
                 </article>
 
-                <div class="date-separator">
-                    <time class="date-text" datetime="2024-01-15">2024년 1월 15일</time>
-                </div>
-
-                <div class="system-notification-wrapper">
-                    <p class="system-notification" role="status" aria-live="polite">
-                        김민수님이 채팅방에 참여하셨습니다
+                <article class="message-sent">
+                    <header class="message-header">
+                        <time datetime="14:31" class="timestamp">오후 2:31</time>
+                    </header>
+                    <p class="message-text">
+                        네, 안녕하세요! 프로젝트에 대해 이야기 나누고 싶습니다.
                     </p>
-                </div>
+                </article>
+
+                <article class="message-received">
+                    <div class="avatar" aria-label="김민수의 아바타">MS</div>
+                    <div class="message-content">
+                        <header class="message-header">
+                            <h2 class="user-name">김민수</h2>
+                            <time datetime="14:30" class="timestamp">오후 2:30</time>
+                        </header>
+                        <p class="message-text">
+                            안녕하세요, 프로젝트 관련해서 이야기 나누고 싶습니다.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="date-notification">
+                    <time datetime="2024-01-15" class="date-text">2024년 1월 15일</time>
+                </article>
+
+                <article class="system-notification">
+                    <p class="join-text">김민수님이 채팅방에 참여하셨습니다</p>
+                </article>
+
             </div>
 
             <footer class="chat-input">
