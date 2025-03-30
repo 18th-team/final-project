@@ -13,13 +13,14 @@ import java.util.Map;
 public class CustomSecurityUserDetails implements UserDetails, OAuth2User {
 
     private final SiteUser siteUser;
-    private Map<String, Object> attributes; // OAuth2User에서 필요한 속성 맵
+    private Map<String, Object> attributes;
 
     // 폼 로그인용 생성자
     public CustomSecurityUserDetails(SiteUser siteUser) {
         this.siteUser = siteUser;
-        this.attributes = null; // 폼 로그인에서는 attributes가 필요 없음
+        this.attributes = null;
     }
+
     // 소셜 로그인용 생성자
     public CustomSecurityUserDetails(SiteUser siteUser, Map<String, Object> attributes) {
         System.out.println(siteUser);
@@ -31,7 +32,7 @@ public class CustomSecurityUserDetails implements UserDetails, OAuth2User {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String role = (siteUser.getRole() != null) ? siteUser.getRole().name() : "USER";
-        System.out.println("Authorities: ROLE_" + role); // 디버깅 로그
+        System.out.println("Authorities: ROLE_" + role);
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
@@ -42,7 +43,7 @@ public class CustomSecurityUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getUsername() {
-        return siteUser.getEmail();
+        return siteUser.getUuid(); // UUID 반환
     }
 
     @Override
@@ -73,8 +74,9 @@ public class CustomSecurityUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        return siteUser.getEmail(); // 이메일로 통일
+        return siteUser.getUuid(); // UUID 반환
     }
+
     public SiteUser getSiteUser() {
         return siteUser;
     }

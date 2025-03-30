@@ -61,57 +61,6 @@
             </header>
 
             <div class="messages-container">
-              <!--  <article class="date-notification">
-                    <time datetime="2024-01-15" class="date-text">2024년 1월 15일</time>
-                </article>
-
-                <article class="system-notification">
-                    <p class="approval-text">김민수님이 승인하셨습니다</p>
-                </article>
-
-                <article class="message-received">
-                    <div class="avatar" aria-label="김민수의 아바타">MS</div>
-                    <div class="message-content">
-                        <header class="message-header">
-                            <h2 class="user-name">김민수</h2>
-                            <time datetime="14:30" class="timestamp">오후 2:30</time>
-                        </header>
-                        <p class="message-text">
-                            안녕하세요, 프로젝트 관련해서 이야기 나누고 싶습니다.
-                        </p>
-                    </div>
-                </article>
-
-                <article class="message-sent">
-                    <header class="message-header">
-                        <time datetime="14:31" class="timestamp">오후 2:31</time>
-                    </header>
-                    <p class="message-text">
-                        네, 안녕하세요! 프로젝트에 대해 이야기 나누고 싶습니다.
-                    </p>
-                </article>
-
-                <article class="message-received">
-                    <div class="avatar" aria-label="김민수의 아바타">MS</div>
-                    <div class="message-content">
-                        <header class="message-header">
-                            <h2 class="user-name">김민수</h2>
-                            <time datetime="14:30" class="timestamp">오후 2:30</time>
-                        </header>
-                        <p class="message-text">
-                            안녕하세요, 프로젝트 관련해서 이야기 나누고 싶습니다.
-                        </p>
-                    </div>
-                </article>
-
-                <article class="date-notification">
-                    <time datetime="2024-01-15" class="date-text">2024년 1월 15일</time>
-                </article>
-
-                <article class="system-notification">
-                    <p class="join-text">김민수님이 채팅방에 참여하셨습니다</p>
-                </article>
--->
             </div>
 
             <footer class="chat-input">
@@ -146,10 +95,6 @@
 <!-- WebSocket 클라이언트 라이브러리 (프래그먼트 외부에서 로드 필요) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-<script th:inline="javascript">
-    const currentUser = /*[[${currentUser}]]*/ null;
-    console.log("Current User in chat.html: " + currentUser);
-</script>
 <script src="/js/chat.js"></script>
 </body>
 </html>

@@ -40,16 +40,24 @@ public class ChatController {
             throw new IllegalArgumentException("잘못된 액션입니다: " + action);
         }
 
-        ChatRoom chatRoom = chatRoomService.handleChatRequest(currentUser, request.getChatRoomId(), action);
-        if (chatRoom == null) return;
+        // 삭제 전 채팅방 조회
+        ChatRoom chatRoomBeforeDelete = chatRoomRepository.findById(request.getChatRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + request.getChatRoomId()));
+        SiteUser requester = chatRoomBeforeDelete.getRequester();
+        SiteUser owner = chatRoomBeforeDelete.getOwner();
 
-        SiteUser requester = chatRoom.getRequester();
-        SiteUser owner = chatRoom.getOwner();
+        chatRoomService.handleChatRequest(currentUser, request.getChatRoomId(), action);
 
-        messagingTemplate.convertAndSend("/user/" + requester.getUuid() + "/topic/chatrooms",
-                chatRoomService.getChatRoomsForUser(requester));
-        messagingTemplate.convertAndSend("/user/" + owner.getUuid() + "/topic/chatrooms",
-                chatRoomService.getChatRoomsForUser(owner));
+        if (requester != null) {
+            List<ChatRoomDTO> requesterChatRooms = chatRoomService.getChatRoomsForUser(requester);
+            System.out.println("Sending to requester " + requester.getUuid() + ": " + requesterChatRooms.size());
+            messagingTemplate.convertAndSend("/user/" + requester.getUuid() + "/topic/chatrooms", requesterChatRooms);
+        }
+        if (owner != null) {
+            List<ChatRoomDTO> ownerChatRooms = chatRoomService.getChatRoomsForUser(owner);
+            System.out.println("Sending to owner " + owner.getUuid() + ": " + ownerChatRooms.size());
+            messagingTemplate.convertAndSend("/user/" + owner.getUuid() + "/topic/chatrooms", ownerChatRooms);
+        }
     }
 
     @MessageMapping("/refreshChatRooms")

@@ -33,10 +33,8 @@ public class HomeController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
-    public String home(Model model, @AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
-        if (userDetails != null) { // sec:authorize로 보호되므로 null 체크는 선택적
-            model.addAttribute("currentUser", userDetails.getSiteUser().getUuid()); // 이메일 추가
-        }
+    public String home(@AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
+
         return "index";
     }
 
