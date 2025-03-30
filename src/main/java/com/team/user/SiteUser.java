@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -55,4 +57,24 @@ public class SiteUser {
     @Column(nullable = false, unique = true)
     private String uuid; // 유저 구분
 
+    // 차단 유저 목록 (다대다 관계)
+    @ManyToMany
+    @JoinTable(
+            name = "blocked_users",
+            joinColumns = @JoinColumn(name = "blocker_uuid"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_uuid")
+    )
+    private List<SiteUser> blockedUsers = new ArrayList<>();
+
+    // 차단 유저 추가 메서드
+    public void blockUser(SiteUser blocked) {
+        if (!blockedUsers.contains(blocked)) {
+            blockedUsers.add(blocked);
+        }
+    }
+
+    // 차단 해제 메서드
+    public void unblockUser(SiteUser blocked) {
+        blockedUsers.remove(blocked);
+    }
 }
