@@ -147,4 +147,11 @@ public class ClubService {
         }
         clubRepository.deleteById(id);
     }
+
+    @Transactional(readOnly = true)
+    public Club getClub(Long id) {
+        return clubRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Club not found for id: " + id));
+    }
+
 }
