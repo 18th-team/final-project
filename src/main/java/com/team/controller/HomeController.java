@@ -36,10 +36,23 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ClubDTO clubDTO = new ClubDTO();
 
+        //만약 비회원이라면?
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
-            model.addAttribute("userList", new ClubDTO());
-            model.addAttribute("recommendedClubs", new ArrayList<>()); // 비회원의 경우 빈 리스트 전달
+// ClubRepository에서 모든 클럽 데이터를 가져오고, 이를 ClubDTO로 변환하여 리스트에 담기
+            List<ClubDTO> clubList = clubRepository.findAll().stream()
+                    .map(club -> ClubDTO.toDTO(club))  // Club 엔티티를 ClubDTO로 변환
+                    .collect(Collectors.toList());
+            if (!clubList.isEmpty()) {
+                // 랜덤으로 섞기
+                Collections.shuffle(clubList);
+                // 최대 8개로 제한
+                if (clubList.size() > 8) {
+                    clubList = clubList.subList(0, 8); // 8개만 남기기
+                }
+            }
+            model.addAttribute("clubList", clubList);
             return "index";
         }
 
@@ -47,28 +60,8 @@ public class HomeController {
         String userEmail = authentication.getName();
         SiteUser user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-        ClubDTO clubDTO = new ClubDTO();
         clubDTO.setHostName(user.getName());
         model.addAttribute("userList", clubDTO);
-
-// ClubRepository에서 모든 클럽 데이터를 가져오고, 이를 ClubDTO로 변환하여 리스트에 담기
-        List<ClubDTO> clubList = clubRepository.findAll().stream()
-                .map(club -> ClubDTO.toDTO(club))  // Club 엔티티를 ClubDTO로 변환
-                .collect(Collectors.toList());
-
-        if (!clubList.isEmpty()) {
-            // 랜덤으로 섞기
-            Collections.shuffle(clubList);
-
-            // 최대 8개로 제한
-            if (clubList.size() > 8) {
-                clubList = clubList.subList(0, 8); // 8개만 남기기
-            }
-        }
-
-        model.addAttribute("clubList", clubList);
-
-
 
         // 사용자 선택 키워드 가져오기
         List<String> userKeywords = user.getKeywords().stream()
@@ -90,6 +83,19 @@ public class HomeController {
         }
 // 모델에 변환된 ClubDTO 리스트 추가
         model.addAttribute("recommendedClubs", recommendedClubDTOs);
+
+        List<ClubDTO> clubList = clubRepository.findAll().stream()
+                .map(club -> ClubDTO.toDTO(club))  // Club 엔티티를 ClubDTO로 변환
+                .collect(Collectors.toList());
+        if (!clubList.isEmpty()) {
+            // 랜덤으로 섞기
+            Collections.shuffle(clubList);
+            // 최대 8개로 제한
+            if (clubList.size() > 8) {
+                clubList = clubList.subList(0, 8); // 8개만 남기기
+            }
+        }
+        model.addAttribute("clubList", clubList);
         return "index";  // view 이름 반환
 
     }

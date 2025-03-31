@@ -7,7 +7,9 @@
     <link th:href="@{/css/custom_category_badge.css}" rel="stylesheet" type="text/css"/>
 
     <style>
-
+        *{
+            font-family: 'Pretendard-Medium';
+        }
         /* 카드 그림자 효과 */
         .card {
             border: none;
@@ -27,17 +29,17 @@ text-decoration: none;
     <h1 class="my-5 text-center fw-bold">모락 크루 리스트 🍳</h1>
 
     <!-- 클럽 목록 -->
-    <div class="row mb-5" th:unless="${#lists.isEmpty(clubDTOList)}">
-        <div class="col-lg-6 my-3" th:each="club : ${clubDTOList}"
+    <div class="row mb-5 " th:unless="${#lists.isEmpty(clubDTOList)}">
+        <div class="col-lg-6 my-3 " th:each="club : ${clubDTOList}"
              >
 
             <a class="card mb-3 border-create py-2"  th:href="@{/clubs/{id}(id=${club.id})}" >
                 <div class="row g-0 h-100"  th:href="@{/clubs/{id}(id=${club.id})}">
                     <!-- 크루리스트 이미지-->
-                    <div class="col-4 col-md-5 my-auto text-center mx-auto p-2">
+                    <div class="col-4 col-md-5 my-auto text-center mx-auto p-2 ">
                         <img th:if="${club.storedFileName != null and #lists.size(club.storedFileName) > 0}"
                              th:src="@{/upload/{filename}(filename=${club.storedFileName[0]})}"
-                             alt="클럽 이미지" class="rounded img-fluid" >
+                             alt="클럽 이미지" class="rounded img-fluid h-100" >
                     </div>
                     <div class="col-8 col-md-7">
                         <div class="card-body">
