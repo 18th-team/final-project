@@ -4,50 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/asset-manifest.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/carousel.css" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/css/carousel.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/category_menu.css" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/css/category_menu.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/navigation.css" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/css/navigation.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/favicon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/img/default-profile.png" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/img/default-profile.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/logo192.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/logo512.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/manifest.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/robots.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/css/main.f855e6bc.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/css/main.f855e6bc.css.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/453.aaf9e97f.chunk.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/453.aaf9e97f.chunk.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/main.77f1b9ac.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/main.77f1b9ac.js.LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/main.77f1b9ac.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/carousel.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/carousel.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/category_menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/category_menu.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/footer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/randomList.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/randomList.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/userRecommend.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/userRecommend.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/signup.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/test.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/test2.html" beforeDir="false" />
-    </list>
+    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="merge" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -115,7 +72,6 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.Application.executor": "Debug",
-    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",

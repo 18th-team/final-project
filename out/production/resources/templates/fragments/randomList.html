@@ -1,24 +1,31 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="randomList">
- <body>
- <section class="random-random-container container my-5" aria-labelledby="random-random-title"  >
-     <h2 id="random-random-title" class="random-random-title text-left mb-4" style="margin-top: 150px">모락모락 랜덤MO임🎲</h2>
-     <section class="recommended-meetings" aria-labelledby="recommended-title">
-         <!-- 한 줄에 3개의 카드가 보이도록 row로 묶고, 카드들은 col-12 col-sm-6 col-md-4로 처리 -->
-         <div class="row g-4 mt-4">
-             <div th:each="randomClub : ${clubList}" class="col-12 col-sm-6 col-md-3">
-                 <a class="card meeting-card h-100" th:href="@{/clubs/{id}(id=${randomClub.id})}">
-                     <img th:if="${randomClub.storedFileName != null and #lists.size(randomClub.storedFileName) > 0}"
-                          th:src="@{/upload/{filename}(filename=${randomClub.storedFileName[0]})}"
-                          alt="클럽 이미지" class="rounded img-fluid">
-                     <div class="card-body meeting-details">
-                         <p class="card-title meeting-location" th:text="${randomClub.title}"></p>
-                         <p class="card-text meeting-description text-truncate" th:text="${randomClub.content}"></p>
-                     </div>
-                 </a>
-             </div>
-         </div>
-     </section>
- </section>
- </body>
+<body>
+<section class="random-random-container container my-5" aria-labelledby="random-random-title">
+    <h2 id="random-random-title" class="random-random-title text-left mb-4">모락모락 랜덤MO임🎲</h2>
+
+    <section class="recommended-meetings" aria-labelledby="recommended-title">
+        <div th:if="${not #lists.isEmpty(clubList)}">
+            <!-- clubList가 비어있지 않으면 출력 -->
+            <div class="row g-4 mt-4">
+                <div th:each="randomClub : ${clubList}" class="col-12 col-sm-6 col-md-3">
+                    <a class="card meeting-card h-100" th:href="@{/clubs/{id}(id=${randomClub.id})}">
+                        <img th:if="${randomClub.storedFileName != null and #lists.size(randomClub.storedFileName) > 0}"
+                             th:src="@{/upload/{filename}(filename=${randomClub.storedFileName[0]})}"
+                             alt="클럽 이미지" class="rounded img-fluid h-100">
+                        <div class="card-body meeting-details">
+                            <p class="card-title meeting-location text-truncate" th:text="${randomClub.title}"></p>
+                            <p class="card-text meeting-description text-truncate" th:text="${randomClub.content}"></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(clubList)}">
+            <!-- clubList가 비어있으면 표시할 메시지 -->
+            <p>현재 추천할 모임이 없습니다.</p>
+        </div>
+    </section>
+</section>
+</body>
 </html>
