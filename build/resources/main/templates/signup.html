@@ -1,62 +1,383 @@
-<!DOCTYPE html>
-<html lang="ko">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}"
+      layout:fragment="content">
+<link th:href="@{/css/signup.css}" rel="stylesheet"/>
+<link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>모락모락 | 회원가입</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
-</head>
+<style>
 
+    .form-check {
+        margin: 0; /* 기본 마진 제거 */
+    }
+
+    .form-check-input.custom-check {
+        display: none; /* 기본 체크박스 숨김 */
+    }
+
+    .form-check-label.btn {
+        transition: all 0.2s;
+        user-select: none; /* 텍스트 선택 방지 */
+    }
+
+    .form-check-input:checked + .form-check-label.btn, .btn-custom-signup:hover {
+        background-color: #d55e0e; /* 선택 시 배경색 */
+        color: white; /* 선택 시 글자색 */
+    }
+
+.btn-custom-signup {
+    font-family: 'Pretendard-Medium';
+        height:60px;width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+</style>
 <body>
-<div class="container">
-    <div class="profile-card">
-        <h4 class="mb-5">회원가입</h4>
-        <form>
-            <img src="img/default-profile.png" alt="Profile Picture">
-            <div class="form-group">
-                <label for="name">이름</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="홍길동">
+<div class="container d-flex justify-content-center align-items-center min-vh-80 my-5">
+    <div class="profile-card  col-md-8 col-lg-11 p-4 ">
+        <h4 class="text-center my-5">회원가입</h4>
+
+        <form th:object="${userCreateForm}" th:action="@{/signup}" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="clientKey" name="clientKey" th:field="*{clientKey}"/>
+            <input type="hidden" id="otpVerified" name="otpVerified" th:field="*{otpVerified}"/>
+            <div style="position: relative;">
+                <!--            프로필 사진 선택-->
+                <div class="mb-4 text-center profile-container " style="border: #d55e0e solid 1px;">
+                    <label for="profile-upload" class="profile-label">
+                        <img id="profile-preview" th:src="@{/img/default-profile.png}" alt="프로필 이미지"
+                             class="profile-img w-100 h-100">
+                    </label>
+                    <input type="file" id="profile-upload" name="profileImage" accept="image/*" style="display: none;">
+                </div>
+                <div><label for="profile-upload">
+                    <img th:src="@{/img/camera.svg}" alt="업로드 아이콘" class="upload-icon "
+                         style="width: 40px; height: 40px; position: absolute; top: 120px; right: 90px; z-index: 9999;">
+                </label></div>
+
+
             </div>
-            <div class="form-group">
-                <label for="email">이메일</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com">
+
+
+            <div class="mb-4 text-start">
+                <label for="name" class="form-label">이름</label>
+                <input type="text" class="form-control" id="name" placeholder="이름을 입력하세요" th:field="*{name}">
+                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label for="password1">비밀번호</label>
+            <div class="mb-4 text-start">
+                <label for="introduction" class="form-label">자기소개</label>
+                <input type="text" class="form-control" id="introduction" placeholder="자기소개를 입력하세요"
+                       th:field="*{introduction}">
+                <span th:if="${#fields.hasErrors('introduction')}" th:errors="*{introduction}"
+                      class="text-danger"></span>
+            </div>
+            <div class="mb-4 text-start">
+                <label for="email" class="form-label">이메일</label>
+                <input type="email" class="form-control" id="email" placeholder="이메일을 입력하세요" th:field="*{email}">
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
+            </div>
+            <div class="mb-4 text-start">
+                <label for="password1" class="form-label">비밀번호</label>
                 <input type="password" class="form-control" id="password1" name="password1"
-                       placeholder="영문자/특수문자/숫자 포함 8~20자">
+                       placeholder="영문자/특수문자/숫자 포함 8~20자" th:field="*{password1}">
+                <span th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label for="password2">비밀번호 확인</label>
+            <div class="mb-4 text-start">
+                <label for="password2" class="form-label">비밀번호 확인</label>
                 <input type="password" class="form-control" id="password2" name="password2"
-                       placeholder="영문자/특수문자/숫자 포함 8~20자">
+                       placeholder="영문자/특수문자/숫자 포함 8~20자" th:field="*{password2}">
+                <span th:if="${#fields.hasErrors('password2')}" th:errors="*{password2}" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label for="phone">전화번호</label>
-                <input type="text" class="form-control" id="phone" name="phone" placeholder="010-0000-0000">
+
+            <!-- 생년월일/성별 -->
+            <div class="mb-4 text-start" id="birthDaySection">
+                <label class="form-label">생년월일/성별</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="birthDay1" name="birthDay1" th:field="*{birthDay1}"
+                           placeholder="YYMMDD" maxlength="6"/>
+                    <span class="input-group-text border-0">-</span>
+                    <input type="text" class="form-control" id="birthDay2" name="birthDay2" th:field="*{birthDay2}"
+                           placeholder="성별(1~4)" maxlength="1"/>
+                </div>
+                <span th:if="${#fields.hasErrors('birthDay1')}" th:errors="*{birthDay1}" class="text-danger"></span>
+                <span th:if="${#fields.hasErrors('birthDay2')}" th:errors="*{birthDay2}" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-save mt-3">가입하기</button>
+
+            <!-- 관심 키워드 선택 -->
+            <!-- 관심 키워드 선택 -->
+            <div class="mb-4 text-start">
+                <label class="form-label create-name text-dark">나의 관심 키워드(최대3개 선택가능)</label>
+                <div class="row row-cols-3 row-cols-lg-6 g-2">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check shadow-sm" type="checkbox" name="theme[]" value="액티비티"
+                                   id="theme1">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2 " for="theme1">액티비티
+                                🏃</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="자기계발"
+                                   id="theme2">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme2">자기계발
+                                📚</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="취미"
+                                   id="theme3">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme3">취미 🎮</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="여행"
+                                   id="theme4">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme4">여행
+                                ✈️</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="문화/예술"
+                                   id="theme5">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme5">문화/예술
+                                🎭</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input custom-check" type="checkbox" name="theme[]" value="푸드/드링크"
+                                   id="theme6">
+                            <label class="form-check-label btn btn-custom-signup fs-6 fs-md-2" for="theme6">푸드/드링크
+                                🍔</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 전화번호 및 통신사 선택 -->
+            <div class="mb-4 text-start" id="cellCorpSection">
+                <label class="form-label">전화번호</label>
+                <div class="input-group">
+                    <select class="form-select" id="cellCorp" th:field="*{cellCorp}">
+                        <option value="">통신사 선택</option>
+                        <option value="KTF">KT</option>
+                        <option value="SKT">SKT</option>
+                        <option value="LGT">LGU</option>
+                    </select>
+                    <input type="text" class="form-control" id="phone" name="phone" th:field="*{phone}"
+                           placeholder="01012345678"/>
+                    <button type="button" class="btn btn-outline-secondary" id="sendOtpBtn">인증번호 전송</button>
+                </div>
+                <span th:if="${#fields.hasErrors('cellCorp')}" th:errors="*{cellCorp}" class="text-danger"></span>
+                <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger"></span>
+            </div>
+            <!-- OTP 입력 필드 -->
+            <div class="mb-4 text-start" id="otpSection" style="display: none;">
+                <label class="form-label">인증번호</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="otpInput" placeholder="인증번호 6자리 입력" maxlength="6"/>
+                    <button type="button" class="btn btn-outline-secondary" id="verifyOtpBtn">인증번호 확인</button>
+                </div>
+                <span id="otpError" class="text-danger" style="display: none;"></span>
+
+            </div>
+            <!-- 보안문자 -->
+            <div class="mb-4 text-start" id="captchaSection">
+                <label>보안문자</label>
+                <div class="input-group">
+                    <img id="captchaImage" class="img-fluid mb-0" alt="Captcha Image" style="height: 40px;"/>
+                    <input type="text" class="form-control" id="captchaInput" th:field="*{captchaInput}"
+                           placeholder="보안문자 입력" minlength="6" maxlength="6"/>
+                    <button type="button" class="btn btn-outline-secondary" id="captchaReloadBtn">새로고침</button>
+                </div>
+                <span th:if="${#fields.hasErrors('captchaInput')}" th:errors="*{captchaInput}"
+                      class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn-save btn w-100">저장</button>
         </form>
     </div>
 </div>
+<script layout:fragment="script">
+    $(function () {
 
-<!--
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $(".btn-save").hover(
-            function () {
-                $(this).text("모락모락에 어서오세요😊");
-            },
-            function () {
-                $(this).text("가입하기");
+        $('#profile-upload').on('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#profile-preview').attr('src', e.target.result); // 이미지 src 변경
+                };
+                reader.readAsDataURL(file);
             }
-        );
-    });
+        });
+
+
+        let clientKey = $('#clientKey').val();
+        let _csrf = $('input[name=_csrf]').val();
+
+        let cnt = 0;
+        loadCaptcha(false);
+
+        $('#captchaReloadBtn').click(function () {
+            cnt++;
+            console.log("Captcha reload count: " + cnt);
+            loadCaptcha(true);
+        });
+
+        function loadCaptcha(includeCnt) {
+            let data = {clientKey: clientKey, _csrf: _csrf};
+            if (includeCnt) {
+                data.cnt = cnt;
+            }
+
+            $.ajax({
+                url: '/get-captcha',
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    $('#captchaImage').attr('src', response);
+                },
+                error: function (xhr, status, error) {
+                    console.error('캡차 이미지를 가져오는 데 실패했습니다:', error);
+                }
+            });
+        }
+
+        $('#sendOtpBtn').click(function () {
+            let name = $('#name').val();
+            let birthDay1 = $('#birthDay1').val();
+            let birthDay2 = $('#birthDay2').val();
+            let cellCorp = $('#cellCorp').val();
+            let phone = $('#phone').val();
+            let captchaInput = $('#captchaInput').val();
+
+            // 개별 필드 검증
+            if (!name) {
+                alert('이름을 입력해주세요.');
+                $('#name').focus();
+                return;
+            }
+
+            if (!birthDay1) {
+                alert('생년월일(YYMMDD)을 입력해주세요.');
+                $('#birthDay1').focus();
+                return;
+            }
+
+            if (!birthDay2) {
+                alert('성별(1~4)을 입력해주세요.');
+                $('#birthDay2').focus();
+                return;
+            }
+
+            if (!cellCorp) {
+                alert('통신사를 선택해주세요.');
+                $('#cellCorp').focus();
+                return;
+            }
+
+            if (!phone) {
+                alert('전화번호를 입력해주세요.');
+                $('#phone').focus();
+                return;
+            }
+
+            if (!captchaInput) {
+                alert('보안문자를 입력해주세요.');
+                $('#captchaInput').focus();
+                return;
+            }
+
+            $.ajax({
+                url: '/send-otp',
+                type: 'POST',
+                data: {
+                    clientKey: clientKey,
+                    name: name,
+                    birthDay1: birthDay1,
+                    birthDay2: birthDay2,
+                    cellCorp: cellCorp,
+                    phone: phone,
+                    captchaInput: captchaInput,
+                    _csrf: _csrf
+                },
+                success: function (response) {
+                    alert(response); // "OTP가 성공적으로 전송되었습니다."
+                    $('#otpSection').show(); // OTP 입력 필드 표시
+                },
+                error: function (xhr, status, error) {
+                    console.error('OTP 전송 실패:', error);
+                    alert(xhr.responseText); // 에러 메시지 표시
+                    if (xhr.responseText === "OTP 전송 실패: 보안문자를 정확히 입력해 주세요.") {
+                        cnt++;
+                        console.log("Captcha reload count: " + cnt);
+                        loadCaptcha(true);
+                    }
+                }
+            });
+        });
+        $('#verifyOtpBtn').click(function () {
+            let otpInput = $('#otpInput').val();
+
+            if (!otpInput) {
+                alert('인증번호를 입력해주세요.');
+                $('#otpInput').focus();
+                return;
+            }
+            if (otpInput.length !== 6) {
+                alert('인증번호는 6자리여야 합니다.');
+                $('#otpInput').focus();
+                return;
+            }
+
+            $.ajax({
+                url: '/check-otp',
+                type: 'POST',
+                data: {
+                    clientKey: clientKey,
+                    otpInput: otpInput,
+                    _csrf: _csrf
+                },
+                success: function (response) {
+                    alert(response);
+                    $('#otpSection').hide();
+                    $('#captchaSection').hide();
+                    $('#birthDaySection').hide();
+                    $('#cellCorpSection').hide();
+                    $('#phone').prop('readonly', true);
+                    $('#sendOtpBtn').prop('disabled', true);
+                    $('#cellCorp').prop('readonly', true);
+                    $('#birthDay1').prop('readonly', true);
+                    $('#birthDay2').prop('readonly', true);
+                    $('#otpVerified').val('true');
+                },
+                error: function (xhr) {
+                    $('#otpError').text(xhr.responseText).show();
+                }
+            });
+        });
+
+        document.querySelectorAll('.custom-check').forEach(check => {
+            check.addEventListener('change', () => {
+                const checkedCount = document.querySelectorAll('.custom-check:checked').length;
+                if (checkedCount > 3) { // 최대 3개 제한 예시
+                    check.checked = false;
+                    alert('최대 3개까지 선택 가능합니다!');
+                }
+            });
+        });
+    })
+
 </script>
--->
+
 </body>
 
 </html>

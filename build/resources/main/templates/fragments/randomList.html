@@ -1,100 +1,31 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="randomList">
- <body>
- <section class="random-random-container container my-5" aria-labelledby="random-random-title"  >
-     <h2 id="random-random-title" class="random-random-title text-left mb-4" style="margin-top: 150px">모락모락 랜덤MO임🎲</h2>
-     <div class="random-items-container row g-4">
-         <!-- Row 1 -->
-         <article class="random-item col-lg-3 col-sm-6">
-             <div class="card h-100">
-                 <img th:src="@{/img/list_01.jpg}"
-                      alt="베이킹공방 이미지"
-                      class="card-img-top random-item-image" />
-                 <div class="card-body random-item-details">
-                     <h3 class="card-title random-item-location">수원시/장안구</h3>
-                     <p class="card-text random-item-description">베이킹공방</p>
-                 </div>
-             </div>
-         </article>
-         <article class="random-item col-lg-3 col-sm-6">
-             <div class="card h-100">
-                 <img th:src="@{/img/list_02.jpg}"
-                      alt="베이킹 모임 이미지"
-                      class="card-img-top random-item-image" />
-                 <div class="card-body random-item-details">
-                     <h3 class="card-title random-item-location">수원시/팔달구</h3>
-                     <p class="card-text random-item-description">이번주 주말에 함께 베이킹 해보는건 어때요 ?</p>
-                 </div>
-             </div>
-         </article>
-         <article class="random-item col-lg-3 col-sm-6">
-             <div class="card h-100">
-                 <img th:src="@{/img/list_03.jpg}"
-                      alt="크로와상 워크숍 이미지"
-                      class="card-img-top random-item-image" />
-                 <div class="card-body random-item-details">
-                     <h3 class="card-title random-item-location">수원시/팔달구</h3>
-                     <p class="card-text random-item-description">크로와상 만들기 워크숍</p>
-                 </div>
-             </div>
-         </article>
-         <article class="random-item col-lg-3 col-sm-6">
-             <div class="card h-100">
-                 <img th:src="@{/img/list_04.jpg}"
-                      alt="쿠키와 차 모임 이미지"
-                      class="card-img-top random-item-image" />
-                 <div class="card-body random-item-details">
-                     <h3 class="card-title random-item-location">수원시/권선구</h3>
-                     <p class="card-text random-item-description">쿠키와 차 한 잔</p>
-                 </div>
-             </div>
-         </article>
-         <!-- Row 2 -->
-         <article class="random-item col-lg-3 col-sm-6">
-             <div class="card h-100">
-                 <img th:src="@{/img/list_05.jpg}"
-                      alt="디저트 클래스 이미지"
-                      class="card-img-top random-item-image" />
-                 <div class="card-body random-item-details">
-                     <h3 class="card-title random-item-location">수원시/영통구</h3>
-                     <p class="card-text random-item-description">디저트 클래스 모임</p>
-                 </div>
-             </div>
-         </article>
-         <article class="random-item col-lg-3 col-sm-6">
-             <div class="card h-100">
-                 <img th:src="@{/img/list_06.jpg}"
-                      alt="빵 굽기 모임 이미지"
-                      class="card-img-top random-item-image" />
-                 <div class="card-body random-item-details">
-                     <h3 class="card-title random-item-location">수원시/장안구</h3>
-                     <p class="card-text random-item-description">빵 굽는 모임</p>
-                 </div>
-             </div>
-         </article>
-         <article class="random-item col-lg-3 col-sm-6">
-             <div class="card h-100">
-                 <img th:src="@{/img/list_07.jpg}"
-                      alt="홈 베이킹 이미지"
-                      class="card-img-top random-item-image" />
-                 <div class="card-body random-item-details">
-                     <h3 class="card-title random-item-location">수원시/팔달구</h3>
-                     <p class="card-text random-item-description">홈 베이킹 초보자 환영</p>
-                 </div>
-             </div>
-         </article>
-         <article class="random-item col-lg-3 col-sm-6">
-             <div class="card h-100">
-                 <img th:src="@{/img/list_08.jpg}"
-                      alt="랜덤 베이킹 파티 이미지"
-                      class="card-img-top random-item-image" />
-                 <div class="card-body random-item-details">
-                     <h3 class="card-title random-item-location">수원시/권선구</h3>
-                     <p class="card-text random-item-description">랜덤 베이킹 파티</p>
-                 </div>
-             </div>
-         </article>
-     </div>
- </section>
- </body>
+<body>
+<section class="random-random-container container my-5" aria-labelledby="random-random-title">
+    <h2 id="random-random-title" class="random-random-title text-left mb-4">모락모락 랜덤MO임🎲</h2>
+
+    <section class="recommended-meetings" aria-labelledby="recommended-title">
+        <div th:if="${not #lists.isEmpty(clubList)}">
+            <!-- clubList가 비어있지 않으면 출력 -->
+            <div class="row g-4 mt-4">
+                <div th:each="randomClub : ${clubList}" class="col-12 col-sm-6 col-md-3">
+                    <a class="card meeting-card h-100" th:href="@{/clubs/{id}(id=${randomClub.id})}">
+                        <img th:if="${randomClub.storedFileName != null and #lists.size(randomClub.storedFileName) > 0}"
+                             th:src="@{/upload/{filename}(filename=${randomClub.storedFileName[0]})}"
+                             alt="클럽 이미지" class="rounded img-fluid h-100">
+                        <div class="card-body meeting-details">
+                            <p class="card-title meeting-location text-truncate" th:text="${randomClub.title}"></p>
+                            <p class="card-text meeting-description text-truncate" th:text="${randomClub.content}"></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(clubList)}">
+            <!-- clubList가 비어있으면 표시할 메시지 -->
+            <p>현재 추천할 모임이 없습니다.</p>
+        </div>
+    </section>
+</section>
+</body>
 </html>
