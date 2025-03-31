@@ -43,4 +43,16 @@ public class ChatRoom {
     private int unreadCount;
     private String requestReason;
     private String status; // PENDING, ACTIVE, REJECTED, BLOCKED 등
+
+    // 참여자 추가 메서드
+    public void addParticipant(SiteUser user) {
+        if (!participants.contains(user)) {
+            participants.add(user);
+        }
+    }
+
+    // 참여자 제거 메서드
+    public void removeParticipant(SiteUser user) {
+        participants.remove(user);
+    }
 }

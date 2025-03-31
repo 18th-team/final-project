@@ -16,4 +16,5 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
  // 사용자가 참여 중이거나 PENDING 상태인 채팅방 조회
  @Query("SELECT c FROM ChatRoom c WHERE :user MEMBER OF c.participants OR (c.status = 'PENDING' AND (c.requester = :user OR c.owner = :user))")
  List<ChatRoom> findByParticipantsContainingOrPendingForUser(@Param("user") SiteUser user);
+ boolean existsByRequesterAndOwnerAndTypeAndStatusNot(SiteUser requester, SiteUser owner, String type, String status);
 }

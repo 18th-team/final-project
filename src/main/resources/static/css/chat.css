@@ -612,7 +612,13 @@
 .leave-option {
     color: #666;
 }
+.closed-item {
+    opacity: 0.6;
+}
 
+.closed-item .chat-name {
+    color: #888;
+}
 .border-bottom-f0f0f0 {
     border-bottom: 1px solid #f0f0f0;
 }

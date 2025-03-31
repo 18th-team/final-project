@@ -76,6 +76,14 @@ public class ChatController {
     public void sendMessage(@Payload ChatRoomDTO.ChatMessageDTO messageDTO, Principal principal) {
         SiteUser sender = getCurrentUser(principal);
         ChatRoom chatRoom = chatRoomService.findChatRoomById(messageDTO.getChatRoomId());
+
+        // 채팅방 상태가 CLOSED 또는 BLOCKED일 경우 메시지 전송 차단
+        if ("CLOSED".equals(chatRoom.getStatus()) || "BLOCKED".equals(chatRoom.getStatus())) {
+            messagingTemplate.convertAndSend("/user/" + sender.getUuid() + "/topic/errors",
+                    "이 채팅방은 더 이상 메시지를 보낼 수 없습니다. 상태: " + chatRoom.getStatus());
+            return;
+        }
+
         ChatMessage message = chatMessageService.createMessage(chatRoom, sender, messageDTO.getContent(), MessageType.NORMAL);
 
         List<Object> messagesWithDate = checkDateChangeAndWrap(chatRoom, message);
@@ -154,7 +162,49 @@ public class ChatController {
         }
         return ((CustomSecurityUserDetails) auth.getPrincipal()).getSiteUser();
     }
+    @MessageMapping("/leaveChatRoom")
+    @Transactional
+    public void leaveChatRoom(Principal principal, @Payload ChatRequestDTO request) {
+        SiteUser currentUser = getCurrentUser(principal);
+        chatRoomService.leaveChatRoom(request.getChatRoomId(), currentUser.getUuid());
 
+        // 모든 참여자에게 채팅 목록 새로고침 알림
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
+        chatRoom.getParticipants().forEach(participant -> {
+            messagingTemplate.convertAndSend("/user/" + participant.getUuid() + "/topic/chatrooms",
+                    chatRoomService.getChatRoomsForUser(participant));
+        });
+
+        // 나간 사용자에게도 채팅 목록 새로고침
+        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms",
+                chatRoomService.getChatRoomsForUser(currentUser));
+    }
+
+    @MessageMapping("/blockUser")
+    @Transactional
+    public void blockUser(Principal principal, @Payload ChatRequestDTO request) {
+        SiteUser currentUser = getCurrentUser(principal);
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
+
+        // 차단할 상대방 찾기 (현재 사용자 제외)
+        String blockedUuid = chatRoom.getParticipants().stream()
+                .filter(participant -> !participant.getUuid().equals(currentUser.getUuid()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("차단할 상대방을 찾을 수 없습니다."))
+                .getUuid();
+
+        chatRoomService.blockUserInChat(request.getChatRoomId(), currentUser.getUuid(), blockedUuid);
+
+        // 모든 참여자에게 채팅 목록 새로고침 알림
+        chatRoom.getParticipants().forEach(participant -> {
+            messagingTemplate.convertAndSend("/user/" + participant.getUuid() + "/topic/chatrooms",
+                    chatRoomService.getChatRoomsForUser(participant));
+        });
+
+        // 차단한 사용자에게도 채팅 목록 새로고침
+        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms",
+                chatRoomService.getChatRoomsForUser(currentUser));
+    }
     @MessageExceptionHandler
     public void handleException(Exception e) {
         System.out.println("handleException: " + e.getMessage());

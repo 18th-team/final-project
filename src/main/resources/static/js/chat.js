@@ -29,7 +29,20 @@ function connect() {
 
         // UUID 기반 구독
         stompClient.subscribe('/user/' + window.currentUser + '/topic/chatrooms', message => {
-            renderChatList(JSON.parse(message.body));
+            const chatRooms = JSON.parse(message.body); // message.body를 파싱한 결과를 chatRooms에 저장
+            renderChatList(chatRooms);
+
+            // 현재 열려 있는 채팅방이 CLOSED 상태인지 확인
+            const currentChatRoom = chatRooms.find(chat => chat.id === currentChatRoomId);
+            if (currentChatRoom && currentChatRoom.status === 'CLOSED') {
+                const messageInput = document.querySelector('.message-input');
+                const sendButton = document.querySelector('.send-button');
+                if (messageInput && sendButton) {
+                    messageInput.disabled = true;
+                    sendButton.disabled = true;
+                    messageInput.placeholder = "채팅방이 종료되었습니다.";
+                }
+            }
         });
 
         stompClient.subscribe('/user/' + window.currentUser + '/topic/messages', message => {
@@ -82,9 +95,10 @@ function renderChatList(chatRooms) {
         const isRequest = chat.status === 'PENDING';
         const isRequester = chat.requester?.uuid === window.currentUser;
         const isOwner = chat.owner?.uuid === window.currentUser;
+        const isClosed = chat.status === 'CLOSED';
         const item = document.createElement('article');
-        item.className = `chat-item ${isRequest ? 'request-item' : ''}`;
-        if (chat.status === 'ACTIVE') {
+        item.className = `chat-item ${isRequest ? 'request-item' : ''} ${isClosed ? 'closed-item' : ''}`;
+        if (chat.status === 'ACTIVE' || chat.status === 'CLOSED') {
             item.addEventListener('click', () => openPersonalChat(chat));
             item.style.cursor = 'pointer';
         }
@@ -191,6 +205,18 @@ function openPersonalChat(chat) {
 
     document.querySelector('.messages-container').innerHTML = '';
     refreshMessages();
+
+    const messageInput = document.querySelector('.message-input');
+    const sendButton = document.querySelector('.send-button');
+    if (chat.status === 'CLOSED') {
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+        messageInput.placeholder = "채팅방이 종료되었습니다.";
+    } else {
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+        messageInput.placeholder = "메시지를 입력하세요.";
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -237,15 +263,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelector('.block-option')?.addEventListener('click', () => {
-        if (currentChatRoomId) {
-            handleRequest(currentChatRoomId, 'BLOCK');
-            document.querySelector('.personal-chat').classList.remove('visible');
+        if (confirm("정말로 이 사용자를 차단하시겠습니까?")) {
+            if (currentChatRoomId && stompClient?.connected) {
+                // 차단 요청 보내기
+                stompClient.send("/app/blockUser", {}, JSON.stringify({chatRoomId: currentChatRoomId}));
+                // 채팅 창 닫고 채팅 목록으로 돌아가기
+                document.querySelector('.personal-chat').classList.remove('visible');
+                currentChatRoomId = null;
+                document.getElementById('messagesList').classList.add('visible');
+                // 채팅 목록 새로고침
+                stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({uuid: window.currentUser}));
+            }
         }
     });
 
     document.querySelector('.leave-option')?.addEventListener('click', () => {
-        if (currentChatRoomId) {
-            document.querySelector('.personal-chat').classList.remove('visible');
+        if (confirm("정말로 이 채팅방을 나가시겠습니까?")) {
+            if (currentChatRoomId && stompClient?.connected) {
+                // 나가기 요청 보내기
+                stompClient.send("/app/leaveChatRoom", {}, JSON.stringify({chatRoomId: currentChatRoomId}));
+                // 채팅 창 닫고 채팅 목록으로 돌아가기
+                document.querySelector('.personal-chat').classList.remove('visible');
+                currentChatRoomId = null;
+                document.getElementById('messagesList').classList.add('visible');
+                // 채팅 목록 새로고침
+                stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({uuid: window.currentUser}));
+            }
         }
     });
 

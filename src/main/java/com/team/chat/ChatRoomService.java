@@ -46,7 +46,8 @@ public class ChatRoomService {
         SiteUser receiver = userRepository.findByUuid(receiverUuid)
                 .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다: " + receiverUuid));
 
-        if (chatRoomRepository.existsByRequesterAndOwnerAndType(requester, receiver, "PRIVATE")) {
+        // 기존 채팅방이 있는지 확인 (CLOSED 상태는 제외)
+        if (chatRoomRepository.existsByRequesterAndOwnerAndTypeAndStatusNot(requester, receiver, "PRIVATE", "CLOSED")) {
             throw new IllegalStateException("이미 존재하는 개인 채팅 요청입니다.");
         }
 
@@ -134,7 +135,66 @@ public class ChatRoomService {
 
         return chatRoomRepository.save(chatRoom);
     }
+    // 채팅방 나가기
+    @Transactional
+    public void leaveChatRoom(Long chatRoomId, String userUuid) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
 
+        SiteUser user = chatRoom.getParticipants().stream()
+                .filter(participant -> participant.getUuid().equals(userUuid))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 채팅방에 없습니다: " + userUuid));
+
+        // 사용자를 채팅방에서 제거
+        chatRoom.removeParticipant(user);
+
+        // 그룹 채팅이고 참여자가 없으면 채팅방 삭제
+        if ("GROUP".equals(chatRoom.getType()) && chatRoom.getParticipants().isEmpty()) {
+            chatRoomRepository.delete(chatRoom);
+        } else {
+            // 개인 채팅이면 BLOCKED 상태로 변경
+            if ("PRIVATE".equals(chatRoom.getType())) {
+                chatRoom.setStatus("CLOSED");
+            }
+            chatRoomRepository.save(chatRoom);
+
+            // 시스템 메시지 생성
+            chatMessageService.createMessage(chatRoom, null,
+                    user.getName() + "님이 채팅방을 나갔습니다.", MessageType.SYSTEM);
+        }
+    }
+    // 개인 채팅에서 사용자 차단
+    @Transactional
+    public void blockUserInChat(Long chatRoomId, String blockerUuid, String blockedUuid) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
+
+        if (!"PRIVATE".equals(chatRoom.getType())) {
+            throw new IllegalArgumentException("차단은 개인 채팅에서만 가능합니다.");
+        }
+
+        SiteUser blocker = chatRoom.getParticipants().stream()
+                .filter(participant -> participant.getUuid().equals(blockerUuid))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("차단하는 사용자가 채팅방에 없습니다: " + blockerUuid));
+
+        SiteUser blocked = chatRoom.getParticipants().stream()
+                .filter(participant -> participant.getUuid().equals(blockedUuid))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("차단할 사용자가 채팅방에 없습니다: " + blockedUuid));
+
+        // 차단 목록에 추가 (SiteUser 엔티티의 blockUser 메서드 사용)
+        blocker.blockUser(blocked);
+
+        // 채팅방을 BLOCKED 상태로 변경
+        chatRoom.setStatus("BLOCKED");
+        chatRoomRepository.save(chatRoom);
+
+        // 시스템 메시지 생성
+        chatMessageService.createMessage(chatRoom, null,
+                blocker.getName() + "님이 " + blocked.getName() + "님을 차단했습니다.", MessageType.SYSTEM);
+    }
     @Transactional(readOnly = true)
     public List<ChatRoomDTO> getChatRoomsForUser(SiteUser user) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByParticipantsContainingOrPendingForUser(user);
