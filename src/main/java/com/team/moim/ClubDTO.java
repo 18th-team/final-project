@@ -2,6 +2,7 @@ package com.team.moim;
 
 import com.team.moim.entity.Club;
 import com.team.moim.entity.ClubFileEntity;
+import com.team.moim.entity.Keyword;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -28,6 +31,8 @@ public class ClubDTO {
     private String hostName; // 작성자의 이름
     private String hostImg; // 작성자의 사진
     private String hostIntro; // 작성자의 자기소개
+    private List<String> hostSelectedKeywords; // 사용자가 선택한 다중 키워드
+
 
     //note 단일 이미지 파일 받기 --> 다중파일 받기 List
     private List<MultipartFile> clubFile;
@@ -53,6 +58,8 @@ public class ClubDTO {
             clubDTO.setHostName(club.getHost().getName());
             clubDTO.setHostImg(club.getHost().getProfileImage());
             clubDTO.setHostIntro(club.getHost().getIntroduction());
+            // 다중 키워드 매핑
+            clubDTO.setHostSelectedKeywords(club.getHost().getKeywords().stream().map(Keyword::getName).collect(Collectors.toList()));
         }
 
         //note 사진 가져오기
