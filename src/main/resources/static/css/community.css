@@ -31,8 +31,14 @@ a.feed-tab {
 }
 
 a.active {
+    font-size: 20px;
+    font-weight: bold;
     background-color: #E36D1D;
     color: white;
+    padding: 15px 20px;
+    border: none !important;
+    border-radius: 15px !important;
+    text-decoration: none;
 }
 
 a.non-active:hover {

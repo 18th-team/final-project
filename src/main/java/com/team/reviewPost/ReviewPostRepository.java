@@ -1,6 +1,7 @@
 package com.team.reviewPost;
 
 import com.team.feedPost.FeedPost;
+import com.team.moim.entity.Club;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +23,8 @@ public interface ReviewPostRepository extends JpaRepository<ReviewPost, Integer>
     // 태그로 검색
     ReviewPost findByTags(String tags);
 
+    Page<ReviewPost> findAll(Pageable pageable);
+
     // 전체 검색
     @Query("SELECT r FROM ReviewPost r " +
             "WHERE r.title LIKE CONCAT('%', :kw, '%') " +
@@ -29,4 +32,8 @@ public interface ReviewPostRepository extends JpaRepository<ReviewPost, Integer>
             "OR r.tags LIKE CONCAT('%', :kw, '%') " +
             "OR r.club.title LIKE CONCAT('%', :kw, '%')")
     Page<ReviewPost> findAllByKeyword(@Param("kw") String keyword, Pageable pageable);
+
+    List<ReviewPost> findByClub(Club club);
+
+    Club club(Club club);
 }

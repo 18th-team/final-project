@@ -1,6 +1,47 @@
-<html layout:decorate="~{layouts/main-layout}" layout:fragment="content" >
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}"
+      layout:fragment="content">
 <link rel="stylesheet" th:href="@{/css/post_create.css}">
 
 <body class="bg-light">
 
+<div class="container mt-4">
+    <h2 th:text="${postID != null} ? '후기 수정' : '후기 쓰기'">후기 쓰기</h2>
+    <form th:action="@{${postID != null} ? '/review/modify/' + ${postID} : '/review/create'}"
+          method="post"
+          th:object="${reviewForm}"
+          enctype="multipart/form-data">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+
+        <div class="form-group">
+            <label for="title">제목</label>
+            <input type="text" class="form-control" id="title" name="title" th:field="*{title}">
+        </div>
+        <div class="form-group">
+            <label for="content">내용</label>
+            <textarea name="content" class="form-control" id="content" cols="30" rows="10" th:field="*{content}"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="clubID">모임 선택</label>
+            <select class="form-control" id="clubID" name="clubID" th:field="*{clubID}">
+                <option th:each="club : ${clubList}" th:value="${club.id}" th:text="${club.title}">모임</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="tags">태그</label>
+            <input type="text" class="form-control" name="tags" id="tags" th:field="*{tags}" placeholder="예시) 강남,소셜다이닝,맛집"></input>
+        </div>
+        <div class="form-group">
+            <label for="imageURL">이미지 업로드</label>
+            <input type="file" class="form-control" name="imageURL" id="imageURL" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-primary">피드 등록하기</button>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script layout:fragment="script">
+
+</script>
 </body>
+</html>

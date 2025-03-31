@@ -1,13 +1,21 @@
-<html layout:decorate="~{layouts/main-layout}" layout:fragment="content">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}"
+      layout:fragment="content">
 <link rel="stylesheet" th:href="@{/css/community.css}">
 <body class="bg-light">
 
+
+
 <div class="container mt-4">
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
         <div>
             <a class="feed-tab non-active" th:href="@{/feed/list}">지금 피드</a>
-            <a class="feed-tab active" th:href="@{/review/list}">모임 후기</a>
+            <a class="review-tab active" th:href="@{/review/list}">모임 후기</a>
         </div>
         <a th:href="@{/review/create}" class="btn" id="write-btn">후기 쓰기</a>
     </div>
@@ -16,7 +24,7 @@
     <!-- 검색 창 -->
     <div class="row">
         <div class="col mt-3">
-            <form class="d-flex align-items-right" role="search" action="/feed/list" method="get">
+            <form class="d-flex align-items-right" role="search" action="/review/list" method="get">
                 <input type="text" class="form-control search-bar" name="keyword" placeholder="제목, 내용, 작성자, 태그로 검색하기">
             </form>
         </div>
@@ -25,31 +33,30 @@
     <!-- 탭 컨텐츠 -->
     <div class="tab-content" id="communityTabContent">
         <!-- 지금 피드 -->
-        <div class="tab-pane fade show active" id="feed-tab-pane" role="tabpanel" aria-labelledby="feed-tab"
+        <div class="tab-pane fade show active" id="review-tab-pane" role="tabpanel" aria-labelledby="review-tab"
              tabindex="0">
-            <div class="row row-cols-1 row-cols-md-2 g-4 mt-3" id="feed-container"
+            <div class="row row-cols-1 row-cols-md-2 g-4 mt-3" id="review-container"
                  data-masonry='{"percentPosition": true }'>
-                <div class="col" th:each="feed : ${feedList}">
+                <div class="col" th:each="review : ${reviewList}">
                     <div class="post-card">
                         <div class="d-flex align-items-center">
-                            <img th:src="${feed.author.profileImage != null ? feed.author.profileImage : '/img/default-profile.png'}"
+                            <img th:src="${review.author.profileImage != null ? review.author.profileImage : '/img/default-profile.png'}"
                                  class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
                             <div>
-                                <div class="post-author" th:text="${feed.author.name}">작성자</div>
+                                <div class="post-author" th:text="${review.author.name}">작성자</div>
                                 <div class="post-time"
-                                     th:text="${#temporals.format(feed.createDate, 'yyyy-MM-dd HH:mm')}">작성일
+                                     th:text="${#temporals.format(review.createDate, 'yyyy-MM-dd HH:mm')}">작성일
                                 </div>
                             </div>
                         </div>
                         <div class="mt-2">
-                            <img th:src="${feed.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지"
-                                 style="width: 100%; height:auto;">
-                            <h5 th:text="${feed.title}">제목</h5>
-                            <p class="mb-2" th:text="${feed.content}">내용</p>
+                            <img th:src="${review.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지">
+                            <h5 th:text="${review.title}">제목</h5>
+                            <p class="mb-2" th:text="${review.content}">내용</p>
                             <div class="hashtags">
                                 <div class="hashtags">
-                                    <a th:each="tag : ${feed.tagList}"
-                                       th:href="@{'/feed/list?keyword=' + ${tag}}"
+                                    <a th:each="tag : ${review.tagList}"
+                                       th:href="@{'/review/list?keyword=' + ${tag}}"
                                        th:text="'#' + ${tag}"
                                        class="me-1 text-decoration-none text-muted hashtag">
                                     </a>
@@ -62,28 +69,28 @@
                         <div class="icons mt-3">
                             <a href="javascript:void(0);"
                                class="like-btn text-decoration-none"
-                               th:data-post-id="${feed.postID}"
-                               th:data-liked="${feed.voter.contains(loginUser)}"
-                               th:data-like-count="${#lists.size(feed.voter)}">
-    <span th:if="${feed.voter.contains(loginUser)}"
-          th:text="'🧡' + ${#lists.size(feed.voter)}"></span>
-                                <span th:unless="${feed.voter.contains(loginUser)}"
-                                      th:text="'🤍' + ${#lists.size(feed.voter)}"></span>
+                               th:data-post-id="${review.postID}"
+                               th:data-liked="${review.voter.contains(loginUser)}"
+                               th:data-like-count="${#lists.size(review.voter)}">
+    <span th:if="${review.voter.contains(loginUser)}"
+          th:text="'🧡' + ${#lists.size(review.voter)}"></span>
+                                <span th:unless="${review.voter.contains(loginUser)}"
+                                      th:text="'🤍' + ${#lists.size(review.voter)}"></span>
                             </a>
 
-                            <span class="ms-3 comment-toggle" th:attr="data-post-id=${feed.postID}">
+                            <span class="ms-3 comment-toggle" th:attr="data-post-id=${review.postID}">
 
-                                💬 <span th:text="${commentCountMap[feed.postID]}">0</span>
+                                💬 <span th:text="${commentCountMap[review.postID]}">0</span>
                             </span>
 
                         </div>
 
                         <!-- icons 아래에 추가 -->
                         <div class="mt-2 d-flex justify-content-end"
-                             th:if="${loginUser != null and loginUser.id == feed.author.id}">
-                            <a th:href="@{'/feed/modify/' + ${feed.postID}}"
+                             th:if="${loginUser != null and loginUser.id == review.author.id}">
+                            <a th:href="@{'/review/modify/' + ${review.postID}}"
                                class="btn btn-sm btn-outline-secondary me-2">수정</a>
-                            <a th:href="@{'/feed/delete/' + ${feed.postID}}" class="btn btn-sm btn-outline-danger"
+                            <a th:href="@{'/review/delete/' + ${review.postID}}" class="btn btn-sm btn-outline-danger"
                                onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
                         </div>
 
@@ -107,9 +114,9 @@
                     <div class="modal-body">
                         <!-- 댓글 목록 -->
                         <div id="commentListContainer">
-                            <div th:each="feed : ${feedList}" class="comment-list d-none"
-                                 th:id="'comment-list-' + ${feed.postID}">
-                                <div th:each="comment : ${allComments[feed.postID]}">
+                            <div th:each="review : ${reviewList}" class="comment-list d-none"
+                                 th:id="'comment-list-' + ${review.postID}">
+                                <div th:each="comment : ${allComments[review.postID]}">
                                     <img th:src="${comment.author.profileImage != null ? comment.author.profileImage : '/img/default-profile.png'}"
                                          class="rounded-circle me-2"
                                          style="width: 35px; height: 35px; object-fit: cover;">
@@ -119,7 +126,7 @@
                                     <button type="button"
                                             class="btn btn-sm btn-link reply-btn"
                                             th:data-parent-id="${comment.id}"
-                                            th:data-post-id="${feed.postID}">
+                                            th:data-post-id="${review.postID}">
                                         답글 달기
                                     </button>
 
@@ -142,7 +149,7 @@
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-danger delete-comment-btn"
                                                     th:data-comment-id="${reply.id}"
-                                                    th:data-post-id="${feed.postID}">
+                                                    th:data-post-id="${review.postID}">
                                                 삭제
                                             </button>
                                         </div>
@@ -159,7 +166,7 @@
                                         <button type="button"
                                                 class="btn btn-sm btn-outline-danger delete-comment-btn"
                                                 th:data-comment-id="${comment.id}"
-                                                th:data-post-id="${feed.postID}">
+                                                th:data-post-id="${review.postID}">
                                             삭제
                                         </button>
 
@@ -199,7 +206,7 @@
 
     // Masonry 수동 초기화 (페이지 처음 로드될 때)
     $(window).on('load', function () {
-        msnry = new Masonry('#feed-container', {
+        msnry = new Masonry('#review-container', {
             itemSelector: '.col',
             percentPosition: true
         });
@@ -210,7 +217,7 @@
 
     document.getElementById("loadMoreBtn").addEventListener("click", function () {
         $.ajax({
-            url: "/feed/more",
+            url: "/review/more",
             type: "GET",
             data: {offset, limit},
             success: function (posts) {
@@ -239,7 +246,7 @@
                                 <div class="hashtags">
   ${
                         post.tags.split(',').map(tag =>
-                            `<a href="/feed/list?keyword=${tag.trim()}" class="me-1 text-decoration-none text-muted hashtag">#${tag.trim()}</a>`
+                            `<a href="/review/list?keyword=${tag.trim()}" class="me-1 text-decoration-none text-muted hashtag">#${tag.trim()}</a>`
                         ).join('')
                     }
 </div>
@@ -253,11 +260,11 @@
                     </div>
                 `);
 
-                    $("#feed-container").append($newCard);
+                    $("#review-container").append($newCard);
                     newElems.push($newCard[0]);
                 });
 
-                imagesLoaded('#feed-container', function () {
+                imagesLoaded('#review-container', function () {
                     msnry.appended(newElems);
                     msnry.layout(); // 이때 정확한 높이 계산됨 → 겹침 없음
                 });
@@ -297,7 +304,7 @@
             const csrfToken = $("input[name='_csrf']").val();
 
             $.ajax({
-                url: "/comment/feed",
+                url: "/comment/review",
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: {
@@ -330,7 +337,7 @@
         const csrfToken = $("input[name='_csrf']").val();
 
         $.ajax({
-            url: `/comment/feed/delete/${commentId}`,
+            url: `/comment/review/delete/${commentId}`,
             type: "POST",
             data: {
                 _csrf: csrfToken
@@ -361,7 +368,7 @@
         const csrfToken = $("input[name='_csrf']").val();
 
         $.ajax({
-            url: "/comment/feed/reply",
+            url: "/comment/review/reply",
             type: "POST",
             data: {
                 postId: postId,
@@ -393,7 +400,7 @@
         const postId = $btn.data("post-id");
 
         $.ajax({
-            url: `/feed/vote/${postId}`,
+            url: `/review/vote/${postId}`,
             type: "GET",
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
