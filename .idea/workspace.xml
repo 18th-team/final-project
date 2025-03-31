@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="merge" />
+    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="merge">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/index.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -71,7 +75,8 @@
     "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.Application.executor": "Debug",
+    "Spring Boot.Application.executor": "Run",
+    "git-widget-placeholder": "yeeunclub",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -127,6 +132,7 @@
       <workItem from="1743382219402" duration="8302000" />
       <workItem from="1743391827401" duration="9244000" />
       <workItem from="1743407164325" duration="3755000" />
+      <workItem from="1743411207900" duration="402000" />
     </task>
     <task id="LOCAL-00001" summary="h2콘솔 server모드(다중접속TCP)">
       <option name="closed" value="true" />
@@ -160,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743410923465</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="merge">
+      <option name="closed" value="true" />
+      <created>1743411236044</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1743411236044</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -185,7 +199,8 @@
     <MESSAGE value="사용자 키워드 추천 모임 랜더링(BE완료)" />
     <MESSAGE value="랜덤모임 랜더링 완료(BE)" />
     <MESSAGE value="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동" />
-    <option name="LAST_COMMIT_MESSAGE" value="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동" />
+    <MESSAGE value="merge" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
