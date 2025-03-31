@@ -72,30 +72,46 @@ public class ChatController {
     }
 
     @MessageMapping("/sendMessage")
-    @Transactional // 트랜잭션 추가
+    @Transactional
     public void sendMessage(@Payload ChatRoomDTO.ChatMessageDTO messageDTO, Principal principal) {
-        SiteUser sender = getCurrentUser(principal);
+        SiteUser sender = userRepository.findByUuidWithBlockedUsers(getCurrentUser(principal).getUuid())
+                .orElseThrow(() -> new IllegalArgumentException("발신자를 찾을 수 없습니다."));
         ChatRoom chatRoom = chatRoomService.findChatRoomById(messageDTO.getChatRoomId());
 
-        // 채팅방 상태가 CLOSED 또는 BLOCKED일 경우 메시지 전송 차단
         if ("CLOSED".equals(chatRoom.getStatus()) || "BLOCKED".equals(chatRoom.getStatus())) {
             messagingTemplate.convertAndSend("/user/" + sender.getUuid() + "/topic/errors",
                     "이 채팅방은 더 이상 메시지를 보낼 수 없습니다. 상태: " + chatRoom.getStatus());
             return;
         }
 
-        ChatMessage message = chatMessageService.createMessage(chatRoom, sender, messageDTO.getContent(), MessageType.NORMAL);
+        SiteUser receiver = chatRoom.getParticipants().stream()
+                .filter(participant -> !participant.getUuid().equals(sender.getUuid()))
+                .findFirst()
+                .map(participant -> userRepository.findByUuidWithBlockedUsers(participant.getUuid())
+                        .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다.")))
+                .orElseThrow(() -> new IllegalArgumentException("상대방을 찾을 수 없습니다."));
 
+        if (sender.getBlockedUsers().contains(receiver)) {
+            messagingTemplate.convertAndSend("/user/" + sender.getUuid() + "/topic/errors",
+                    "차단한 사용자에게 메시지를 보낼 수 없습니다.");
+            return;
+        }
+
+        if (receiver.getBlockedUsers().contains(sender)) {
+            messagingTemplate.convertAndSend("/user/" + sender.getUuid() + "/topic/errors",
+                    "상대방이 당신을 차단하여 메시지를 보낼 수 없습니다.");
+            return;
+        }
+
+        ChatMessage message = chatMessageService.createMessage(chatRoom, sender, messageDTO.getContent(), MessageType.NORMAL);
         List<Object> messagesWithDate = checkDateChangeAndWrap(chatRoom, message);
         chatRoom.setLastMessage(message.getContent());
         chatRoom.setLastMessageTime(message.getTimestamp());
         chatRoomRepository.save(chatRoom);
 
-        // 트랜잭션 내에서 participants에 접근
         List<SiteUser> participants = new ArrayList<>(chatRoom.getParticipants());
         participants.forEach(participant ->
                 messagingTemplate.convertAndSend("/user/" + participant.getUuid() + "/topic/messages", messagesWithDate));
-
         participants.forEach(participant ->
                 messagingTemplate.convertAndSend("/user/" + participant.getUuid() + "/topic/chatrooms",
                         chatRoomService.getChatRoomsForUser(participant)));
@@ -168,18 +184,21 @@ public class ChatController {
         SiteUser currentUser = getCurrentUser(principal);
         chatRoomService.leaveChatRoom(request.getChatRoomId(), currentUser.getUuid());
 
-        // 모든 참여자에게 채팅 목록 새로고침 알림
-        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
-        chatRoom.getParticipants().forEach(participant -> {
-            messagingTemplate.convertAndSend("/user/" + participant.getUuid() + "/topic/chatrooms",
-                    chatRoomService.getChatRoomsForUser(participant));
-        });
+        // 채팅방이 아직 존재하는지 확인
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(request.getChatRoomId());
+        if (chatRoomOptional.isPresent()) {
+            ChatRoom chatRoom = chatRoomOptional.get();
+            // 남아있는 참여자들에게 알림
+            chatRoom.getParticipants().forEach(participant -> {
+                messagingTemplate.convertAndSend("/user/" + participant.getUuid() + "/topic/chatrooms",
+                        chatRoomService.getChatRoomsForUser(participant));
+            });
+        }
 
-        // 나간 사용자에게도 채팅 목록 새로고침
+        // 떠난 사용자에게도 채팅 목록 새로고침
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms",
                 chatRoomService.getChatRoomsForUser(currentUser));
     }
-
     @MessageMapping("/blockUser")
     @Transactional
     public void blockUser(Principal principal, @Payload ChatRequestDTO request) {

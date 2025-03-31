@@ -419,7 +419,7 @@
     padding: 16px;
     border-radius: 16px;
     border: 1px solid #f0f0f0;
-    cursor: pointer;
+/*    cursor: pointer;*/
     transition: background-color 0.2s ease-in-out,
     border-color 0.2s ease-in-out;
 }

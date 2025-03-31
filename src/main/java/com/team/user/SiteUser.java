@@ -2,16 +2,15 @@ package com.team.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor // 기본 생성자
-@AllArgsConstructor // 모든 필드 포함 생성자
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class SiteUser {
     @Id
@@ -47,6 +46,7 @@ public class SiteUser {
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
     // OAuth 관련 필드
     @Column
     private String provider; // OAuth 제공자 ("kakao", "naver")
@@ -64,17 +64,32 @@ public class SiteUser {
             joinColumns = @JoinColumn(name = "blocker_uuid"),
             inverseJoinColumns = @JoinColumn(name = "blocked_uuid")
     )
-    private List<SiteUser> blockedUsers = new ArrayList<>();
+    private Set<SiteUser> blockedUsers = new HashSet<>();
 
     // 차단 유저 추가 메서드
     public void blockUser(SiteUser blocked) {
-        if (!blockedUsers.contains(blocked)) {
-            blockedUsers.add(blocked);
-        }
+        this.blockedUsers.add(blocked);
     }
 
     // 차단 해제 메서드
     public void unblockUser(SiteUser blocked) {
-        blockedUsers.remove(blocked);
+        this.blockedUsers.remove(blocked);
+    }
+
+    // 내가 특정 사용자에게 차단당했는지 확인
+    public boolean isBlockedBy(SiteUser other) {
+        return other.blockedUsers.contains(this);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SiteUser siteUser = (SiteUser) o;
+        return uuid != null && uuid.equals(siteUser.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid != null ? uuid.hashCode() : 0;
     }
 }

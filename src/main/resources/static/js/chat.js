@@ -119,7 +119,7 @@ function renderChatList(chatRooms) {
     let groupUnread = 0, personalUnread = 0;
 
     chatRooms.forEach(chat => {
-        if (chat.status === "BLOCKED" || (activeTab === 'GROUP' && chat.type !== 'GROUP') || (activeTab === 'PRIVATE' && chat.type !== 'PRIVATE')) return;
+        if ((activeTab === 'GROUP' && chat.type !== 'GROUP') || (activeTab === 'PRIVATE' && chat.type !== 'PRIVATE')) return;
 
         const isRequest = chat.status === 'PENDING';
         const isRequester = chat.requester?.uuid === window.currentUser;
@@ -127,7 +127,7 @@ function renderChatList(chatRooms) {
         const isClosed = chat.status === 'CLOSED';
         const item = document.createElement('article');
         item.className = `chat-item ${isRequest ? 'request-item' : ''} ${isClosed ? 'closed-item' : ''}`;
-        if (chat.status === 'ACTIVE' || chat.status === 'CLOSED') {
+        if (chat.status === 'ACTIVE' || chat.status === 'CLOSED' || chat.status === 'BLOCKED') {
             item.addEventListener('click', () => openPersonalChat(chat));
             item.style.cursor = 'pointer';
         }
@@ -237,7 +237,7 @@ function openPersonalChat(chat) {
 
     const messageInput = document.querySelector('.message-input');
     const sendButton = document.querySelector('.send-button');
-    if (chat.status === 'CLOSED') {
+    if (chat.status === 'CLOSED' || chat.status === 'BLOCKED') {
         messageInput.disabled = true;
         sendButton.disabled = true;
         messageInput.placeholder = "채팅방이 종료되었습니다.";
