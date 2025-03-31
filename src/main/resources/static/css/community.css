@@ -1,3 +1,20 @@
+a {
+    text-decoration: none;
+}
+
+.cs-orange {
+    border: 1px solid #E36D1D;
+    background-color: white;
+    color: #E36D1D;
+    border-radius: 10px;
+    padding: 10px 20px;
+}
+
+.cs-orange:hover {
+    background-color: #E36D1D;
+    color: white;
+}
+
 .nav-tabs {
     border-bottom: none !important;
 }
