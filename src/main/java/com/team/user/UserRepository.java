@@ -7,11 +7,9 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<SiteUser, Long> {
-    // 아이디로 사용자 조회
-    @Override
     Optional<SiteUser> findById(Long id);
 
-    // 이메일로 사용자 조회
+    // ✅ 이메일로 사용자 조회
     Optional<SiteUser> findByEmail(String email);
 
     // 전화번호로 사용자 조회
@@ -22,5 +20,5 @@ public interface UserRepository extends JpaRepository<SiteUser, Long> {
 
     // 이름과 이메일로 사용자 존재 여부 확인
     boolean existsByNameAndEmail(String name, String email);
-    
+
 }

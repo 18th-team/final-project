@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
                                 .requestMatchers(
-                                        new AntPathRequestMatcher("/"),
+                                        new AntPathRequestMatcher("/"), // 메인 페이지는 비회원도 접근 가능
                                         new AntPathRequestMatcher("/error"),
                                         new AntPathRequestMatcher("/login"),
                                         new AntPathRequestMatcher("/signup"),
@@ -49,7 +49,7 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/img/**"),  // 이미지 허용 (필요 시)
                                         new AntPathRequestMatcher("/font/**"), // 폰트 허용
                                         new AntPathRequestMatcher("/favicon.ico") // favicon 허용
-                                ).permitAll() // 공개 경로
+                                ).permitAll() // 위 경로들은 모두 공개
                                 .anyRequest().authenticated() // 나머지 경로는 인증 필요
                 )
                 .csrf(csrf ->

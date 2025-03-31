@@ -1,21 +1,29 @@
 package com.team.controller;
 
+import com.team.moim.ClubDTO;
+import com.team.moim.entity.Club;
+import com.team.moim.entity.Keyword;
+import com.team.moim.repository.ClubRepository;
 import com.team.user.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -23,11 +31,54 @@ public class HomeController {
     private final UserService userService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ClubRepository clubRepository;
 
     @GetMapping("/")
-    public String home() {
-        return "index";
+    public String home(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            model.addAttribute("userList", new ClubDTO());
+            model.addAttribute("recommendedClubs", new ArrayList<>()); // 비회원의 경우 빈 리스트 전달
+            return "index";
+        }
+
+        // 로그인된 사용자 처리
+        String userEmail = authentication.getName();
+        SiteUser user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+        ClubDTO clubDTO = new ClubDTO();
+        clubDTO.setHostName(user.getName());
+        model.addAttribute("userList", clubDTO);
+
+        // 사용자 선택 키워드 가져오기
+        List<String> userKeywords = user.getKeywords().stream()
+                .map(Keyword::getName)
+                .collect(Collectors.toList());
+
+// 1. Club 엔티티에서 키워드와 매칭되는 클럽을 조회
+        List<Club> recommendedClubs = clubRepository.findByKeywords(userKeywords);
+
+// 2. Club 엔티티 리스트를 ClubDTO 리스트로 변환
+        List<ClubDTO> recommendedClubDTOs = recommendedClubs.stream()
+                .map(club -> ClubDTO.toDTO(club))  // Club 엔티티에서 ClubDTO로 변환
+                .collect(Collectors.toList());
+
+        // 랜덤으로 돌리기
+        if (!recommendedClubDTOs.isEmpty()){
+            Collections.shuffle(recommendedClubDTOs);
+            //최대3개제한
+            if (recommendedClubDTOs.size() > 3){
+                recommendedClubDTOs = recommendedClubDTOs.subList(0, 3);
+            }
+        }
+// 모델에 변환된 ClubDTO 리스트 추가
+        model.addAttribute("recommendedClubs", recommendedClubDTOs);
+
+        return "index";  // view 이름 반환
+
     }
+
 
     @GetMapping("/mobti")
     public String mobtiTest() {
