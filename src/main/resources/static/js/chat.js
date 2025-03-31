@@ -124,7 +124,7 @@ function renderChatList(chatRooms) {
         const isRequest = chat.status === 'PENDING';
         const isRequester = chat.requester?.uuid === window.currentUser;
         const isOwner = chat.owner?.uuid === window.currentUser;
-        const isClosed = chat.status === 'CLOSED';
+        const isClosed = chat.status === 'CLOSED' || chat.status === 'BLOCKED';
         const item = document.createElement('article');
         item.className = `chat-item ${isRequest ? 'request-item' : ''} ${isClosed ? 'closed-item' : ''}`;
         if (chat.status === 'ACTIVE' || chat.status === 'CLOSED' || chat.status === 'BLOCKED') {
