@@ -154,4 +154,12 @@ public class ClubService {
                 .orElseThrow(() -> new IllegalArgumentException("Club not found for id: " + id));
     }
 
+
+    //클럽생성시 선택된 단일키워드로 해당 클럽 전체를 저장함.
+    public List<Club> getRecommendedClubs(List<String> userKeywords) {
+        if (userKeywords == null || userKeywords.isEmpty()) {
+            return new ArrayList<>(); // 키워드가 없으면 빈 리스트 반환
+        }
+        return clubRepository.findByKeywords_NameIn(userKeywords);
+    }
 }

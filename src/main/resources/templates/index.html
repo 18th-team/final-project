@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"   layout:decorate="~{layouts/main-layout}" layout:fragment="content">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main-layout}" layout:fragment="content"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>취미플랫폼::</title>
     <link th:href="@{/css/carousel.css}" rel="stylesheet"/>
     <link th:href="@{/css/category_menu.css}" rel="stylesheet"/>
     <link th:href="@{/css/userRecommend.css}" rel="stylesheet"/>
     <link th:href="@{/font/font.css}" rel="stylesheet"/>
-    <style>*{
+    <style>
+        a{
+            text-decoration: none;
+        }
+        *{
        font-family: 'Pretendard-Medium';
     }</style>
 
@@ -18,8 +23,8 @@
         <div th:replace="~{fragments/category_menu :: category}"></div>
         <div th:replace="~{fragments/mobtiBanner :: mobtiBanner}"></div>
         <div th:replace="~{fragments/userRecommend :: userRecommend}"></div>
-        <div th:replace="~{fragments/userLocation :: userLocation}"></div>
         <div th:replace="~{fragments/randomList :: randomList}"></div>
+        <div th:replace="~{fragments/userLocation :: userLocation}"></div>
     </div>
 
 
