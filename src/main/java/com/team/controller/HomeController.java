@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -67,6 +64,14 @@ public class HomeController {
                 .map(club -> ClubDTO.toDTO(club))  // Club 엔티티에서 ClubDTO로 변환
                 .collect(Collectors.toList());
 
+        // 랜덤으로 돌리기
+        if (!recommendedClubDTOs.isEmpty()){
+            Collections.shuffle(recommendedClubDTOs);
+            //최대3개제한
+            if (recommendedClubDTOs.size() > 3){
+                recommendedClubDTOs = recommendedClubDTOs.subList(0, 3);
+            }
+        }
 // 모델에 변환된 ClubDTO 리스트 추가
         model.addAttribute("recommendedClubs", recommendedClubDTOs);
 

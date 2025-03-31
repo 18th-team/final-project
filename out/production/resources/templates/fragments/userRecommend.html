@@ -11,7 +11,7 @@
         <!-- 한 줄에 3개의 카드가 보이도록 row로 묶고, 카드들은 col-12 col-sm-6 col-md-4로 처리 -->
         <div class="row g-4 mt-4">
             <div th:each="club : ${recommendedClubs}" class="col-12 col-sm-6 col-md-4">
-                <article class="card meeting-card h-100">
+                <a class="card meeting-card h-100" th:href="@{/clubs/{id}(id=${club.id})}">
                     <img th:if="${club.storedFileName != null and #lists.size(club.storedFileName) > 0}"
                          th:src="@{/upload/{filename}(filename=${club.storedFileName[0]})}"
                          alt="클럽 이미지" class="rounded img-fluid">
@@ -19,7 +19,7 @@
                         <p class="card-title meeting-location" th:text="${club.title}"></p>
                         <p class="card-text meeting-description text-truncate" th:text="${club.content}"></p>
                     </div>
-                </article>
+                </a>
             </div>
         </div>
     </section>
