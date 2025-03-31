@@ -1,18 +1,20 @@
 package com.team.reviewPost;
 
 import com.team.FileService;
-import com.team.feedPost.FeedPost;
 import com.team.moim.ClubDTO;
 import com.team.moim.entity.Club;
 import com.team.moim.service.ClubService;
+import com.team.reviewComment.ReviewCommentService;
 import com.team.user.SiteUser;
 import com.team.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -27,6 +29,7 @@ public class ReviewPostController {
     private final UserService userService;
     private final ClubService clubService;
     private final FileService fileService;
+    private final ReviewCommentService reviewCommentService;
 
     @GetMapping("/list")
     public String reviewList(@RequestParam(value="keyword", required = false) String keyword, Model model, Principal principal){
@@ -46,12 +49,14 @@ public class ReviewPostController {
         model.addAttribute("keyword", keyword); // 검색어 유지용
         model.addAttribute("clubList", clubService.findAll());
 
-
-
         if (principal != null) {
             SiteUser loginUser = userService.getUser(principal.getName());
             model.addAttribute("loginUser", loginUser);
         }
+
+        model.addAttribute("allComments", reviewCommentService.getAllCommentsMap(reviewList));
+        model.addAttribute("commentCountMap", reviewCommentService.getCommentCountMap(reviewList));
+
 
         return "review_list";
 
@@ -111,6 +116,58 @@ public class ReviewPostController {
             reviewPostService.vote(reviewPost, siteUser);
         }
 
+        return "redirect:/review/list";
+    }
+
+    @GetMapping("/modify/{id}")
+    public String modifyForm(@PathVariable Integer id, Principal principal, Model model) {
+        ReviewPost post = reviewPostService.getReviewPost(id);
+        SiteUser user = userService.getUser(principal.getName());
+
+        if (!post.getAuthor().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        ReviewPostForm form = new ReviewPostForm();
+        form.setTitle(post.getTitle());
+        form.setContent(post.getContent());
+        model.addAttribute("reviewForm", form);
+        model.addAttribute("postID", post.getPostID());
+
+        return "review_form"; // 글쓰기와 동일한 템플릿 사용
+    }
+
+    @PostMapping("/modify/{id}")
+    public String modifySubmit(@PathVariable Integer id,
+                               @ModelAttribute ReviewPostForm form,
+                               @RequestParam("imageURL") MultipartFile imageFile,
+                               Principal principal) {
+        ReviewPost post = reviewPostService.getReviewPost(id);
+        SiteUser user = userService.getUser(principal.getName());
+
+        String imagePath = null;
+        if (!imageFile.isEmpty()) {
+            imagePath = fileService.saveImage(imageFile); // 이미지 저장 후 경로 반환
+        }
+
+        if (!post.getAuthor().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        reviewPostService.modify(post, post.getTitle(), post.getContent(), post.getTags(), post.getClub(), imagePath);
+        return "redirect:/review/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Integer id, Principal principal) {
+        ReviewPost post = reviewPostService.getReviewPost(id);
+        SiteUser user = userService.getUser(principal.getName());
+
+        if (!post.getAuthor().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        reviewPostService.delete(post);
         return "redirect:/review/list";
     }
 }
