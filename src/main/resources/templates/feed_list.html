@@ -1,4 +1,6 @@
-<html layout:decorate="~{layouts/main-layout}" layout:fragment="content">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}"
+      layout:fragment="content">
 <link rel="stylesheet" th:href="@{/css/community.css}">
 <body class="bg-light">
 
@@ -207,72 +209,78 @@
 
     let offset = 4;
     const limit = 4;
+    const loadMoreBtn = document.getElementById("loadMoreBtn");
 
-    document.getElementById("loadMoreBtn").addEventListener("click", function () {
-        $.ajax({
-            url: "/feed/more",
-            type: "GET",
-            data: {offset, limit},
-            success: function (posts) {
-                if (posts.length === 0) {
-                    $("#loadMoreBtn").hide();
-                    return;
-                }
+    // "더보기" 버튼이 존재할 때만 이벤트 바인딩
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener("click", function () {
+            $.ajax({
+                url: "/feed/more",
+                type: "GET",
+                data: { offset, limit },
+                success: function (posts) {
+                    if (posts.length === 0) {
+                        $("#loadMoreBtn").hide();
+                        return;
+                    }
 
-                const newElems = [];
+                    const newElems = [];
 
-                posts.forEach(post => {
-                    const $newCard = $(`
-                    <div class="col">
-                        <div class="post-card">
-                            <div class="d-flex align-items-center">
-                                <img src="${post.author.profileImage || '/img/default-profile.png'}" class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
-                                <div>
-                                    <div class="post-author">${post.author.name}</div>
-                                    <div class="post-time">${new Date(post.createDate).toLocaleString()}</div>
+                    posts.forEach(post => {
+                        const $newCard = $(`
+                        <div class="col">
+                            <div class="post-card">
+                                <div class="d-flex align-items-center">
+                                    <img src="${post.author.profileImage || '/img/default-profile.png'}" class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
+                                    <div>
+                                        <div class="post-author">${post.author.name}</div>
+                                        <div class="post-time">${new Date(post.createDate).toLocaleString()}</div>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <img src="${post.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지" style="width: 100%; height:auto;">
+                                    <h5>${post.title}</h5>
+                                    <p class="mb-2">${post.content}</p>
+                                    <div class="hashtags">
+                                        ${
+                            post.tags.split(',').map(tag =>
+                                `<a href="/feed/list?keyword=${tag.trim()}" class="me-1 text-decoration-none text-muted hashtag">#${tag.trim()}</a>`
+                            ).join('')
+                        }
+                                    </div>
+                                </div>
+                                <div class="icons mt-3">
+                                    <span>🤍 0</span>
+                                    <span class="ms-3">💬 0</span>
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <img src="${post.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지" style="width: 100%; height:auto;">
-                                <h5>${post.title}</h5>
-                                <p class="mb-2">${post.content}</p>
-                                <div class="hashtags">
-  ${
-                        post.tags.split(',').map(tag =>
-                            `<a href="/feed/list?keyword=${tag.trim()}" class="me-1 text-decoration-none text-muted hashtag">#${tag.trim()}</a>`
-                        ).join('')
-                    }
-</div>
-
-                            </div>
-                            <div class="icons mt-3">
-                                <span>🤍 0</span>
-                                <span class="ms-3">💬 0</span>
-                            </div>
                         </div>
-                    </div>
-                `);
+                    `);
 
-                    $("#feed-container").append($newCard);
-                    newElems.push($newCard[0]);
-                });
+                        $("#feed-container").append($newCard);
+                        newElems.push($newCard[0]);
+                    });
 
-                imagesLoaded('#feed-container', function () {
-                    msnry.appended(newElems);
-                    msnry.layout(); // 이때 정확한 높이 계산됨 → 겹침 없음
-                });
+                    imagesLoaded('#feed-container', function () {
+                        msnry.appended(newElems);
+                        msnry.layout(); // 정확한 높이 계산
+                    });
 
-                offset += posts.length;
+                    offset += posts.length;
 
-                if (posts.length < limit) {
-                    $("#loadMoreBtn").hide();
+                    if (posts.length < limit) {
+                        $("#loadMoreBtn").hide();
+                    }
+                },
+                error: function () {
+                    alert("피드를 더 불러오는 데 실패했습니다.");
                 }
-            },
-            error: function () {
-                alert("피드를 더 불러오는 데 실패했습니다.");
-            }
+            });
         });
-    });
+    } else {
+        console.log("더보기 버튼이 존재하지 않습니다.");
+    }
+
 
 
     $(document).ready(function () {
