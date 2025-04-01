@@ -1,22 +1,26 @@
 package com.team.community;
 
-import com.team.feedPost.FeedPost;
-import com.team.feedPost.FeedPostRepository;
+import com.team.post.Post;
+import com.team.post.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Controller
 public class CommunityController {
 
-    private final FeedPostRepository feedPostRepository;
+    private final PostService postService;
 
-    @GetMapping
+    @GetMapping("/community/post")
     public String communityPage(Model model) {
-        List<FeedPost> feedList = feedPostRepository.findAllByOrderByCreateDateDesc();
-        model.addAttribute("feedList", feedList);
-        return "feed_list"; // community.html로 이동
+        List<Post> feedList = postService.findFeedOnly(0, 4); // 초기 4개 로드
+        model.addAttribute("postList", feedList);
+        model.addAttribute("hasMore", postService.countFeedOnly() > 4);
+        return "post_feed_list";
     }
 }
+

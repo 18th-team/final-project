@@ -1,0 +1,48 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}"
+      layout:fragment="content">
+<link rel="stylesheet" th:href="@{/css/post_create.css}">
+
+<body class="bg-light">
+<div class="container mt-4">
+    <h2 th:text="${postID != null} ? (isReview ? '후기 수정' : '피드 수정') : (isReview ? '후기 작성' : '피드 작성')">피드 작성</h2>
+    <form th:action="@{${postID != null} ? '/post/modify/' + ${postID} : '/post/create'}"
+          method="post"
+          th:object="${postForm}"
+          enctype="multipart/form-data">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <!-- 게시판 종류 (피드 or 후기) -->
+        <input type="hidden" name="boardType" th:value="${isReview} ? 'REVIEW' : 'FEED'" />
+        <!-- 수정 시 postID hidden 전달 (선택사항) -->
+        <input type="hidden" name="postID" th:if="${postID != null}" th:value="${postID}" />
+        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+
+        <div class="form-group">
+            <label for="title">제목</label>
+            <input type="text" class="form-control" id="title" name="title" th:field="*{title}">
+        </div>
+        <div class="form-group">
+            <label for="content">내용</label>
+            <textarea name="content" class="form-control" id="content" cols="30" rows="10" th:field="*{content}"></textarea>
+        </div>
+        <!-- 모임 선택: 후기 작성일 때만 보임 -->
+        <div class="form-group" th:if="${isReview}">
+            <label for="clubID">모임 선택</label>
+            <select class="form-control" id="clubID" name="clubID" th:field="*{clubID}">
+                <option value="" disabled selected>모임을 선택하세요</option>
+                <option th:each="club : ${clubList}" th:value="${club.id}" th:text="${club.title}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="tags">태그</label>
+            <input type="text" class="form-control" name="tags" id="tags" th:field="*{tags}" placeholder="예시) 강남,소셜다이닝,맛집">
+        </div>
+        <div class="form-group">
+            <label for="imageURL">이미지 업로드</label>
+            <input type="file" class="form-control" name="imageURL" id="imageURL" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-primary">등록하기</button>
+    </form>
+</div>
+</body>
+</html>

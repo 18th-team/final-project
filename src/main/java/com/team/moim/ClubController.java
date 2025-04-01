@@ -5,8 +5,6 @@ import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubRepository;
 import com.team.moim.repository.KeywordRepository;
 import com.team.moim.service.ClubService;
-import com.team.reviewPost.ReviewPost;
-import com.team.reviewPost.ReviewPostRepository;
 import com.team.user.CustomSecurityUserDetails;
 import com.team.user.SiteUser;
 import com.team.user.UserService;
@@ -32,7 +30,6 @@ import java.util.stream.Collectors;
 public class ClubController {
     private final ClubService clubService;
     private final UserService userService;
-    private final ReviewPostRepository reviewPostRepository;
     private final ClubRepository clubRepository;
 private final KeywordRepository keywordRepository;
 
@@ -132,11 +129,6 @@ private final KeywordRepository keywordRepository;
     public String delete(@PathVariable Long id) {
         Club club = clubRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
-
-        List<ReviewPost> reviews = reviewPostRepository.findByClub(club);
-        for (ReviewPost review : reviews) {
-            reviewPostRepository.delete(review);
-        }
 
         clubService.delete(id);
         return "redirect:/clubs";
