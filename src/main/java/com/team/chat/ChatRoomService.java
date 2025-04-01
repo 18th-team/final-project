@@ -45,11 +45,37 @@ public class ChatRoomService {
             chatMessageRepository.deleteByChatRoom(chatRoom);
             chatRoomRepository.delete(chatRoom); // 참여자가 없으면 채팅방 삭제
         } else {
+            chatRoom.setStatus("CLOSED");
             chatMessageService.createMessage(chatRoom, user, user.getName() + "님이 채팅방을 떠났습니다.", MessageType.SYSTEM);
             chatRoomRepository.save(chatRoom);
         }
 
         // 이벤트 발생
+        eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), chatRoom.getOwner().getUuid()));
+    }
+    @Transactional
+    public void blockUserInChat(Long chatRoomId, String blockerUuid, String blockedUuid) {
+        ChatRoom chatRoom = findChatRoomById(chatRoomId);
+        SiteUser blocker = userRepository.findByUuidWithBlockedUsers(blockerUuid)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + blockerUuid));
+        SiteUser blocked = userRepository.findByUuidWithBlockedUsers(blockedUuid)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + blockedUuid));
+
+        if (!chatRoom.getParticipants().contains(blocker)) {
+            throw new IllegalStateException("이 채팅방의 참여자가 아닙니다.");
+        }
+
+        blocker.blockUser(blocked);
+        chatRoom.getParticipants().remove(blocker);
+        if (chatRoom.getParticipants().isEmpty()) {
+            chatMessageRepository.deleteByChatRoom(chatRoom);
+            chatRoomRepository.delete(chatRoom);
+        } else {
+            chatMessageService.createMessage(chatRoom, null,
+                    blocker.getName() + "님이 " + blocked.getName() + "님을 차단했습니다.", MessageType.SYSTEM);
+            chatRoomRepository.save(chatRoom);
+        }
+
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), chatRoom.getOwner().getUuid()));
     }
     @Transactional

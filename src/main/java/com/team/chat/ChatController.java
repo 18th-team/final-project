@@ -79,7 +79,13 @@ public class ChatController {
             ChatRoomDTO.ChatMessageDTO messageDTO = new ChatRoomDTO.ChatMessageDTO();
             messageDTO.setId(msg.getId());
             messageDTO.setChatRoomId(chatRoomId);
-            messageDTO.setSender(new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()));
+            // sender가 null일 경우 처리
+            if (msg.getSender() != null) {
+                messageDTO.setSender(new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()));
+            } else {
+                // 시스템 메시지일 경우 null 또는 특별한 값 설정
+                messageDTO.setSender(null); // 또는 시스템용 더미 객체를 사용할 수 있음
+            }
             messageDTO.setContent(msg.getContent());
             messageDTO.setTimestamp(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             messageDTO.setType(msg.getType().toString());
@@ -94,6 +100,35 @@ public class ChatController {
     public void handleChatRequest(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
         chatRoomService.handleChatRequest(currentUser, request.getChatRoomId(), request.getAction());
+    }
+    @MessageMapping("/blockUser")
+    @Transactional
+    public void blockUser(Principal principal, @Payload ChatRequestDTO request) {
+        SiteUser currentUser = getCurrentUser(principal);
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
+      /*  String blockedUuid = chatRoom.getParticipants().stream()
+                .filter(p -> !p.getUuid().equals(currentUser.getUuid()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("차단할 상대방을 찾을 수 없습니다."))
+                .getUuid();*/
+        // 차단할 상대방을 participants에서 찾음 (현재 참여자에 없어도 UUID로 식별 가능)
+        String blockedUuid = chatRoom.getParticipants().stream()
+                .filter(p -> !p.getUuid().equals(currentUser.getUuid()))
+                .findFirst()
+                .map(SiteUser::getUuid)
+                .orElse(null);
+
+        if (blockedUuid == null) {
+            // 참여자에 없으면 채팅방의 requester나 owner에서 찾기
+            if (chatRoom.getRequester().getUuid().equals(currentUser.getUuid())) {
+                blockedUuid = chatRoom.getOwner().getUuid();
+            } else if (chatRoom.getOwner().getUuid().equals(currentUser.getUuid())) {
+                blockedUuid = chatRoom.getRequester().getUuid();
+            } else {
+                throw new IllegalArgumentException("차단할 상대방을 찾을 수 없습니다.");
+            }
+        }
+        chatRoomService.blockUserInChat(request.getChatRoomId(), currentUser.getUuid(), blockedUuid);
     }
     @MessageMapping("/leaveChatRoom")
     @Transactional

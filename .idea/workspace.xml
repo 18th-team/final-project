@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="개인 채팅 차단 기능 추가">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="기능 개선">
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" afterDir="false" />
@@ -30,19 +30,10 @@
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-03-18_오후_4_29_[Changes]1/fileHashes.lock" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025-03-18_오후_4_29_[Changes]1/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/AddPublicChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/AddPublicChatController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/WebSocketConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/security/SecurityHandshakeInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/security/SecurityHandshakeInterceptor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/RefreshChatRoomsDTO.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/addPublicChat.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/addPublicChat.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -258,7 +249,7 @@
       <workItem from="1743133149523" duration="15247000" />
       <workItem from="1743152686436" duration="16000" />
       <workItem from="1743379525170" duration="29457000" />
-      <workItem from="1743465831257" duration="12068000" />
+      <workItem from="1743465831257" duration="21298000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -452,7 +443,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743410481917</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="기능 개선">
+      <option name="closed" value="true" />
+      <created>1743478159321</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1743478159321</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -521,7 +520,8 @@
     <MESSAGE value="localStorage로 채팅창 닫을 때 마지막 채팅방 상태 저장" />
     <MESSAGE value="채팅 스타일 수정" />
     <MESSAGE value="개인 채팅 차단 기능 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="개인 채팅 차단 기능 추가" />
+    <MESSAGE value="기능 개선" />
+    <option name="LAST_COMMIT_MESSAGE" value="기능 개선" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

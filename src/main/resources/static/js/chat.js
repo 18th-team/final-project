@@ -24,18 +24,6 @@ const chatApp = (function() {
         console.log("Saved chat state:", chatState);
     }
 
-    // 상태 로드
-    function loadChatState() {
-        const savedState = localStorage.getItem('chatState');
-        if (savedState) {
-            const parsedState = JSON.parse(savedState);
-            state.isChatOpen = parsedState.isChatOpen || false;
-            state.isChatRoomOpen = parsedState.isChatRoomOpen || false;
-            currentChatRoomId = parsedState.currentChatRoomId || null;
-            activeTab = parsedState.activeTab || 'PRIVATE';
-            console.log("Loaded chat state:", state);
-        }
-    }
 
     // WebSocket 연결
     function connect() {
