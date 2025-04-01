@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
@@ -17,4 +18,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
  @Query("SELECT c FROM ChatRoom c WHERE :user MEMBER OF c.participants OR (c.status = 'PENDING' AND (c.requester = :user OR c.owner = :user))")
  List<ChatRoom> findByParticipantsContainingOrPendingForUser(@Param("user") SiteUser user);
  boolean existsByRequesterAndOwnerAndTypeAndStatusNot(SiteUser requester, SiteUser owner, String type, String status);
+ @Query("SELECT cr FROM ChatRoom cr " +
+         "JOIN FETCH cr.participants p " +
+         "LEFT JOIN FETCH p.blockedUsers " +
+         "WHERE cr.id = :id")
+ Optional<ChatRoom> findByIdWithParticipantsAndBlockedUsers(@Param("id") Long id);
 }

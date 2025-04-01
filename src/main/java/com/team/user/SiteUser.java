@@ -75,11 +75,6 @@ public class SiteUser {
     public void unblockUser(SiteUser blocked) {
         this.blockedUsers.remove(blocked);
     }
-
-    // 내가 특정 사용자에게 차단당했는지 확인
-    public boolean isBlockedBy(SiteUser other) {
-        return other.blockedUsers.contains(this);
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

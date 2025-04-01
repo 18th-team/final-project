@@ -18,15 +18,22 @@ public class SecurityHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         if (request instanceof ServletServerHttpRequest) {
             HttpSession session = ((ServletServerHttpRequest) request).getServletRequest().getSession(false);
-            if (session != null) {
-                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-                    attributes.put("authentication", auth);
-                    System.out.println("Handshake set authentication for user: " + auth.getName());
-                }
+            if (session == null) {
+                System.out.println("No session found, denying handshake");
+                return false; // 세션 없으면 차단
+            }
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+                attributes.put("authentication", auth);
+                System.out.println("Handshake set authentication for user: " + auth.getName());
+                return true;
+            } else {
+                System.out.println("Authentication failed, denying handshake");
+                return false; // 인증 없으면 차단
             }
         }
-        return true; // 핸드셰이크 계속 진행
+        System.out.println("Invalid request type, denying handshake");
+        return false; // ServletServerHttpRequest가 아니면 차단
     }
 
     @Override

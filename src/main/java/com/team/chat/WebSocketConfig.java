@@ -15,6 +15,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -37,22 +40,37 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
+            private final Map<String, Long> lastConnectTime = new ConcurrentHashMap<>();
+            private final long rateLimitMillis = 1000; // 1초당 1 연결
+
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
                 StompCommand command = accessor.getCommand();
                 System.out.println("Inbound STOMP Command: " + command);
 
+                Authentication auth = (Authentication) accessor.getSessionAttributes().get("authentication");
                 if (command != null && command.equals(StompCommand.DISCONNECT)) {
+                    if (auth == null || !auth.isAuthenticated()) {
+                        throw new org.springframework.security.access.AccessDeniedException("DISCONNECT requires authentication");
+                    }
                     return message;
                 }
-
-                Authentication auth = (Authentication) accessor.getSessionAttributes().get("authentication");
                 if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
                     if (auth.getPrincipal() instanceof CustomSecurityUserDetails) {
                         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) auth.getPrincipal();
                         String userUuid = userDetails.getSiteUser().getUuid();
-                        System.out.println("Set Principal with UUID from SiteUser: " + userUuid);
+
+                        if (command != null && command.equals(StompCommand.CONNECT)) {
+                            long now = System.currentTimeMillis();
+                            Long lastTime = lastConnectTime.get(userUuid);
+                            if (lastTime != null && (now - lastTime) < rateLimitMillis) {
+                                throw new IllegalStateException("연결 속도 제한 초과");
+                            }
+                            lastConnectTime.put(userUuid, now);
+                            accessor.getSessionAttributes().put("userUuid", userUuid);
+                            System.out.println("Stored UUID in session: " + userUuid);
+                        }
 
                         accessor.setUser(new java.security.Principal() {
                             @Override
@@ -60,11 +78,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                 return userUuid;
                             }
                         });
-
-                        if (command != null && command.equals(StompCommand.CONNECT)) {
-                            accessor.getSessionAttributes().put("userUuid", userUuid);
-                            System.out.println("Stored UUID in session: " + userUuid);
-                        }
                     } else {
                         throw new org.springframework.security.access.AccessDeniedException("Invalid user details");
                     }

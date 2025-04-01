@@ -4,6 +4,8 @@ import com.team.user.CustomSecurityUserDetails;
 import com.team.user.SiteUser;
 import com.team.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -35,37 +38,23 @@ public class AddPublicChatController {
         return "addpublicchat";
     }
 
-    @PostMapping("/addpublicchat/requestchat")
-    public String requestPersonalChat(@RequestParam("uuid") String uuid,
-                                      @RequestParam("reason") String reason,
-                                      @AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
+    @PostMapping(value = "/addpublicchat/requestchat", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> requestPersonalChat(@RequestParam("uuid") String uuid,
+                                                 @RequestParam("reason") String reason,
+                                                 @AuthenticationPrincipal CustomSecurityUserDetails userDetails) {
         if (userDetails == null) {
-            System.out.println("userDetails is null in /addpublicchat/requestchat");
-            return "redirect:/login";
+            System.err.println("userDetails is null in /addpublicchat/requestchat");
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
         }
         try {
-            System.out.println("Requesting personal chat with uuid: " + uuid + ", reason: " + reason);
-            ChatRoom chatRoom = chatRoomService.requestPersonalChat(userDetails, uuid, reason);
-
-            SiteUser requester = userDetails.getSiteUser();
-            SiteUser receiver = userRepository.findByUuid(uuid).get();
-
-            List<ChatRoomDTO> requesterChatRooms = chatRoomService.getChatRoomsForUser(requester);
-            List<ChatRoomDTO> receiverChatRooms = chatRoomService.getChatRoomsForUser(receiver);
-
-            System.out.println("Sending to requester: " + requester.getUuid() + ", Chat rooms: " + requesterChatRooms.size());
-            System.out.println("Sending to receiver: " + uuid + ", Chat rooms: " + receiverChatRooms.size());
-
-            messagingTemplate.convertAndSend("/user/" + requester.getUuid() + "/topic/chatrooms", requesterChatRooms);
-            messagingTemplate.convertAndSend("/user/" + receiver.getUuid() + "/topic/chatrooms", receiverChatRooms);
-
-            return "redirect:/addpublicchat";
+            chatRoomService.requestPersonalChat(userDetails, uuid, reason);
+            return ResponseEntity.ok("채팅 요청이 성공적으로 처리되었습니다.");
         } catch (IllegalStateException e) {
-            System.out.println("Blocked error: " + e.getMessage());
-            return "redirect:/addpublicchat?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            System.out.println("Error requesting personal chat for user " + userDetails.getSiteUser().getName() + ": " + e.getMessage());
-            return "redirect:/addpublicchat?error=" + e.getClass().getSimpleName();
+            System.err.println("Error requesting personal chat for user " + userDetails.getSiteUser().getName() + ": " + e.getMessage());
+            return ResponseEntity.status(500).body("요청 처리 중 오류 발생: " + e.getMessage());
         }
     }
 }
