@@ -4,13 +4,45 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="사용자 키워드 추천 모임 랜더링(BE완료)">
+    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="리뷰 페이지 완료">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/BoardType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/Post.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostForm.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/post_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/post_review_list.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/randomList.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/randomList.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/community/CommunityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/community/CommunityController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/randomList.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/randomList.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedComment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPost.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewComment/ReviewComment.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewComment/ReviewCommentController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewComment/ReviewCommentRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewComment/ReviewCommentService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPost.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostForm.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/feed_form.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/feed_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/post_feed_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +53,16 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Enum" />
+        <option value="Class" />
+        <option value="HTML File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -39,7 +81,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
-    &quot;accountId&quot;: &quot;9879ead2-cb9d-443b-9060-5e04c12e8733&quot;
+    &quot;accountId&quot;: &quot;3cd7410d-9738-4af7-9858-1be0dcd9219e&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -58,6 +100,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
     "JavaScript Debug.signup.html.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
@@ -117,6 +160,9 @@
       <workItem from="1743331207471" duration="3012000" />
       <workItem from="1743382219402" duration="8302000" />
       <workItem from="1743391827401" duration="9244000" />
+      <workItem from="1743411827835" duration="222000" />
+      <workItem from="1743467084548" duration="17091000" />
+      <workItem from="1743489408744" duration="8648000" />
     </task>
     <task id="LOCAL-00001" summary="h2콘솔 server모드(다중접속TCP)">
       <option name="closed" value="true" />
@@ -140,12 +186,24 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="커뮤니티 - 피드 페이지 완성&#10;커뮤니티 - 후기 페이지 시작" />
     <MESSAGE value="키워드테이블생성(join:회원가입&amp;크루생성)&#10;sql 고정 키워드 설정" />
     <MESSAGE value="회원가입:관심키워드 선택지 추가" />
     <MESSAGE value="h2콘솔 server모드(다중접속TCP)" />
     <MESSAGE value="사용자 키워드 추천 모임 랜더링(BE완료)" />
-    <option name="LAST_COMMIT_MESSAGE" value="사용자 키워드 추천 모임 랜더링(BE완료)" />
+    <MESSAGE value="리뷰 페이지 완료" />
+    <option name="LAST_COMMIT_MESSAGE" value="리뷰 페이지 완료" />
   </component>
 </project>

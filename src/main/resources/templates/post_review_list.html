@@ -4,101 +4,92 @@
 <link rel="stylesheet" th:href="@{/css/community.css}">
 <body class="bg-light">
 
+
+
 <div class="container mt-4">
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3 mt-5">
         <div>
-            <a class="feed-tab active" th:href="@{/feed/list}">지금 피드</a>
-            <a class="feed-tab non-active" th:href="@{/review/list}">모임 후기</a>
+            <a class="feed-tab non-active" th:href="@{/post/feed/list}">지금 피드</a>
+            <a class="review-tab active" th:href="@{/post/review/list}">모임 후기</a>
         </div>
-        <a th:href="@{/feed/create}" class="btn" id="write-btn">피드 쓰기</a>
+        <a th:href="@{/post/review/create}" class="btn" id="write-btn">후기 쓰기</a>
     </div>
-
 
     <!-- 검색 창 -->
     <div class="row">
         <div class="col mt-3">
-            <form class="d-flex align-items-right" role="search" action="/feed/list" method="get">
+            <form class="d-flex align-items-right" role="search" th:action="@{/post/review/list}" method="get">
                 <input type="text" class="form-control search-bar" name="keyword" placeholder="제목, 내용, 작성자, 태그로 검색하기">
             </form>
         </div>
     </div>
 
-    <!-- 탭 컨텐츠 -->
-    <div class="tab-content" id="communityTabContent">
-        <!-- 지금 피드 -->
-        <div class="tab-pane fade show active" id="feed-tab-pane" role="tabpanel" aria-labelledby="feed-tab"
-             tabindex="0">
-            <div class="row row-cols-1 row-cols-md-2 g-4 mt-3" id="feed-container"
-                 data-masonry='{"percentPosition": true }'>
-                <div class="col" th:each="feed : ${feedList}">
-                    <div class="post-card">
-                        <div class="d-flex align-items-center">
-                            <img th:src="${feed.author.profileImage != null ? feed.author.profileImage : '/img/default-profile.png'}"
-                                 class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
-                            <div>
-                                <div class="post-author" th:text="${feed.author.name}">작성자</div>
-                                <div class="post-time"
-                                     th:text="${#temporals.format(feed.createDate, 'yyyy-MM-dd HH:mm')}">작성일
-                                </div>
-                            </div>
+    <!-- 후기 리스트 -->
+    <div class="tab-pane fade show active" id="review-tab-pane" role="tabpanel" aria-labelledby="review-tab"
+         tabindex="0">
+        <div class="row row-cols-1 row-cols-md-2 g-4 mt-3" id="review-container"
+             data-masonry='{"percentPosition": true }'>
+            <div class="col" th:each="post : ${postList}">
+                <div class="post-card">
+                    <div class="d-flex align-items-center">
+                        <img th:if="${post.author != null}"
+                             th:src="${post.author.profileImage != null ? post.author.profileImage : '/img/default-profile.png'}"
+                             class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
+
+                        <div>
+                            <div class="post-author" th:text="${post.author.name}">작성자</div>
+                            <div class="post-time" th:text="${#temporals.format(post.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
                         </div>
-                        <div class="mt-2">
-                            <img th:if="${feed.imageURL != null and !feed.imageURL.isEmpty()}" th:src="${feed.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지"
-                                 style="width: 100%; height:auto;">
-                            <h5 th:text="${feed.title}">제목</h5>
-                            <p class="mb-2" th:text="${feed.content}">내용</p>
-                            <div class="hashtags">
-                                <div class="hashtags">
-                                    <a th:each="tag : ${feed.tagList}"
-                                       th:href="@{'/feed/list?keyword=' + ${tag}}"
-                                       th:text="'#' + ${tag}"
-                                       class="me-1 text-decoration-none text-muted hashtag">
-                                    </a>
-                                </div>
-
-
-
-                            </div>
-                        </div>
-                        <div class="icons mt-3">
-                            <a href="javascript:void(0);"
-                               class="like-btn text-decoration-none"
-                               th:data-post-id="${feed.postID}"
-                               th:data-liked="${feed.voter.contains(loginUser)}"
-                               th:data-like-count="${#lists.size(feed.voter)}">
-    <span th:if="${feed.voter.contains(loginUser)}"
-          th:text="'🧡' + ${#lists.size(feed.voter)}"></span>
-                                <span th:unless="${feed.voter.contains(loginUser)}"
-                                      th:text="'🤍' + ${#lists.size(feed.voter)}"></span>
-                            </a>
-
-                            <span class="ms-3 comment-toggle" th:attr="data-post-id=${feed.postID}">
-
-                                💬 <span th:text="${commentCountMap[feed.postID]}">0</span>
-                            </span>
-
-                        </div>
-
-                        <!-- icons 아래에 추가 -->
-                        <div class="mt-2 d-flex justify-content-end"
-                             th:if="${loginUser != null and loginUser.id == feed.author.id}">
-                            <a th:href="@{'/feed/modify/' + ${feed.postID}}"
-                               class="btn btn-sm btn-outline-secondary me-2">수정</a>
-                            <a th:href="@{'/feed/delete/' + ${feed.postID}}" class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
-                        </div>
-
                     </div>
-                </div>
-            </div>
+                    <div class="mt-2">
+                        <img th:if="${post.imageURL != null and !post.imageURL.isEmpty()}" th:src="${post.imageURL}" class="img-fluid rounded mb-2" alt="피드 이미지">
+                        <a th:if="${post.club != null}" th:href="@{'/clubs/' + ${post.club.id}}">
+                            <h6 class="cs-orange mb-3" th:text="${post.club.title}">모임</h6>
+                        </a>
+                        <h5 th:text="${post.title}">제목</h5>
+                        <p class="mb-2" th:text="${post.content}">내용</p>
+                        <div class="hashtags">
+                            <a th:each="tag : ${post.tagList}"
+                               th:href="@{'/post/review/list?keyword=' + ${tag}}"
+                               th:text="'#' + ${tag}"
+                               class="me-1 text-decoration-none text-muted hashtag"></a>
+                        </div>
+                    </div>
 
-            <div class="text-center mt-4" th:if="${hasMore}">
-                <button id="loadMoreBtn" class="btn btn-outline-primary">더보기</button>
+                    <div class="icons mt-3">
+                        <a href="javascript:void(0);"
+                           class="like-btn text-decoration-none"
+                           th:data-post-id="${post.postID}"
+                           th:data-liked="${post.voter.contains(loginUser)}"
+                           th:data-like-count="${#lists.size(post.voter)}">
+                            <span th:if="${post.voter.contains(loginUser)}" th:text="'\uD83D\uDC9C' + ${#lists.size(post.voter)}"></span>
+                            <span th:unless="${post.voter.contains(loginUser)}" th:text="'\uD83E\uDD0D' + ${#lists.size(post.voter)}"></span>
+                        </a>
+                    </div>
+
+                    <div class="mt-2 d-flex justify-content-end"
+                         th:if="${loginUser != null and loginUser.id == post.author.id}">
+                        <a th:href="@{'/post/review/modify/' + ${post.postID}}"
+                           class="btn btn-sm btn-outline-secondary me-2">수정</a>
+                        <a th:href="@{'/post/review/delete/' + ${post.postID}}" class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+                    </div>
+
+                </div>
             </div>
         </div>
 
-        <!-- 댓글 모달 -->
+        <div class="text-center mt-4" th:if="${hasMore}">
+            <button id="loadMoreBtn" class="btn btn-outline-primary">더보기</button>
+        </div>
+    </div>
+
+        <!-- 댓글 모달
         <div class="modal fade" id="commentModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
@@ -107,11 +98,11 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- 댓글 목록 -->
+                        댓글 목록
                         <div id="commentListContainer">
-                            <div th:each="feed : ${feedList}" class="comment-list d-none"
-                                 th:id="'comment-list-' + ${feed.postID}">
-                                <div th:each="comment : ${allComments[feed.postID]}">
+                            <div th:each="review : ${reviewList}" class="comment-list d-none"
+                                 th:id="'comment-list-' + ${review.postID}">
+                                <div th:each="comment : ${allComments[review.postID]}">
                                     <img th:src="${comment.author.profileImage != null ? comment.author.profileImage : '/img/default-profile.png'}"
                                          class="rounded-circle me-2"
                                          style="width: 35px; height: 35px; object-fit: cover;">
@@ -121,7 +112,7 @@
                                     <button type="button"
                                             class="btn btn-sm btn-link reply-btn"
                                             th:data-parent-id="${comment.id}"
-                                            th:data-post-id="${feed.postID}">
+                                            th:data-post-id="${review.postID}">
                                         답글 달기
                                     </button>
 
@@ -138,13 +129,13 @@
                                         <strong th:text="${reply.author.name}">작성자</strong>
                                         <div th:text="${reply.content}">답글</div>
 
-                                        <!-- 답글 삭제 버튼 -->
+                                        답글 삭제 버튼
                                         <div class="text-end"
                                              th:if="${loginUser != null and reply.author.id == loginUser.id}">
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-danger delete-comment-btn"
                                                     th:data-comment-id="${reply.id}"
-                                                    th:data-post-id="${feed.postID}">
+                                                    th:data-post-id="${review.postID}">
                                                 삭제
                                             </button>
                                         </div>
@@ -161,7 +152,7 @@
                                         <button type="button"
                                                 class="btn btn-sm btn-outline-danger delete-comment-btn"
                                                 th:data-comment-id="${comment.id}"
-                                                th:data-post-id="${feed.postID}">
+                                                th:data-post-id="${review.postID}">
                                             삭제
                                         </button>
 
@@ -174,7 +165,7 @@
                             </div>
                         </div>
 
-                        <!-- 댓글 작성 폼 -->
+                         댓글 작성 폼
                         <form id="commentForm">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <input type="hidden" name="postID" id="commentPostID">
@@ -186,6 +177,7 @@
                 </div>
             </div>
         </div>
+        -->
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -201,9 +193,11 @@
 
     // Masonry 수동 초기화 (페이지 처음 로드될 때)
     $(window).on('load', function () {
-        msnry = new Masonry('#feed-container', {
-            itemSelector: '.col',
-            percentPosition: true
+        imagesLoaded('#review-container', function () {
+            msnry = new Masonry('#review-container', {
+                itemSelector: '.col',
+                percentPosition: true
+            });
         });
     });
 
@@ -211,11 +205,10 @@
     const limit = 4;
     const loadMoreBtn = document.getElementById("loadMoreBtn");
 
-    // "더보기" 버튼이 존재할 때만 이벤트 바인딩
     if (loadMoreBtn) {
         loadMoreBtn.addEventListener("click", function () {
             $.ajax({
-                url: "/feed/more",
+                url: "/post/review/more",
                 type: "GET",
                 data: { offset, limit },
                 success: function (posts) {
@@ -227,13 +220,14 @@
                     const newElems = [];
 
                     posts.forEach(post => {
+                        if (post.boardType !== "REVIEW") return;
                         const $newCard = $(`
                         <div class="col">
                             <div class="post-card">
                                 <div class="d-flex align-items-center">
-                                    <img src="${post.author.profileImage || '/img/default-profile.png'}" class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
+                                    <img src="${post.authorProfileImage || '/img/default-profile.png'}" class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
                                     <div>
-                                        <div class="post-author">${post.author.name}</div>
+                                        <div class="post-author">${post.authorName}</div>
                                         <div class="post-time">${new Date(post.createDate).toLocaleString()}</div>
                                     </div>
                                 </div>
@@ -244,7 +238,7 @@
                                     <div class="hashtags">
                                         ${
                             post.tags.split(',').map(tag =>
-                                `<a href="/feed/list?keyword=${tag.trim()}" class="me-1 text-decoration-none text-muted hashtag">#${tag.trim()}</a>`
+                                `<a href="/post/review/list?keyword=${tag.trim()}" class="me-1 text-decoration-none text-muted hashtag">#${tag.trim()}</a>`
                             ).join('')
                         }
                                     </div>
@@ -257,11 +251,11 @@
                         </div>
                     `);
 
-                        $("#feed-container").append($newCard);
+                        $("#review-container").append($newCard);
                         newElems.push($newCard[0]);
                     });
 
-                    imagesLoaded('#feed-container', function () {
+                    imagesLoaded('#review-container', function () {
                         msnry.appended(newElems);
                         msnry.layout(); // 정확한 높이 계산
                     });
@@ -273,7 +267,7 @@
                     }
                 },
                 error: function () {
-                    alert("피드를 더 불러오는 데 실패했습니다.");
+                    alert("후기를 더 불러오는 데 실패했습니다.");
                 }
             });
         });
@@ -282,10 +276,7 @@
     }
 
 
-
     $(document).ready(function () {
-        
-
         // 댓글 모달 열기
         $(".comment-toggle").on("click", function () {
             const postID = $(this).data("post-id");
@@ -307,7 +298,7 @@
             const csrfToken = $("input[name='_csrf']").val();
 
             $.ajax({
-                url: "/comment/feed",
+                url: "/comment/review",
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: {
@@ -340,7 +331,7 @@
         const csrfToken = $("input[name='_csrf']").val();
 
         $.ajax({
-            url: `/comment/feed/delete/${commentId}`,
+            url: `/comment/review/delete/${commentId}`,
             type: "POST",
             data: {
                 _csrf: csrfToken
@@ -371,7 +362,7 @@
         const csrfToken = $("input[name='_csrf']").val();
 
         $.ajax({
-            url: "/comment/feed/reply",
+            url: "/comment/review/reply",
             type: "POST",
             data: {
                 postId: postId,
@@ -403,7 +394,7 @@
         const postId = $btn.data("post-id");
 
         $.ajax({
-            url: `/feed/vote/${postId}`,
+            url: `/post/vote/${postId}`,
             type: "GET",
             headers: {
                 "X-Requested-With": "XMLHttpRequest"

@@ -3,8 +3,6 @@ package com.team.moim;
 import com.team.moim.entity.Club;
 import com.team.moim.repository.ClubRepository;
 import com.team.moim.service.ClubService;
-import com.team.reviewPost.ReviewPost;
-import com.team.reviewPost.ReviewPostRepository;
 import com.team.user.CustomSecurityUserDetails;
 import com.team.user.SiteUser;
 import com.team.user.UserService;
@@ -25,7 +23,6 @@ import java.util.List;
 public class ClubController {
     private final ClubService clubService;
     private final UserService userService;
-    private final ReviewPostRepository reviewPostRepository;
     private final ClubRepository clubRepository;
 
     @GetMapping("/create")
@@ -95,11 +92,6 @@ public class ClubController {
     public String delete(@PathVariable Long id) {
         Club club = clubRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
-
-        List<ReviewPost> reviews = reviewPostRepository.findByClub(club);
-        for (ReviewPost review : reviews) {
-            reviewPostRepository.delete(review);
-        }
 
         clubService.delete(id);
         return "redirect:/clubs";
