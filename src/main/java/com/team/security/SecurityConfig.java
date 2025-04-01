@@ -40,6 +40,7 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/error"),
                                         new AntPathRequestMatcher("/login"),
                                         new AntPathRequestMatcher("/signup"),
+                                        new AntPathRequestMatcher("/clubs/category/**"),
                                         new AntPathRequestMatcher("/login/oauth2/**"),
                                         new AntPathRequestMatcher("/h2-console/**"),
                                         new AntPathRequestMatcher("/check-otp"),
