@@ -1,4 +1,4 @@
-package com.team.reviewPost;
+package com.team.post;
 
 import com.team.moim.entity.Club;
 import com.team.user.SiteUser;
@@ -15,7 +15,8 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-public class ReviewPost {
+@Table(name = "post")
+public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postID;
@@ -27,9 +28,9 @@ public class ReviewPost {
     private String content;
 
     @Column(name="CREATE_DATE")
-    private LocalDateTime createDate;
+     private LocalDateTime createDate;
 
-    private String tags; // 맛집,강남,소셜다이닝 -> 이런 식으로 입력
+    private String tags;
 
     @ManyToOne
     private SiteUser author;
@@ -40,13 +41,23 @@ public class ReviewPost {
     private String imageURL;
 
     @ManyToOne
-    private Club club; // 후기를 쓰려고 선택한 모임
+    private Club club; // Review에만 필요한 경우 nullable로 유지
 
-    @Transient // DB에는 저장하지 않음
+    @Transient
     public List<String> getTagList() {
-        if(tags == null || tags.equals("")) {
+        if (tags == null || tags.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        return Arrays.asList(tags.split(","));
+        return Arrays.asList(tags.replaceAll("\\s+", "").split(","));
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BoardType boardType;
+
+    @Transient
+    public String getBoardType() {
+        return (this.club == null) ? "FEED" : "REVIEW";
     }
 }
+

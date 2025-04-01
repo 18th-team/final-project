@@ -127,7 +127,7 @@ public class HomeController {
 
     @GetMapping("/community")
     public String community() {
-        return "feed_list";
+        return "post_feed_list";
     }
 
     @GetMapping("/signup")
