@@ -4,6 +4,7 @@ import com.team.moim.ClubDTO;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubRepository;
+import com.team.moim.repository.KeywordRepository;
 import com.team.user.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -32,6 +33,7 @@ public class HomeController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ClubRepository clubRepository;
+    private final KeywordRepository keywordRepository;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -52,6 +54,9 @@ public class HomeController {
                     clubList = clubList.subList(0, 8); // 8개만 남기기
                 }
             }
+            // 키워드 목록 조회
+            List<Keyword> keywordList = keywordRepository.findAll();
+            model.addAttribute("keywordList", keywordList);
             model.addAttribute("clubList", clubList);
             return "index";
         }
@@ -95,6 +100,10 @@ public class HomeController {
                 clubList = clubList.subList(0, 8); // 8개만 남기기
             }
         }
+
+        // 키워드 목록 조회
+        List<Keyword> keywordList = keywordRepository.findAll();
+        model.addAttribute("keywordList", keywordList);
         model.addAttribute("clubList", clubList);
         return "index";  // view 이름 반환
 

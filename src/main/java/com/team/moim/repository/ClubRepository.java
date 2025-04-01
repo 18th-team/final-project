@@ -19,5 +19,5 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     @Query("SELECT c FROM Club c JOIN c.keywords k WHERE k.name IN :keywords GROUP BY c HAVING COUNT(k) > 0")
     List<Club> findByKeywords(@Param("keywords") List<String> keywords);
 
-    List<Club> findByKeywordsIn(Set<Keyword> keywords);
+    List<Club> findByKeywords_Name(String keywordName); // 특정 키워드를 가진 클럽 조회
 }
