@@ -1,9 +1,10 @@
 .card-text{
     font-size: 1.3em;
 }
-#recommend .card-title,#random .card-title{
+#recommend .card-title ,#random .card-title{
     color: #667085;
 }
+
 
 .container{
     margin-top: 130px;

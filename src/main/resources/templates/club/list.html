@@ -25,20 +25,15 @@
 
         }
 
-
     </style>
 
 </head>
 <body>
 <div class="container my-5 shadow-lg p-4 rounded-3 w-80">
     <h1 class="my-5 text-center fw-bold">모락 크루 리스트 🍳</h1>
-    <!-- ✅ URL이 "/clubs"로 시작할 때만 카테고리 메뉴 표시 -->
-
-
-
     <!-- 클럽 목록 -->
-    <div class="row mb-5 " th:unless="${#lists.isEmpty(clubDTOList)}">
-        <div class="col-lg-6 my-3 " th:each="club : ${clubDTOList}">
+    <div class="row mb-5 " th:unless="${#lists.isEmpty(clubList)}">
+        <div class="col-lg-6 my-3 " th:each="club : ${clubList}">
             <a class="card mb-3 border-create py-2" th:href="@{/clubs/{id}(id=${club.id})}">
                 <div class="row g-0 h-100" th:href="@{/clubs/{id}(id=${club.id})}">
                     <!-- 크루리스트 이미지-->
@@ -89,7 +84,7 @@
     </div>
 
     <!-- 목록이 비었을 때 -->
-    <div th:if="${#lists.isEmpty(clubDTOList)}" class="alert alert-info text-center">
+    <div th:if="${#lists.isEmpty(clubList)}" class="alert alert-info text-center">
         등록된 모임이 없습니다. 새 모임을 만들어 보세요! 😢
     </div>
 

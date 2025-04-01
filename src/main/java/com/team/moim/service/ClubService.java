@@ -164,11 +164,8 @@ public class ClubService {
         return clubRepository.findByKeywords_NameIn(userKeywords);
     }
 
-    //카테고리 클랙시 -> 해당 카테고리와 연관된 클럽목록 불러오기
-    public List<ClubDTO> findByCategory(String categoryName) {
-        List<Club> clubs = clubRepository.findByKeywords_Name(categoryName);
-        return clubs.stream()
-                .map(ClubDTO::toDTO)
-                .collect(Collectors.toList());
-    }
+
+
+
+
 }

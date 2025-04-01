@@ -10,6 +10,7 @@ import com.team.reviewPost.ReviewPostRepository;
 import com.team.user.CustomSecurityUserDetails;
 import com.team.user.SiteUser;
 import com.team.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,8 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -33,6 +36,18 @@ public class ClubController {
     private final ClubRepository clubRepository;
 private final KeywordRepository keywordRepository;
 
+    // ✅ 중복 코드 줄이기 ->
+    @ModelAttribute("keywordList")
+    public List<Keyword> populateKeywords(@RequestParam(value = "id", required = false) String id, HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if (uri.equals("/clubs") || uri.startsWith("/clubs/category") || uri.equals("/")) {
+            return keywordRepository.findAll();
+        }
+        return null; // /clubs/10 같은 경로에서는 키워드 목록 안 보냄
+    }
+
+    
+    
     @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("clubDTO", new ClubDTO());
@@ -48,16 +63,32 @@ private final KeywordRepository keywordRepository;
         return "redirect:/clubs";
     }
 
+    // ✅ 전체 클럽 리스트 조회
     @GetMapping()
-    //DB에서 전체게시물을 가지고 와서, list.html에 보여줌
-    public String findAll(Model model) {
-        List<ClubDTO> clubDTOList = clubService.findAll();
-        model.addAttribute("clubDTOList", clubDTOList);
-        // 키워드 목록 조회
-        List<Keyword> keywordList = keywordRepository.findAll();
-        model.addAttribute("keywordList", keywordList);
-        return "club/list"; //list.html로 흘러간다.
+    public String findAllClubs(Model model) {
+        List<Club> clubs = clubRepository.findAll();
+        List<ClubDTO> clubDTOList = clubs.stream()
+                .map(ClubDTO::toDTO)
+                .collect(Collectors.toList());
+        model.addAttribute("clubList", clubDTOList);
+        System.out.println("All clubs: " + clubDTOList.size()); // 디버깅
+        return "club/list";
     }
+
+    //카테고리 클랙시 -> 해당 카테고리와 연관된 클럽목록 불러오기
+    // 키워드 ID로 클럽 목록 조회
+    @GetMapping("/category/{id}")
+    public String getClubsByKeywordId(@PathVariable("id") Long keywordId, Model model) {
+        // 키워드 ID로 클럽 목록 조회
+        List<Club> clubs = clubRepository.findByKeywords_Id(keywordId);
+        List<ClubDTO> clubDTOList = clubs.stream()
+                .map(ClubDTO::toDTO)
+                .collect(Collectors.toList());
+        model.addAttribute("clubList", clubDTOList);
+        System.out.println("Keyword ID: " + keywordId + ", Clubs found: " + clubDTOList.size()); // 디버깅
+        return "club/list";
+    }
+
 
     //상세보기 (사용자정보 저장하기)
     @GetMapping("/{id}")
@@ -113,16 +144,7 @@ private final KeywordRepository keywordRepository;
         return "redirect:/clubs";
     }
 
-    //카테고리 클랙시 -> 해당 카테고리와 연관된 클럽목록 불러오기
-    @GetMapping("/category/{categoryName}")
-    public String findByCategory(@PathVariable String categoryName, Model model) {
-        List<ClubDTO> clubDTOList = clubService.findByCategory(categoryName);
-        // 키워드 목록 조회
-        List<Keyword> keywordList = keywordRepository.findAll();
-        model.addAttribute("keywordList", keywordList);
-        model.addAttribute("clubDTOList", clubDTOList);
-        return "club/list"; // list.html에 전달
-    }
+
 
 
 
