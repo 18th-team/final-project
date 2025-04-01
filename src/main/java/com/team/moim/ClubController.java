@@ -71,7 +71,6 @@ private final KeywordRepository keywordRepository;
                 .map(ClubDTO::toDTO)
                 .collect(Collectors.toList());
         model.addAttribute("clubList", clubDTOList);
-        System.out.println("All clubs: " + clubDTOList.size()); // 디버깅
         return "club/list";
     }
 
@@ -85,7 +84,6 @@ private final KeywordRepository keywordRepository;
                 .map(ClubDTO::toDTO)
                 .collect(Collectors.toList());
         model.addAttribute("clubList", clubDTOList);
-        System.out.println("Keyword ID: " + keywordId + ", Clubs found: " + clubDTOList.size()); // 디버깅
         return "club/list";
     }
 
