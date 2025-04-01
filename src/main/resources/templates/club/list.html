@@ -7,19 +7,22 @@
     <link th:href="@{/css/custom_category_badge.css}" rel="stylesheet" type="text/css"/>
 
     <style>
-        *{
+        * {
             font-family: 'Pretendard-Medium';
         }
+
         /* 카드 그림자 효과 */
         .card {
             border: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* 카드 외부 그림자 */
-text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 카드 외부 그림자 */
+            text-decoration: none;
         }
+
         span, p {
             font-family: 'Pretendard-Light';
 
         }
+
 
     </style>
 
@@ -27,26 +30,28 @@ text-decoration: none;
 <body>
 <div class="container my-5 shadow-lg p-4 rounded-3 w-80">
     <h1 class="my-5 text-center fw-bold">모락 크루 리스트 🍳</h1>
+    <div th:replace="~{fragments/category_menu :: category}"></div>
 
     <!-- 클럽 목록 -->
     <div class="row mb-5 " th:unless="${#lists.isEmpty(clubDTOList)}">
         <div class="col-lg-6 my-3 " th:each="club : ${clubDTOList}"
-             >
+        >
 
-            <a class="card mb-3 border-create py-2"  th:href="@{/clubs/{id}(id=${club.id})}" >
-                <div class="row g-0 h-100"  th:href="@{/clubs/{id}(id=${club.id})}">
+            <a class="card mb-3 border-create py-2" th:href="@{/clubs/{id}(id=${club.id})}">
+                <div class="row g-0 h-100" th:href="@{/clubs/{id}(id=${club.id})}">
                     <!-- 크루리스트 이미지-->
                     <div class="col-4 col-md-5 my-auto text-center mx-auto p-2 ">
                         <img th:if="${club.storedFileName != null and #lists.size(club.storedFileName) > 0}"
                              th:src="@{/upload/{filename}(filename=${club.storedFileName[0]})}"
-                             alt="클럽 이미지" class="rounded img-fluid h-100" >
+                             alt="클럽 이미지" class="rounded img-fluid h-100">
                     </div>
                     <div class="col-8 col-md-7">
                         <div class="card-body">
                             <p class="card-text">
                             <h5>
                                 <span th:switch="${club.selectedTheme}">
-                                    <span th:case="'액티비티'" class="badge custom-badge custom-badge-success" th:text="${club.selectedTheme}">액티비티</span>
+                                    <span th:case="'액티비티'" class="badge custom-badge custom-badge-success"
+                                          th:text="${club.selectedTheme}">액티비티</span>
 
                                     <span th:case="'자기계발'" class="badge custom-badge custom-badge-info"
                                           th:text="${club.selectedTheme}">자기계발</span>
@@ -54,7 +59,8 @@ text-decoration: none;
                                           th:text="${club.selectedTheme}">취미</span>
                                     <span th:case="'여행'" class="badge custom-badge custom-badge-danger"
                                           th:text="${club.selectedTheme}">여행</span>
-                                    <span th:case="'문화/예술'" class="badge custom-badge custom-badge-primary" th:text="${club.selectedTheme}">문화/예술</span>
+                                    <span th:case="'문화/예술'" class="badge custom-badge custom-badge-primary"
+                                          th:text="${club.selectedTheme}">문화/예술</span>
                                     <span th:case="'푸드/드링크'" class="badge custom-badge custom-badge-secondary"
                                           th:text="${club.selectedTheme}">푸드/드링크</span>
                                     <span th:case="*" class="badge custom-badge custom-badge-light text-dark"

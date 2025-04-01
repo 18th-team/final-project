@@ -5,48 +5,51 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/asset-manifest.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/carousel.css" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/css/carousel.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/category_menu.css" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/css/category_menu.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/navigation.css" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/css/navigation.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/favicon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/img/default-profile.png" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/img/default-profile.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/logo192.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/logo512.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/manifest.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/robots.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/css/main.f855e6bc.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/css/main.f855e6bc.css.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/453.aaf9e97f.chunk.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/453.aaf9e97f.chunk.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/main.77f1b9ac.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/main.77f1b9ac.js.LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/js/main.77f1b9ac.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/carousel.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/carousel.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/static/img/futbol-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/static/img/mug-hot-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/static/img/palette-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/static/img/sack-dollar-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/static/img/suitcase-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/static/img/wand-sparkles-solid.svg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/category_menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/category_menu.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/footer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/randomList.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/randomList.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/userRecommend.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/userRecommend.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/signup.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/test.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/test2.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/repository/ClubRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/repository/ClubRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/camera.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/1-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/futbol-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/mug-hot-solid.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/6-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/palette-solid.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/5-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/sack-dollar-solid.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/2-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/suitcase-solid.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/4-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/upload/0aec3e3b-3a7f-4df8-820d-50791b2e9037_KakaoTalk_20250318_152124928.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/upload/14ff3188-fff1-415a-a357-4edfe13ac8f5_watch.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/upload/633f1ac4-1a83-4de0-9e41-a27505746fd0_다운로드.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/upload/ad429959-460d-404f-8b89-256532da4d9d_2019082100645_1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/upload/c05123c3-0794-4f4d-a49b-24803d2b96ae_GalaxyTab.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/upload/c9b240aa-de2f-4871-b014-267e2d285cde_다운로드 (1).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/upload/d035a559-8908-46e7-9b52-b8dd44329b32_20241122_164033.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/upload/dd75333f-83b7-457b-9c51-d753eebd9128_screencapture-cos-ko-kr-2025-01-10-17_47_05.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/wand-sparkles-solid.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/3-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/category_menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/category_menu.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/signup.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +66,12 @@
       <state>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="18th_final" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -73,7 +81,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="yeeunclub" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -114,19 +122,24 @@
     "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.Application.executor": "Debug",
+    "Spring Boot.Application.executor": "Run",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reactor",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\GREEN\IdeaProjects\final-project2\src\main\resources\static\img\svg" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
@@ -171,6 +184,7 @@
       <workItem from="1743382219402" duration="8302000" />
       <workItem from="1743391827401" duration="9244000" />
       <workItem from="1743407164325" duration="3755000" />
+      <workItem from="1743470381466" duration="7695000" />
     </task>
     <task id="LOCAL-00001" summary="h2콘솔 server모드(다중접속TCP)">
       <option name="closed" value="true" />
@@ -234,5 +248,10 @@
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
     <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/18th_final$Application.ic" NAME="Application Coverage Results" MODIFIED="1743470222890" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.team.*</FILTER>
+    </SUITE>
   </component>
 </project>

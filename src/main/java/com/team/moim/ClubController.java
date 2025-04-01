@@ -16,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 
@@ -104,5 +106,15 @@ public class ClubController {
         clubService.delete(id);
         return "redirect:/clubs";
     }
+
+    //카테고리 클랙시 -> 해당 카테고리와 연관된 클럽목록 불러오기
+    @GetMapping("/category/{categoryName}")
+    public String findByCategory(@PathVariable String categoryName, Model model) {
+        List<ClubDTO> clubDTOList = clubService.findByCategory(categoryName);
+        model.addAttribute("clubDTOList", clubDTOList);
+        return "club/list"; // list.html에 전달
+    }
+
+
 
 }

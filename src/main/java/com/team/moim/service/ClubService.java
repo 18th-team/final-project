@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -161,5 +162,13 @@ public class ClubService {
             return new ArrayList<>(); // 키워드가 없으면 빈 리스트 반환
         }
         return clubRepository.findByKeywords_NameIn(userKeywords);
+    }
+
+    //카테고리 클랙시 -> 해당 카테고리와 연관된 클럽목록 불러오기
+    public List<ClubDTO> findByCategory(String categoryName) {
+        List<Club> clubs = clubRepository.findByKeywords_Name(categoryName);
+        return clubs.stream()
+                .map(ClubDTO::toDTO)
+                .collect(Collectors.toList());
     }
 }

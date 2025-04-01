@@ -8,12 +8,29 @@
     <link th:href="@{/css/userRecommend.css}" rel="stylesheet"/>
     <link th:href="@{/font/font.css}" rel="stylesheet"/>
     <style>
+        .card-title{
+            font-family: 'Pretendard-Medium';
+            font-size: 1.3rem;
+            color: black
+        ;
+        }
+        .card-text{
+            font-family: 'Pretendard-Light';
+            font-size: 1.1rem;
+            color: grey;
+
+        }
         a{
             text-decoration: none;
         }
         *{
        font-family: 'Pretendard-Medium';
-    }</style>
+    }
+    .category-title card-title{
+        font-size: 3rem;
+    }
+
+    </style>
 
 
 </head>
@@ -22,7 +39,7 @@
         <div th:replace="~{fragments/carousel :: carousel}"></div>
         <div th:replace="~{fragments/category_menu :: category}"></div>
         <div th:replace="~{fragments/mobtiBanner :: mobtiBanner}"></div>
-        <div th:replace="~{fragments/userRecommend :: userRecommend}"></div>
+        <div sec:authorize="isAuthenticated()" th:replace="~{fragments/userRecommend :: userRecommend}"></div>
         <div th:replace="~{fragments/randomList :: randomList}"></div>
         <div th:replace="~{fragments/userLocation :: userLocation}"></div>
     </div>
