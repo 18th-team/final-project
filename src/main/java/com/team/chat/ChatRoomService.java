@@ -71,6 +71,7 @@ public class ChatRoomService {
             chatMessageRepository.deleteByChatRoom(chatRoom);
             chatRoomRepository.delete(chatRoom);
         } else {
+            chatRoom.setStatus("BLOCKED");
             chatMessageService.createMessage(chatRoom, null,
                     blocker.getName() + "님이 " + blocked.getName() + "님을 차단했습니다.", MessageType.SYSTEM);
             chatRoomRepository.save(chatRoom);
