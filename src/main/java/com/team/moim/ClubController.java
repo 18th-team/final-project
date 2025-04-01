@@ -1,7 +1,9 @@
 package com.team.moim;
 
 import com.team.moim.entity.Club;
+import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubRepository;
+import com.team.moim.repository.KeywordRepository;
 import com.team.moim.service.ClubService;
 import com.team.reviewPost.ReviewPost;
 import com.team.reviewPost.ReviewPostRepository;
@@ -29,6 +31,7 @@ public class ClubController {
     private final UserService userService;
     private final ReviewPostRepository reviewPostRepository;
     private final ClubRepository clubRepository;
+private final KeywordRepository keywordRepository;
 
     @GetMapping("/create")
     public String createForm(Model model) {
@@ -50,6 +53,9 @@ public class ClubController {
     public String findAll(Model model) {
         List<ClubDTO> clubDTOList = clubService.findAll();
         model.addAttribute("clubDTOList", clubDTOList);
+        // 키워드 목록 조회
+        List<Keyword> keywordList = keywordRepository.findAll();
+        model.addAttribute("keywordList", keywordList);
         return "club/list"; //list.html로 흘러간다.
     }
 
@@ -111,6 +117,9 @@ public class ClubController {
     @GetMapping("/category/{categoryName}")
     public String findByCategory(@PathVariable String categoryName, Model model) {
         List<ClubDTO> clubDTOList = clubService.findByCategory(categoryName);
+        // 키워드 목록 조회
+        List<Keyword> keywordList = keywordRepository.findAll();
+        model.addAttribute("keywordList", keywordList);
         model.addAttribute("clubDTOList", clubDTOList);
         return "club/list"; // list.html에 전달
     }

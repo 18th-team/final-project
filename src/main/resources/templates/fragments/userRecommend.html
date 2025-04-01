@@ -7,7 +7,7 @@
         th:text="${userList != null ? userList.hostName + '님이 좋아하실 만한 모임이에요 👀' : '추천 모임이 없습니다.'}">
     </h2>
 
-    <section class="recommended-meetings" aria-labelledby="recommended-title">
+    <section class="recommended-meetings" aria-labelledby="recommended-title" id="recommend">
         <!-- 한 줄에 3개의 카드가 보이도록 row로 묶고, 카드들은 col-12 col-sm-6 col-md-4로 처리 -->
         <div class="row g-4 mt-4">
             <div th:each="club : ${recommendedClubs}" class="col-12 col-sm-6 col-md-4">

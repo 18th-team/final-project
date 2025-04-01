@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}" layout:fragment="content"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main-layout}" layout:fragment="content"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Club List</title>
     <link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/css/custom_category_badge.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/category_menu.css}" rel="stylesheet"/>
+
 
     <style>
         * {
@@ -30,13 +32,13 @@
 <body>
 <div class="container my-5 shadow-lg p-4 rounded-3 w-80">
     <h1 class="my-5 text-center fw-bold">모락 크루 리스트 🍳</h1>
-    <div th:replace="~{fragments/category_menu :: category}"></div>
+    <!-- ✅ URL이 "/clubs"로 시작할 때만 카테고리 메뉴 표시 -->
+
+
 
     <!-- 클럽 목록 -->
     <div class="row mb-5 " th:unless="${#lists.isEmpty(clubDTOList)}">
-        <div class="col-lg-6 my-3 " th:each="club : ${clubDTOList}"
-        >
-
+        <div class="col-lg-6 my-3 " th:each="club : ${clubDTOList}">
             <a class="card mb-3 border-create py-2" th:href="@{/clubs/{id}(id=${club.id})}">
                 <div class="row g-0 h-100" th:href="@{/clubs/{id}(id=${club.id})}">
                     <!-- 크루리스트 이미지-->
@@ -65,7 +67,8 @@
                                           th:text="${club.selectedTheme}">푸드/드링크</span>
                                     <span th:case="*" class="badge custom-badge custom-badge-light text-dark"
                                           th:text="'미정'">미정</span>
-                                </span></h5>
+                                </span>
+                            </h5>
                             </p>
                             <h4 class="card-title create-name mb-2 text-truncate" style="max-width: 100%;"
                                 th:text="${club.title}"></h4>
