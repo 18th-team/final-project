@@ -1,7 +1,7 @@
 .card-text{
     font-size: 1.3em;
 }
-.card-title{
+#recommend .card-title,#random .card-title{
     color: #667085;
 }
 
