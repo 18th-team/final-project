@@ -4,45 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="리뷰 페이지 완료">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/BoardType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/Post.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostForm.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/post_form.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/post_review_list.html" afterDir="false" />
+    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="카테고리메뉴바 UI변경">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/randomList.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/randomList.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/community/CommunityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/community/CommunityController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedComment.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedComment/FeedCommentService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPost.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostForm.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/feedPost/FeedPostService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewComment/ReviewComment.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewComment/ReviewCommentController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewComment/ReviewCommentRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewComment/ReviewCommentService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPost.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostForm.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/reviewPost/ReviewPostService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/feed_form.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/feed_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/post_feed_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,13 +32,38 @@
       <ProjectState />
     </projectState>
   </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="18th_final" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="18th_final" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="18th_final" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Enum" />
         <option value="Class" />
-        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -81,9 +84,12 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
-    &quot;accountId&quot;: &quot;3cd7410d-9738-4af7-9858-1be0dcd9219e&quot;
+    &quot;accountId&quot;: &quot;9879ead2-cb9d-443b-9060-5e04c12e8733&quot;
   }
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -100,7 +106,8 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
+    "Gradle.Build final-project2.executor": "Run",
+    "Gradle.final-project 빌드.executor": "Run",
     "JavaScript Debug.signup.html.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
@@ -115,9 +122,18 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\GREEN\IdeaProjects\final-project2\src\main\resources\static\img\svg" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
@@ -160,9 +176,8 @@
       <workItem from="1743331207471" duration="3012000" />
       <workItem from="1743382219402" duration="8302000" />
       <workItem from="1743391827401" duration="9244000" />
-      <workItem from="1743411827835" duration="222000" />
-      <workItem from="1743467084548" duration="17091000" />
-      <workItem from="1743489408744" duration="8648000" />
+      <workItem from="1743407164325" duration="3755000" />
+      <workItem from="1743470381466" duration="24300000" />
     </task>
     <task id="LOCAL-00001" summary="h2콘솔 server모드(다중접속TCP)">
       <option name="closed" value="true" />
@@ -180,7 +195,63 @@
       <option name="project" value="LOCAL" />
       <updated>1743402405711</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="랜덤모임 랜더링 완료(BE)">
+      <option name="closed" value="true" />
+      <created>1743406167905</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1743406167906</updated>
+    </task>
+    <task id="LOCAL-00004" summary="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동">
+      <option name="closed" value="true" />
+      <created>1743410923465</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743410923465</updated>
+    </task>
+    <task id="LOCAL-00005" summary="카테고리 설정 -&gt; 클릭시 리스트로 이동 &#10;하드코딩 -&gt; 동적코딩 변경">
+      <option name="closed" value="true" />
+      <created>1743478467336</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1743478467336</updated>
+    </task>
+    <task id="LOCAL-00006" summary="카테고리메뉴바 UI변경">
+      <option name="closed" value="true" />
+      <created>1743478494269</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743478494269</updated>
+    </task>
+    <task id="LOCAL-00007" summary="메인+크루리스트만 카테고리 컨트롤러 설정 -&gt; UI크기 수정 필요">
+      <option name="closed" value="true" />
+      <created>1743480515130</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1743480515130</updated>
+    </task>
+    <task id="LOCAL-00008" summary="카테고리 비회원 접근 가능">
+      <option name="closed" value="true" />
+      <created>1743481041468</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1743481041468</updated>
+    </task>
+    <task id="LOCAL-00009" summary="카테고리메뉴바 UI변경">
+      <option name="closed" value="true" />
+      <created>1743561235562</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1743561235562</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -203,7 +274,21 @@
     <MESSAGE value="회원가입:관심키워드 선택지 추가" />
     <MESSAGE value="h2콘솔 server모드(다중접속TCP)" />
     <MESSAGE value="사용자 키워드 추천 모임 랜더링(BE완료)" />
-    <MESSAGE value="리뷰 페이지 완료" />
-    <option name="LAST_COMMIT_MESSAGE" value="리뷰 페이지 완료" />
+    <MESSAGE value="랜덤모임 랜더링 완료(BE)" />
+    <MESSAGE value="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동" />
+    <MESSAGE value="카테고리 설정 -&gt; 클릭시 리스트로 이동 &#10;하드코딩 -&gt; 동적코딩 변경" />
+    <MESSAGE value="메인+크루리스트만 카테고리 컨트롤러 설정 -&gt; UI크기 수정 필요" />
+    <MESSAGE value="카테고리 비회원 접근 가능" />
+    <MESSAGE value="카테고리메뉴바 UI변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="카테고리메뉴바 UI변경" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/18th_final$Application.ic" NAME="Application Coverage Results" MODIFIED="1743470222890" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.team.*</FILTER>
+    </SUITE>
   </component>
 </project>

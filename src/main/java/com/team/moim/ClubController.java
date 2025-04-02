@@ -12,9 +12,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -68,9 +70,16 @@ private final KeywordRepository keywordRepository;
                 .map(ClubDTO::toDTO)
                 .collect(Collectors.toList());
         model.addAttribute("clubList", clubDTOList);
+        System.out.println("All clubs: " + clubDTOList.size()); // 디버깅
         return "club/list";
     }
-
+    // 검색 처리
+    @GetMapping("/search")
+    public String searchClubs(@RequestParam("query") String query, Model model) {
+        List<ClubDTO> clubDTOList = clubService.searchClubs(query);
+        model.addAttribute("clubList", clubDTOList);
+        return "club/list"; // list.html로 렌더링
+    }
     //카테고리 클랙시 -> 해당 카테고리와 연관된 클럽목록 불러오기
     // 키워드 ID로 클럽 목록 조회
     @GetMapping("/category/{id}")
@@ -81,6 +90,7 @@ private final KeywordRepository keywordRepository;
                 .map(ClubDTO::toDTO)
                 .collect(Collectors.toList());
         model.addAttribute("clubList", clubDTOList);
+        System.out.println("Keyword ID: " + keywordId + ", Clubs found: " + clubDTOList.size()); // 디버깅
         return "club/list";
     }
 
@@ -134,7 +144,15 @@ private final KeywordRepository keywordRepository;
         return "redirect:/clubs";
     }
 
-
+//클럽 가입 요청 처리
+@PostMapping("/join/{clubId}")
+public String joinClub(@PathVariable("clubId") Long clubId,
+                       @AuthenticationPrincipal SiteUser user, // 로그인한 유저 정보
+                       RedirectAttributes redirectAttributes) {
+    clubService.joinClub(clubId, user.getId());
+    redirectAttributes.addFlashAttribute("message", "참여완료!");
+    return "redirect:/clubs/" + clubId; // 상세 페이지로 리다이렉트
+}
 
 
 

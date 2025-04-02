@@ -16,7 +16,6 @@
 
 /* .category-title: 텍스트 스타일 유지 */
 .category-title {
-    color: #805c4c;
     font-size: 20px;
 }
 @media (max-width: 754px){

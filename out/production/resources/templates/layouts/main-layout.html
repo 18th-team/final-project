@@ -4,6 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title layout:title-pattern="$CONTENT_TITLE | 모락모락">모락모락</title>
+    <link th:href="@{/css/category_menu.css}" rel="stylesheet"/>
 
     <link th:href="@{/css/navigation.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
@@ -29,7 +30,11 @@
 </head>
 <body>
 <nav th:replace="~{fragments/navigation :: navigation}"></nav>
-<hr>
+<!-- /clubs, /clubs/category/**, / 일 때만 카테고리 메뉴 표시 -->
+<div th:replace="~{fragments/category_menu :: category}"
+     th:if="${#httpServletRequest.requestURI == '/clubs' or
+                 #httpServletRequest.requestURI.startsWith('/clubs/category') or
+                 #httpServletRequest.requestURI == '/'}"></div>
 <div layout:fragment="content"></div>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 

@@ -144,6 +144,7 @@
             </div>
         </dd>
         <div class="card-body">
+
             <div class="row my-3 d-flex justify-content-between">
                 <div class="col-lg-8">
                     <h2 th:text="${clubDTO.title}"></h2>
@@ -221,6 +222,31 @@
                                                 class="rounded-circle img-fluid "
                                                                    style="max-width: 150px;max-height: 150px"
                             />
+                            <span th:if="${clubDTO.hostImg == null}">이미지 없음</span></div>
+                        <div class="col-md-9 ">
+                            <div class="row px-sm-4">
+                                <div class="col-12 mt-3 ">
+                                    <dd class="hostName" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
+                                </div>
+                                <div class="col-12 ">
+                                    <dd class="hostIntro" th:text="${clubDTO.hostIntro}">Host Introduction</dd>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Host -->
+                <dt class="col-4 col-md-3 mt-5">참여자 목록📚</dt>
+                <div class="col-8 col-md-9 mb-4 mt-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 "><img th:if="${clubDTO.hostImg != null}"
+                                                    th:src="${clubDTO.hostImg}"
+                                                    alt="프로필 사진"
+                                                    class="rounded-circle img-fluid "
+                                                    style="max-width: 150px;max-height: 150px"
+                        />
                             <span th:if="${clubDTO.hostImg == null}">이미지 없음</span></div>
                         <div class="col-md-9 ">
                             <div class="row px-sm-4">

@@ -81,5 +81,14 @@ public class SiteUser {
     )
     private Set<Keyword> keywords = new HashSet<>();
 
+    @ManyToMany(mappedBy = "members")
+    private Set<Club> clubs = new HashSet<>();
+    // Getter, Setter
+    public Set<Club> getClubs() {
+        return clubs;
+    }
 
+    public void joinClub(Club club) {
+        clubs.add(club);
+    }
 }

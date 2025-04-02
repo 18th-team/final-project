@@ -3,6 +3,7 @@ package com.team.moim;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.ClubFileEntity;
 import com.team.moim.entity.Keyword;
+import com.team.user.SiteUser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,11 @@ public class ClubDTO {
     private List<String> originalFileName;
     private List<String> storedFileName;
     private int fileAttached;//파일 첨부 여부(1:첨부,0:미첨부)
+
+    // 새로 추가
+    private Set<String> memberUsernames = new HashSet<>(); // 참여자 이름 목록
+    private int memberCount; // 참여자 수
+
 
     // Entity -> DTO로 변환
     public static ClubDTO toDTO(Club club) {
@@ -78,6 +86,8 @@ public class ClubDTO {
             }
             clubDTO.setOriginalFileName(originalFileName);
             clubDTO.setStoredFileName(storedFileName);
+            clubDTO.setMemberUsernames(club.getMembers().stream().map(SiteUser::getName).collect(Collectors.toSet()));
+       clubDTO.setMemberCount(club.getMembers().size());
         }
         return clubDTO;
     }

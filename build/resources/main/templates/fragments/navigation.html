@@ -15,7 +15,7 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/clubs}">모락크루</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/clubs/create}">크루생성</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">채팅</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/feed/list}">커뮤니티</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/post/feed/list}">커뮤니티</a></li>
                 <!-- 로그인 상태에 따라 다르게 표시 -->
                 <div sec:authorize="isAuthenticated()">
                     <li class="nav-item"><a class="nav-link" th:href="@{/logout}">로그아웃</a></li>
@@ -35,8 +35,8 @@
 
             </ul>
         </div>
-        <form  th:action="@{/clubs/search}" class="search-bar d-flex align-items-right" role="search">
-            <input class="form-control" type="search" placeholder="키워드 검색" aria-label="Search" />
+        <form th:action="@{/clubs/search}" class="search-bar d-flex align-items-right" role="search" method="get">
+            <input class="form-control" type="search" name="query" placeholder="키워드 검색" aria-label="Search" />
             <button class="btn" type="submit">
                 <img th:src="@{/img/search-heart-fill.svg}" alt="Search Icon" style="width: 24px; height: 24px;" />
             </button>

@@ -54,6 +54,23 @@ public class Club extends BaseEntity {
     )
     private Set<Keyword> keywords = new HashSet<>();
 
+    // 가입자 추가
+    @ManyToMany
+    @JoinTable(
+            name = "club_member",
+            joinColumns = @JoinColumn(name = "club_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<SiteUser> members = new HashSet<>();
+
+    // Getter, Setter
+    public Set<SiteUser> getMembers() {
+        return members;
+    }
+
+    public void addMember(SiteUser user) {
+        members.add(user);
+    }
     // DTO -> Entity로 저장 (기본)
     public static Club toSaveEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
         return Club.builder()
