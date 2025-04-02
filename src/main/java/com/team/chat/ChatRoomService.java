@@ -8,11 +8,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +29,7 @@ public class ChatRoomService {
         return chatRoomRepository.findByIdWithParticipantsAndBlockedUsers(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
     }
+
     @Transactional
     public void leaveChatRoom(Long chatRoomId, String userUuid) {
         ChatRoom chatRoom = findChatRoomById(chatRoomId);
@@ -44,16 +43,15 @@ public class ChatRoomService {
         chatRoom.getParticipants().remove(user);
         if (chatRoom.getParticipants().isEmpty()) {
             chatMessageRepository.deleteByChatRoom(chatRoom);
-            chatRoomRepository.delete(chatRoom); // 참여자가 없으면 채팅방 삭제
+            chatRoomRepository.delete(chatRoom);
         } else {
             chatRoom.setStatus("CLOSED");
             chatMessageService.createMessage(chatRoom, user, user.getName() + "님이 채팅방을 떠났습니다.", MessageType.SYSTEM);
             chatRoomRepository.save(chatRoom);
         }
-
-        // 이벤트 발생
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), chatRoom.getOwner().getUuid()));
     }
+
     @Transactional
     public void blockUserInChat(Long chatRoomId, String blockerUuid, String blockedUuid) {
         ChatRoom chatRoom = findChatRoomById(chatRoomId);
@@ -77,25 +75,18 @@ public class ChatRoomService {
                     blocker.getName() + "님이 " + blocked.getName() + "님을 차단했습니다.", MessageType.SYSTEM);
             chatRoomRepository.save(chatRoom);
         }
-
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), chatRoom.getOwner().getUuid()));
     }
+
     @Transactional
     public ChatRoom requestPersonalChat(CustomSecurityUserDetails userDetails, String receiverUuid, String reason) {
-        validateInputs(userDetails, receiverUuid, reason);
         SiteUser requester = userRepository.findByUuidWithBlockedUsers(userDetails.getSiteUser().getUuid())
                 .orElseThrow(() -> new IllegalArgumentException("요청자를 찾을 수 없습니다: " + userDetails.getSiteUser().getUuid()));
         SiteUser receiver = userRepository.findByUuidWithBlockedUsers(receiverUuid)
                 .orElseThrow(() -> new IllegalArgumentException("수신자를 찾을 수 없습니다: " + receiverUuid));
 
-        if (requester.getUuid().equals(receiverUuid)) {
-            throw new IllegalArgumentException("자기 자신에게 채팅 요청을 보낼 수 없습니다.");
-        }
-        if (requester.getBlockedUsers().contains(receiver)) {
-            throw new IllegalStateException("차단한 사용자에게 채팅을 요청할 수 없습니다.");
-        }
-        if (receiver.getBlockedUsers().contains(requester)) {
-            throw new IllegalStateException("상대방이 당신을 차단했습니다.");
+        if (requester.getUuid().equals(receiverUuid) || requester.getBlockedUsers().contains(receiver) || receiver.getBlockedUsers().contains(requester)) {
+            throw new IllegalStateException("채팅 요청이 불가능한 상태입니다.");
         }
         if (chatRoomRepository.existsByRequesterAndOwnerAndTypeAndStatusNot(requester, receiver, "PRIVATE", "CLOSED")) {
             throw new IllegalStateException("이미 존재하는 개인 채팅 요청입니다.");
@@ -113,21 +104,11 @@ public class ChatRoomService {
                 .build();
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
-
-        // requester에 대한 ChatRoomParticipant
-        ChatRoomParticipant requesterParticipant = new ChatRoomParticipant();
-        requesterParticipant.setChatRoom(savedChatRoom);
-        requesterParticipant.setUser(requester);
-        requesterParticipant.setNotificationEnabled(true);
+        ChatRoomParticipant requesterParticipant = new ChatRoomParticipant(savedChatRoom, requester, true);
+        ChatRoomParticipant ownerParticipant = new ChatRoomParticipant(savedChatRoom, receiver, true);
         savedChatRoom.addParticipantSetting(requesterParticipant);
-        chatRoomParticipantRepository.save(requesterParticipant);
-
-        // owner에 대한 ChatRoomParticipant (PENDING 상태에서도 생성)
-        ChatRoomParticipant ownerParticipant = new ChatRoomParticipant();
-        ownerParticipant.setChatRoom(savedChatRoom);
-        ownerParticipant.setUser(receiver);
-        ownerParticipant.setNotificationEnabled(true);
         savedChatRoom.addParticipantSetting(ownerParticipant);
+        chatRoomParticipantRepository.save(requesterParticipant);
         chatRoomParticipantRepository.save(ownerParticipant);
 
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(requester.getUuid(), receiver.getUuid()));
@@ -136,26 +117,29 @@ public class ChatRoomService {
 
     @Transactional
     public void handleChatRequest(SiteUser currentUser, Long chatRoomId, String action) {
-        validateInputs(currentUser, chatRoomId, action);
         ChatRoom chatRoom = validateChatRoom(chatRoomId, currentUser);
-        SiteUser managedUser = userRepository.findByUuid(currentUser.getUuid())
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + currentUser.getUuid()));
-
-        String upperAction = action.toUpperCase();
-        switch (upperAction) {
+        switch (action.toUpperCase()) {
             case "APPROVE":
-                approveChatRequest(chatRoom, managedUser);
+                chatRoom.setStatus("ACTIVE");
+                if (!chatRoom.getParticipants().contains(currentUser)) {
+                    chatRoom.getParticipants().add(currentUser);
+                }
+                chatMessageService.createMessage(chatRoom, currentUser, currentUser.getName() + "님이 채팅을 수락하셨습니다.", MessageType.SYSTEM);
+                chatRoomRepository.save(chatRoom);
                 break;
             case "REJECT":
-                chatRoomRepository.delete(chatRoom);
-                break;
             case "BLOCK":
-                blockChatRequest(chatRoom, managedUser);
+                if ("BLOCK".equals(action.toUpperCase())) {
+                    SiteUser blocked = chatRoom.getRequester();
+                    currentUser.blockUser(blocked);
+                    userRepository.save(currentUser);
+                }
+                chatRoomRepository.delete(chatRoom);
                 break;
             default:
                 throw new IllegalArgumentException("지원하지 않는 액션: " + action);
         }
-        eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), managedUser.getUuid()));
+        eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), currentUser.getUuid()));
     }
 
     @Transactional(readOnly = true)
@@ -163,18 +147,16 @@ public class ChatRoomService {
         List<ChatRoom> chatRooms = chatRoomRepository.findByParticipantsContainingOrPendingForUser(user);
         return chatRooms.stream().map(chat -> {
             ChatRoomDTO dto = convertToChatRoomDTO(chat);
-            int unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat)
+            // long을 int로 캐스팅
+            long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat)
                     .stream()
                     .filter(msg -> !msg.getSender().getUuid().equals(user.getUuid()))
                     .filter(msg -> !msg.getReadBy().contains(user))
-                    .collect(Collectors.toList())
-                    .size();
-            dto.setUnreadCount(unreadCount);
+                    .count();
+            dto.setUnreadCount((int) unreadCount); // 캐스팅 추가
             if (includeMessages) {
-                dto.setMessages(chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat)
-                        .stream().map(this::convertToChatMessageDTO).collect(Collectors.toList()));
+                dto.setMessages(getMessages(chat));
             }
-            // 사용자별 notificationEnabled 설정
             ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chat, user)
                     .orElseThrow(() -> new IllegalStateException("Participant not found"));
             dto.setNotificationEnabled(participant.isNotificationEnabled());
@@ -182,55 +164,21 @@ public class ChatRoomService {
         }).collect(Collectors.toList());
     }
 
-    private void validateInputs(Object... inputs) {
-        for (Object input : inputs) {
-            if (input == null || (input instanceof String && ((String) input).trim().isEmpty())) {
-                throw new IllegalArgumentException("입력값이 유효하지 않습니다.");
-            }
-        }
+    @Transactional(readOnly = true)
+    public List<ChatRoomDTO.ChatMessageDTO> getMessages(ChatRoom chatRoom) {
+        return chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
+                .stream()
+                .map(this::convertToChatMessageDTO)
+                .collect(Collectors.toList());
     }
 
     private ChatRoom validateChatRoom(Long chatRoomId, SiteUser user) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
-        if (!chatRoom.getOwner().getEmail().equals(user.getEmail())) {
-            throw new SecurityException("권한이 없습니다. 사용자: " + user.getUuid() + ", 채팅방: " + chatRoomId);
-        }
-        if (!"PENDING".equals(chatRoom.getStatus())) {
-            throw new IllegalStateException("PENDING 상태에서만 처리 가능: " + chatRoom.getStatus());
+        if (!chatRoom.getOwner().getUuid().equals(user.getUuid()) || !"PENDING".equals(chatRoom.getStatus())) {
+            throw new SecurityException("권한이 없습니다.");
         }
         return chatRoom;
-    }
-
-    private void approveChatRequest(ChatRoom chatRoom, SiteUser user) {
-        chatRoom.setStatus("ACTIVE");
-        if (chatRoom.getParticipants().stream().noneMatch(p -> p.getUuid().equals(user.getUuid()))) {
-            chatRoom.getParticipants().add(user);
-        }
-        // ChatRoomParticipant 확인 및 생성
-        Optional<ChatRoomParticipant> participantOpt = chatRoomParticipantRepository.findByChatRoomAndUser(chatRoom, user);
-        if (participantOpt.isEmpty()) {
-            ChatRoomParticipant participant = new ChatRoomParticipant();
-            participant.setUser(user);
-            participant.setNotificationEnabled(true);
-            chatRoom.addParticipantSetting(participant);
-            chatRoomParticipantRepository.save(participant);
-        }
-        chatMessageService.createMessage(chatRoom, user, user.getName() + "님이 채팅을 수락하셨습니다.", MessageType.SYSTEM);
-        chatRoomRepository.save(chatRoom);
-    }
-
-    private void blockChatRequest(ChatRoom chatRoom, SiteUser user) {
-        SiteUser blocked = chatRoom.getRequester();
-        if (blocked == null) {
-            throw new IllegalArgumentException("차단할 요청자가 없습니다.");
-        }
-        if (user.getBlockedUsers().contains(blocked)) {
-            throw new IllegalStateException("이미 차단된 사용자입니다.");
-        }
-        user.blockUser(blocked);
-        userRepository.save(user);
-        chatRoomRepository.delete(chatRoom);
     }
 
     private ChatRoomDTO convertToChatRoomDTO(ChatRoom chat) {
@@ -268,17 +216,4 @@ public class ChatRoomService {
         dto.setType(msg.getType().name());
         return dto;
     }
-}
-
-class ChatRoomUpdateEvent {
-    private final String requesterUuid;
-    private final String ownerUuid;
-
-    public ChatRoomUpdateEvent(String requesterUuid, String ownerUuid) {
-        this.requesterUuid = requesterUuid;
-        this.ownerUuid = ownerUuid;
-    }
-
-    public String getRequesterUuid() { return requesterUuid; }
-    public String getOwnerUuid() { return ownerUuid; }
 }

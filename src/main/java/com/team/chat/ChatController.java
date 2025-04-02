@@ -15,11 +15,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,111 +32,72 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
 
-    @MessageMapping("/refreshChatRooms") // 추가: 새로고침 요청 처리
+    @MessageMapping("/refreshChatRooms")
     @Transactional(readOnly = true)
     public void refreshChatRooms(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
-        System.out.println("Received /app/refreshChatRooms for user: " + currentUser.getUuid());
         List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(currentUser, false);
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms", chatRooms);
-        System.out.println("Sent chat rooms to /user/" + currentUser.getUuid() + "/topic/chatrooms: " + chatRooms.size());
     }
+
     @MessageMapping("/getMessages")
     @Transactional(readOnly = true)
     public void getMessages(Principal principal, @Payload ChatRoomDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
-        Long chatRoomId = request.getId(); // ChatRoomDTO의 id 사용
+        Long chatRoomId = request.getId();
         if (chatRoomId == null) {
             messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방 ID가 제공되지 않았습니다.");
             return;
         }
 
         ChatRoom chatRoom = chatRoomService.findChatRoomById(chatRoomId);
-        if (chatRoom == null) {
-            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "존재하지 않는 채팅방입니다.");
+        if (chatRoom == null || !chatRoom.getParticipants().contains(currentUser)) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방에 접근할 권한이 없습니다.");
             return;
         }
 
-        System.out.println("Current user UUID: " + currentUser.getUuid());
-        System.out.println("Chat room ID: " + chatRoomId);
-        System.out.println("Participants: " + chatRoom.getParticipants().stream().map(SiteUser::getUuid).toList());
-
-        if (!chatRoom.getParticipants().contains(currentUser)) {
-            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "이 채팅방에 접근할 권한이 없습니다.");
-            return;
-        }
-
-        List<ChatMessage> messages = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom);
-        List<Object> messagesWithDate = new ArrayList<>();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREAN);
-        String lastDate = null;
-
-        for (ChatMessage msg : messages) {
-            String currentDate = dateFormat.format(Date.from(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant()));
-            if (!currentDate.equals(lastDate)) {
-                messagesWithDate.add(new DateNotificationDTO(currentDate));
-                lastDate = currentDate;
-            }
-            ChatRoomDTO.ChatMessageDTO messageDTO = new ChatRoomDTO.ChatMessageDTO();
-            messageDTO.setId(msg.getId());
-            messageDTO.setChatRoomId(chatRoomId);
-            // sender가 null일 경우 처리
-            if (msg.getSender() != null) {
-                messageDTO.setSender(new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()));
-            } else {
-                // 시스템 메시지일 경우 null 또는 특별한 값 설정
-                messageDTO.setSender(null); // 또는 시스템용 더미 객체를 사용할 수 있음
-            }
-            messageDTO.setContent(msg.getContent());
-            messageDTO.setTimestamp(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-            messageDTO.setType(msg.getType().toString());
-            messagesWithDate.add(messageDTO);
-        }
-
-        System.out.println("Sending messages for chatRoomId " + chatRoomId + " to user " + currentUser.getUuid());
-        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/messages", messagesWithDate);
+        List<ChatRoomDTO.ChatMessageDTO> messages = chatRoomService.getMessages(chatRoom);
+        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/messages", messages);
     }
+
     @MessageMapping("/handleChatRequest")
     @Transactional
     public void handleChatRequest(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
         chatRoomService.handleChatRequest(currentUser, request.getChatRoomId(), request.getAction());
     }
+
     @MessageMapping("/blockUser")
     @Transactional
     public void blockUser(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
         ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
-      /*  String blockedUuid = chatRoom.getParticipants().stream()
-                .filter(p -> !p.getUuid().equals(currentUser.getUuid()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("차단할 상대방을 찾을 수 없습니다."))
-                .getUuid();*/
-        // 차단할 상대방을 participants에서 찾음 (현재 참여자에 없어도 UUID로 식별 가능)
         String blockedUuid = chatRoom.getParticipants().stream()
                 .filter(p -> !p.getUuid().equals(currentUser.getUuid()))
                 .findFirst()
                 .map(SiteUser::getUuid)
-                .orElse(null);
-
+                .orElseGet(() -> {
+                    if (chatRoom.getRequester().getUuid().equals(currentUser.getUuid())) {
+                        return chatRoom.getOwner().getUuid();
+                    } else if (chatRoom.getOwner().getUuid().equals(currentUser.getUuid())) {
+                        return chatRoom.getRequester().getUuid();
+                    }
+                    return null;
+                });
         if (blockedUuid == null) {
-            // 참여자에 없으면 채팅방의 requester나 owner에서 찾기
-            if (chatRoom.getRequester().getUuid().equals(currentUser.getUuid())) {
-                blockedUuid = chatRoom.getOwner().getUuid();
-            } else if (chatRoom.getOwner().getUuid().equals(currentUser.getUuid())) {
-                blockedUuid = chatRoom.getRequester().getUuid();
-            } else {
-                throw new IllegalArgumentException("차단할 상대방을 찾을 수 없습니다.");
-            }
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "차단할 상대방을 찾을 수 없습니다.");
+            return;
         }
         chatRoomService.blockUserInChat(request.getChatRoomId(), currentUser.getUuid(), blockedUuid);
     }
+
     @MessageMapping("/leaveChatRoom")
     @Transactional
     public void leaveChatRoom(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
         chatRoomService.leaveChatRoom(request.getChatRoomId(), currentUser.getUuid());
     }
+
     @MessageMapping("/sendMessage")
     @Transactional
     public void sendMessage(@Payload ChatRoomDTO.ChatMessageDTO messageDTO, Principal principal) {
@@ -159,20 +119,45 @@ public class ChatController {
         chatRoom.setLastMessageTime(message.getTimestamp());
         chatRoomRepository.save(chatRoom);
 
-        List<Object> messagesWithDate = checkDateChangeAndWrap(chatRoom, message);
-
-        // 모든 참여자에게 메시지 전송
+        ChatRoomDTO.ChatMessageDTO messageDto = chatRoomService.convertToChatMessageDTO(message);
         chatRoom.getParticipants().forEach(p ->
-                messagingTemplate.convertAndSend("/user/" + p.getUuid() + "/topic/messages", messagesWithDate));
-
-        // 모든 참여자에게 채팅 목록 갱신
-        chatRoom.getParticipants().forEach(p ->
-                messagingTemplate.convertAndSend("/user/" + p.getUuid() + "/topic/chatrooms",
-                        chatRoomService.getChatRoomsForUser(p, false)));
+                messagingTemplate.convertAndSend("/user/" + p.getUuid() + "/topic/messages", messageDto));
 
         sendPushNotification(chatRoom, message, sender);
     }
 
+    @MessageMapping("/toggleNotification")
+    @Transactional
+    public void toggleNotification(Principal principal, @Payload ChatRequestDTO request) {
+        SiteUser currentUser = getCurrentUser(principal);
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
+        if (!chatRoom.getParticipants().contains(currentUser)) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "권한이 없습니다.");
+            return;
+        }
+        ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chatRoom, currentUser)
+                .orElseThrow(() -> new IllegalStateException("Participant not found"));
+        boolean newState = "ON".equals(request.getAction());
+        participant.setNotificationEnabled(newState);
+        chatRoomParticipantRepository.save(participant);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("chatRoomId", chatRoom.getId());
+        response.put("notificationEnabled", newState);
+        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/notificationUpdate", response);
+    }
+
+    @MessageMapping("/markMessagesAsRead")
+    @Transactional
+    public void markMessagesAsRead(Principal principal, @Payload ChatRequestDTO request) {
+        SiteUser currentUser = getCurrentUser(principal);
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
+        int unreadCount = chatMessageService.markMessagesAsRead(chatRoom, currentUser);
+        Map<String, Object> update = new HashMap<>();
+        update.put("chatRoomId", chatRoom.getId());
+        update.put("unreadCount", unreadCount);
+        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/readUpdate", update);
+    }
 
     @EventListener
     public void onChatRoomUpdated(ChatRoomUpdateEvent event) {
@@ -189,67 +174,10 @@ public class ChatController {
     }
 
     private SiteUser getCurrentUser(Principal principal) {
-        if (principal == null) {
-            System.err.println("Unauthorized access attempt detected");
-            throw new SecurityException("인증되지 않은 사용자입니다.");
-        }
         Authentication auth = (Authentication) principal;
-        if (!(auth.getPrincipal() instanceof CustomSecurityUserDetails)) {
-            throw new SecurityException("잘못된 사용자 정보입니다.");
-        }
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) auth.getPrincipal();
         return userRepository.findByUuidWithBlockedUsers(userDetails.getSiteUser().getUuid())
                 .orElseThrow(() -> new SecurityException("사용자를 찾을 수 없습니다: " + userDetails.getSiteUser().getUuid()));
-    }
-
-    private List<Object> checkDateChangeAndWrap(ChatRoom chatRoom, ChatMessage newMessage) {
-        List<Object> result = new ArrayList<>();
-        ChatRoomDTO.ChatMessageDTO newMessageDTO = chatRoomService.convertToChatMessageDTO(newMessage);
-        result.add(newMessageDTO); // 날짜 알림은 클라이언트에서 처리하도록 단순화
-        return result;
-    }
-    @MessageMapping("/toggleNotification")
-    @Transactional
-    public void toggleNotification(Principal principal, @Payload ChatRequestDTO request) {
-        SiteUser currentUser = getCurrentUser(principal);
-        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
-        if (!chatRoom.getParticipants().contains(currentUser)) {
-            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "권한이 없습니다.");
-            return;
-        }
-        ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chatRoom, currentUser)
-                .orElseThrow(() -> new IllegalStateException("Participant not found"));
-        boolean newState = "ON".equals(request.getAction());
-        participant.setNotificationEnabled(newState);
-        chatRoomParticipantRepository.save(participant);
-
-        // 변경된 알림 상태만 전송
-        Map<String, Object> response = new HashMap<>();
-        response.put("chatRoomId", chatRoom.getId());
-        response.put("notificationEnabled", newState);
-        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/notificationUpdate", response);
-    }
-
-    @MessageMapping("/markMessagesAsRead")
-    @Transactional
-    public void markMessagesAsRead(Principal principal, @Payload ChatRequestDTO request) {
-        SiteUser currentUser = getCurrentUser(principal);
-        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
-        List<ChatMessage> unreadMessages = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
-                .stream()
-                .filter(msg -> !msg.getSender().getUuid().equals(currentUser.getUuid())) // 자신이 보낸 메시지 제외
-                .filter(msg -> !msg.getReadBy().contains(currentUser))
-                .collect(Collectors.toList());
-
-        unreadMessages.forEach(msg -> {
-            msg.getReadBy().add(currentUser);
-            chatMessageRepository.save(msg);
-        });
-
-        // 모든 참여자에게 채팅 목록 갱신
-        chatRoom.getParticipants().forEach(p ->
-                messagingTemplate.convertAndSend("/user/" + p.getUuid() + "/topic/chatrooms",
-                        chatRoomService.getChatRoomsForUser(p, false)));
     }
 
     private void sendPushNotification(ChatRoom chatRoom, ChatMessage message, SiteUser sender) {
@@ -261,10 +189,11 @@ public class ChatController {
         );
         chatRoom.getParticipantSettings().stream()
                 .filter(p -> !p.getUser().getUuid().equals(sender.getUuid()))
-                .filter(ChatRoomParticipant::isNotificationEnabled) // 사용자별 설정 확인
+                .filter(ChatRoomParticipant::isNotificationEnabled)
                 .filter(p -> !message.getReadBy().contains(p.getUser()))
                 .forEach(p -> messagingTemplate.convertAndSend("/user/" + p.getUser().getUuid() + "/topic/notifications", notification));
     }
+
     @MessageExceptionHandler(IllegalArgumentException.class)
     public void handleIllegalArgument(Principal principal, IllegalArgumentException e) {
         messagingTemplate.convertAndSend("/user/" + principal.getName() + "/topic/errors", "잘못된 요청: " + e.getMessage());
