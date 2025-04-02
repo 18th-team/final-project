@@ -18,14 +18,37 @@ const chatApp = (function() {
     let lastMarkTime = 0;
     const markCooldown = 1000;
     let renderedMessageIds = new Set();
+    let messageSubscription = null;
 
     let state = { isChatOpen: false, isChatRoomOpen: false, isLoading: false };
 
+    // 상태 저장
     function saveChatState() {
         const chatState = { isChatOpen: state.isChatOpen, isChatRoomOpen: state.isChatRoomOpen, currentChatRoomId, activeTab };
         localStorage.setItem('chatState', JSON.stringify(chatState));
     }
 
+    // 상태 로드
+    function loadChatState() {
+        try {
+            const savedState = localStorage.getItem('chatState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                state.isChatOpen = parsedState.isChatOpen;
+                state.isChatRoomOpen = parsedState.isChatRoomOpen;
+                currentChatRoomId = parsedState.currentChatRoomId;
+                activeTab = parsedState.activeTab || 'PRIVATE';
+            }
+        } catch (e) {
+            console.error('Failed to load chat state:', e);
+            state.isChatOpen = false;
+            state.isChatRoomOpen = false;
+            currentChatRoomId = null;
+            activeTab = 'PRIVATE';
+        }
+    }
+
+    // 서버 연결
     function connect() {
         if (Date.now() - lastConnectTime < connectRateLimit || isConnected) {
             if (isConnected) refreshChatRooms();
@@ -74,6 +97,7 @@ const chatApp = (function() {
         });
     }
 
+    // 토픽 구독
     function subscribeToTopics() {
         stompClient.subscribe('/user/' + currentUser + '/topic/chatrooms', message => {
             chatRoomsCache = JSON.parse(message.body);
@@ -117,30 +141,41 @@ const chatApp = (function() {
                 if (currentChatRoomId === update.chatRoomId) updateNotificationToggle();
             }
         });
+
+        // 메시지 자동 읽기 처리
+        if (!messageSubscription) {
+            messageSubscription = stompClient.subscribe('/user/' + currentUser + '/topic/messages', message => {
+                const items = JSON.parse(message.body);
+                const item = Array.isArray(items) ? items[0] : items;
+                if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
+                    markMessagesAsRead();
+                }
+                handleMessage(item);
+            });
+        }
     }
 
+    // 채팅방 목록 새로고침
     function refreshChatRooms() {
         if (stompClient?.connected) {
             stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
         }
     }
 
+    // 메시지 새로고침
     function refreshMessages(chatId = currentChatRoomId) {
         if (!chatId || !stompClient?.connected) return;
-        const chat = chatRoomsCache.find(c => c.id === chatId);
-        if (!chat?.messages || chat.messages.length === 0) {
-            stompClient.send("/app/getMessages", {}, JSON.stringify({ id: chatId }));
-        } else {
-            renderCachedMessages(chat);
-        }
+        stompClient.send("/app/getMessages", {}, JSON.stringify({ id: chatId }));
     }
 
+    // 메시지 읽음 처리
     function markMessagesAsRead() {
         if (Date.now() - lastMarkTime < markCooldown || !stompClient?.connected || !currentChatRoomId || !state.isChatRoomOpen) return;
         stompClient.send("/app/markMessagesAsRead", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
         lastMarkTime = Date.now();
     }
 
+    // 메시지 처리
     function handleMessage(item) {
         const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
         if (!chat) return;
@@ -151,7 +186,10 @@ const chatApp = (function() {
             chat.lastMessage = item.content;
             chat.lastMessageTime = item.timestamp;
             if (state.isChatOpen && !state.isChatRoomOpen) {
-                renderChatList(chatRoomsCache); // 목록만 갱신
+                renderChatList(chatRoomsCache);
+            }
+            if (state.isChatRoomOpen && item.chatRoomId === currentChatRoomId) {
+                refreshMessages(currentChatRoomId);
             }
         }
 
@@ -161,6 +199,7 @@ const chatApp = (function() {
         }
     }
 
+    // 읽지 않은 메시지 수 업데이트
     function updateUnreadCount(chatRoomId, unreadCount) {
         const chat = chatRoomsCache.find(c => c.id === chatRoomId);
         if (chat) {
@@ -171,6 +210,7 @@ const chatApp = (function() {
         }
     }
 
+    // 채팅 요청 처리
     function handleRequest(chatId, action) {
         if (stompClient?.connected) {
             stompClient.send("/app/handleChatRequest", {}, JSON.stringify({ chatRoomId: chatId, action }));
@@ -183,6 +223,7 @@ const chatApp = (function() {
         }
     }
 
+    // 알림 처리
     function handleNotification(item) {
         if (!item.sender || item.sender.uuid === currentUser) return;
         const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
@@ -196,6 +237,7 @@ const chatApp = (function() {
         }
     }
 
+    // 푸시 알림 표시
     function showPushNotification(notification) {
         const container = document.getElementById('notificationContainer');
         if (!container) return;
@@ -226,6 +268,7 @@ const chatApp = (function() {
         }, 5000);
     }
 
+    // 채팅 목록 렌더링
     function renderChatList(chatRooms) {
         const chatList = document.getElementById('chatList');
         if (!chatList) return;
@@ -336,6 +379,7 @@ const chatApp = (function() {
         chatList.appendChild(fragment);
     }
 
+    // 읽지 않은 메시지 수 UI 업데이트
     function updateUnreadCounts(groupUnread, personalUnread) {
         const groupElement = document.getElementById('groupUnreadCount');
         const personalElement = document.getElementById('personalUnreadCount');
@@ -343,6 +387,7 @@ const chatApp = (function() {
         if (personalElement) personalElement.textContent = personalUnread > 0 ? personalUnread : '';
     }
 
+    // 개인 채팅 열기
     function openPersonalChat(chat) {
         if (!chat || !chat.id || isChatOpening) return;
         isChatOpening = true;
@@ -350,6 +395,9 @@ const chatApp = (function() {
         currentChatRoomId = chat.id;
         state.isChatRoomOpen = true;
         state.isChatOpen = false;
+
+        // 항상 메시지 새로고침
+        refreshMessages(chat.id);
 
         const chatWindow = document.querySelector('.personal-chat');
         document.getElementById('messagesList').classList.remove('visible');
@@ -359,15 +407,6 @@ const chatApp = (function() {
             (chat.requester?.uuid === currentUser ? chat.owner?.name : chat.requester?.name) || 'Unknown';
         chatWindow.querySelector('.chat-name').textContent = chatName;
         chatWindow.querySelector('.avatar').textContent = chatName.slice(0, 2);
-
-        if (chat.messages?.length) {
-            renderCachedMessages(chat);
-        } else {
-            const messagesContainer = document.querySelector('.messages-container');
-            while (messagesContainer.firstChild) messagesContainer.removeChild(messagesContainer.firstChild);
-            renderedMessageIds.clear();
-            refreshMessages(chat.id);
-        }
 
         markMessagesAsRead();
         updateNotificationToggle();
@@ -381,34 +420,12 @@ const chatApp = (function() {
         isChatOpening = false;
     }
 
-    function renderCachedMessages(chat) {
-        const messagesContainer = document.querySelector('.messages-container');
-        if (!messagesContainer) return;
-
-        const fragment = document.createDocumentFragment();
-        chat.messages.forEach(msg => {
-            if (!renderedMessageIds.has(msg.id)) {
-                renderedMessageIds.add(msg.id);
-                fragment.appendChild(createMessageElement(msg));
-            }
-        });
-
-        while (messagesContainer.firstChild) messagesContainer.removeChild(messagesContainer.firstChild);
-        messagesContainer.appendChild(fragment);
-        if (isScrollable) messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
+    // 메시지 렌더링
     function renderMessage(item) {
         const messagesContainer = document.querySelector('.messages-container');
         if (!messagesContainer) return;
 
-        const element = createMessageElement(item);
-        messagesContainer.appendChild(element);
-        if (isScrollable) messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    function createMessageElement(item) {
-        const lastMessage = document.querySelector('.messages-container')?.lastElementChild;
+        const lastMessage = messagesContainer.lastElementChild;
         const lastDate = lastMessage?.dataset.date;
         const currentDate = item.timestamp ? new Date(item.timestamp).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
 
@@ -420,7 +437,7 @@ const chatApp = (function() {
             time.className = 'date-text';
             time.textContent = currentDate;
             dateElement.appendChild(time);
-            document.querySelector('.messages-container')?.appendChild(dateElement);
+            messagesContainer.appendChild(dateElement);
         }
 
         const element = document.createElement('article');
@@ -483,9 +500,11 @@ const chatApp = (function() {
             element.style.transition = 'opacity 0.3s ease-in';
             element.style.opacity = '1';
         });
-        return element;
+        messagesContainer.appendChild(element);
+        if (isScrollable) messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
+    // 알림 토글 업데이트
     function updateNotificationToggle() {
         const toggleButton = document.querySelector('.notification-toggle');
         if (!toggleButton || !currentChatRoomId) return;
@@ -497,6 +516,7 @@ const chatApp = (function() {
         if (icon) icon.style.fill = isEnabled ? '#333' : '#ccc';
     }
 
+    // 채팅 입력 UI 업데이트-업데이트
     function updateChatInput(chat, messageInput, sendButton) {
         const isDisabled = chat.status === 'CLOSED' || chat.status === 'BLOCKED';
         messageInput.disabled = isDisabled;
@@ -504,6 +524,7 @@ const chatApp = (function() {
         messageInput.placeholder = isDisabled ? "채팅방이 종료되었습니다." : "메시지를 입력하세요.";
     }
 
+    // 에러 메시지 표시
     function showError(message) {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message';
@@ -512,6 +533,7 @@ const chatApp = (function() {
         setTimeout(() => errorDiv.remove(), 5000);
     }
 
+    // 이벤트 리스너 설정
     function setupEventListeners() {
         const messagesContainer = document.querySelector('.messages-container');
         if (messagesContainer && !messagesContainer.dataset.listenerAdded) {
@@ -602,6 +624,7 @@ const chatApp = (function() {
         }
     }
 
+    // 메시지 전송
     function sendMessage() {
         const messageInput = document.querySelector('.message-input');
         let content = messageInput.value.trim();
@@ -617,6 +640,7 @@ const chatApp = (function() {
         }
     }
 
+    // 탭 전환
     function switchTab(tab) {
         activeTab = tab;
         updateTabUI();
@@ -624,6 +648,7 @@ const chatApp = (function() {
         saveChatState();
     }
 
+    // 채팅 창 초기화
     function resetChatWindow() {
         document.querySelector('.personal-chat').classList.remove('visible');
         currentChatRoomId = null;
@@ -632,8 +657,13 @@ const chatApp = (function() {
         document.getElementById('messagesList').classList.add('visible');
         refreshChatRooms();
         saveChatState();
+        if (messageSubscription) {
+            messageSubscription.unsubscribe();
+            messageSubscription = null;
+        }
     }
 
+    // 채팅 UI 업데이트
     function updateChatUI() {
         const messagesList = document.getElementById('messagesList');
         const openButton = document.getElementById('openChat');
@@ -658,6 +688,7 @@ const chatApp = (function() {
         }
     }
 
+    // 탭 UI 업데이트
     function updateTabUI() {
         const groupTab = document.querySelector('.tab-group');
         const personalTab = document.querySelector('.tab-personal');
@@ -673,11 +704,28 @@ const chatApp = (function() {
     return {
         connect,
         handleRequest,
-        setupEventListeners
+        setupEventListeners,
+        loadChatState,    // 노출 추가
+        updateChatUI,     // 노출 추가
+        updateTabUI,      // 노출 추가
+        getState: () => state,
+        getCurrentChatRoomId: () => currentChatRoomId,
+        getChatRoomsCache: () => chatRoomsCache,
+        openPersonalChat
     };
 })();
 
+// 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
+    chatApp.loadChatState();
     chatApp.connect();
     chatApp.setupEventListeners();
+    chatApp.updateChatUI();
+    chatApp.updateTabUI();
+    if (chatApp.getState().isChatRoomOpen && chatApp.getCurrentChatRoomId()) {
+        setTimeout(() => {
+            const chat = chatApp.getChatRoomsCache().find(c => c.id === chatApp.getCurrentChatRoomId());
+            if (chat) chatApp.openPersonalChat(chat); // openPersonalChat도 추가 필요
+        }, 1000);
+    }
 });
