@@ -8,6 +8,7 @@ import com.team.moim.repository.ClubFileRepository;
 import com.team.moim.repository.ClubRepository;
 import com.team.moim.repository.KeywordRepository; // 추가
 import com.team.user.SiteUser;
+import com.team.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class ClubService {
     private final ClubRepository clubRepository;
     private final ClubFileRepository clubFileRepository;
     private final KeywordRepository keywordRepository; // 의존성 추가
+    private final UserRepository userRepository;
 
     // 1. 클럽 저장
     @Transactional
@@ -175,9 +177,18 @@ public class ClubService {
         return clubRepository.findByKeywords_NameIn(userKeywords);
     }
 
-
+//검색기능
     public List<ClubDTO> searchClubs(String query) {
         List<Club> clubs = clubRepository.findBySearchQuery(query);
         return clubs.stream().map(ClubDTO::toDTO).collect(Collectors.toList());
+    }
+
+    //가입로직
+    public void joinClub(Long clubId, Long userId) {
+        Club club = clubRepository.findById(clubId).orElseThrow();
+        SiteUser user = userRepository.findById(userId).orElseThrow();
+        club.addMember(user);
+        user.joinClub(club);
+        clubRepository.save(club);
     }
 }
