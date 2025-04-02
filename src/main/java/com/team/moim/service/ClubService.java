@@ -50,8 +50,19 @@ public class ClubService {
                 if (!clubFile.isEmpty()) {
                     String originalFilename = clubFile.getOriginalFilename();
                     String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
-                    String savePath = "C:/springBoot_img/" + storedFilename;
+                    String directoryPath = "C:/springBoot_img/";  // 저장할 폴더 경로
+                    String savePath = directoryPath + storedFilename;
+
+                    // 폴더가 존재하지 않으면 생성
+                    File directory = new File(directoryPath);
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+
+                    // 파일 저장
                     clubFile.transferTo(new File(savePath));
+
+                    // 파일 엔티티 저장
                     ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
                     clubFileRepository.save(clubFileEntity);
                 }
@@ -165,7 +176,8 @@ public class ClubService {
     }
 
 
-
-
-
+    public List<ClubDTO> searchClubs(String query) {
+        List<Club> clubs = clubRepository.findBySearchQuery(query);
+        return clubs.stream().map(ClubDTO::toDTO).collect(Collectors.toList());
+    }
 }

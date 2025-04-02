@@ -71,7 +71,13 @@ private final KeywordRepository keywordRepository;
         System.out.println("All clubs: " + clubDTOList.size()); // 디버깅
         return "club/list";
     }
-
+    // 검색 처리
+    @GetMapping("/search")
+    public String searchClubs(@RequestParam("query") String query, Model model) {
+        List<ClubDTO> clubDTOList = clubService.searchClubs(query);
+        model.addAttribute("clubList", clubDTOList);
+        return "club/list"; // list.html로 렌더링
+    }
     //카테고리 클랙시 -> 해당 카테고리와 연관된 클럽목록 불러오기
     // 키워드 ID로 클럽 목록 조회
     @GetMapping("/category/{id}")

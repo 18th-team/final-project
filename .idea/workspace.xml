@@ -4,30 +4,42 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="카테고리 비회원 접근 가능">
+    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="이미지파일 확인 필요">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/static/css/userRecommend.css" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/static/css/userRecommend.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/category_menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/category_menu.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/css/category_menu.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/css/category_menu.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/css/userRecommend.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/css/userRecommend.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/futbol-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/mug-hot-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/palette-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/sack-dollar-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/suitcase-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/wand-sparkles-solid.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/category_menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/category_menu.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/randomList.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/randomList.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/userRecommend.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/userRecommend.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/signup.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/repository/ClubRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/repository/ClubRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/repository/KeywordRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/repository/KeywordRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/userRecommend.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/userRecommend.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/category_menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/category_menu.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,12 +54,25 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="18th_final" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="18th_final" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="18th_final" type="f1a62948:ProjectNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
               </path>
             </expand>
             <select />
@@ -73,7 +98,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
-    &quot;accountId&quot;: &quot;9879ead2-cb9d-443b-9060-5e04c12e8733&quot;
+    &quot;accountId&quot;: &quot;123af43f-6b7a-4b31-bcc0-3febc0795daa&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -91,27 +116,33 @@
     <option name="showLibraryContents" value="true" />
     <option name="showScratchesAndConsoles" value="false" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.Build final-project2.executor": "Run",
-    "JavaScript Debug.signup.html.executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.Application.executor": "Run",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build final-project2.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.final-project 빌드.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.signup.html.executor&quot;: &quot;Run&quot;,
+    &quot;Notification.DisplayName-DoNotAsk-Database detector&quot;: &quot;데이터베이스 탐지기&quot;,
+    &quot;Notification.DoNotAsk-Database detector&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;전역 라이브러리&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -164,6 +195,9 @@
       <workItem from="1743391827401" duration="9244000" />
       <workItem from="1743407164325" duration="3755000" />
       <workItem from="1743470381466" duration="24300000" />
+      <workItem from="1743561877978" duration="733000" />
+      <workItem from="1743587557134" duration="384000" />
+      <workItem from="1743590757781" duration="2062000" />
     </task>
     <task id="LOCAL-00001" summary="h2콘솔 server모드(다중접속TCP)">
       <option name="closed" value="true" />
