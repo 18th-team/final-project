@@ -4,24 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="카테고리 비회원 접근 가능">
+    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="카테고리메뉴바 UI변경">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/css/category_menu.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/css/category_menu.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/css/userRecommend.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/css/userRecommend.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/futbol-solid.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/mug-hot-solid.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/palette-solid.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/sack-dollar-solid.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/suitcase-solid.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/wand-sparkles-solid.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/category_menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/category_menu.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/randomList.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/randomList.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/userRecommend.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/userRecommend.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/community.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/community.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/post_feed_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/post_feed_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/post_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/post_form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/post_review_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/post_review_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/review_form.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/review_list.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +40,14 @@
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -222,7 +221,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743481041468</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="카테고리메뉴바 UI변경">
+      <option name="closed" value="true" />
+      <created>1743561235562</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1743561235562</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -248,10 +255,10 @@
     <MESSAGE value="랜덤모임 랜더링 완료(BE)" />
     <MESSAGE value="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동" />
     <MESSAGE value="카테고리 설정 -&gt; 클릭시 리스트로 이동 &#10;하드코딩 -&gt; 동적코딩 변경" />
-    <MESSAGE value="카테고리메뉴바 UI변경" />
     <MESSAGE value="메인+크루리스트만 카테고리 컨트롤러 설정 -&gt; UI크기 수정 필요" />
     <MESSAGE value="카테고리 비회원 접근 가능" />
-    <option name="LAST_COMMIT_MESSAGE" value="카테고리 비회원 접근 가능" />
+    <MESSAGE value="카테고리메뉴바 UI변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="카테고리메뉴바 UI변경" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

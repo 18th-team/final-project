@@ -67,16 +67,16 @@
                            th:data-post-id="${post.postID}"
                            th:data-liked="${post.voter.contains(loginUser)}"
                            th:data-like-count="${#lists.size(post.voter)}">
-                            <span th:if="${post.voter.contains(loginUser)}" th:text="'\uD83D\uDC9C' + ${#lists.size(post.voter)}"></span>
-                            <span th:unless="${post.voter.contains(loginUser)}" th:text="'\uD83E\uDD0D' + ${#lists.size(post.voter)}"></span>
+                            <span th:if="${post.voter.contains(loginUser)}" th:text="'🧡' + ${#lists.size(post.voter)}"></span>
+                            <span th:unless="${post.voter.contains(loginUser)}" th:text="'🤍' + ${#lists.size(post.voter)}"></span>
                         </a>
                     </div>
 
                     <div class="mt-2 d-flex justify-content-end"
                          th:if="${loginUser != null and loginUser.id == post.author.id}">
-                        <a th:href="@{'/post/review/modify/' + ${post.postID}}"
+                        <a th:href="@{'/post/modify/' + ${post.postID}}"
                            class="btn btn-sm btn-outline-secondary me-2">수정</a>
-                        <a th:href="@{'/post/review/delete/' + ${post.postID}}" class="btn btn-sm btn-outline-danger"
+                        <a th:href="@{'/post/delete/' + ${post.postID}}" class="btn btn-sm btn-outline-danger"
                            onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
                     </div>
 
@@ -85,11 +85,10 @@
         </div>
 
         <div class="text-center mt-4" th:if="${hasMore}">
-            <button id="loadMoreBtn" class="btn btn-outline-primary">더보기</button>
+            <button id="loadMoreBtn" class="btn btn-outline-primary mb-5">더보기</button>
         </div>
     </div>
 
-        <!-- 댓글 모달
         <div class="modal fade" id="commentModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
@@ -98,7 +97,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        댓글 목록
+                        <!-- 댓글 목록 -->
                         <div id="commentListContainer">
                             <div th:each="review : ${reviewList}" class="comment-list d-none"
                                  th:id="'comment-list-' + ${review.postID}">
@@ -129,7 +128,7 @@
                                         <strong th:text="${reply.author.name}">작성자</strong>
                                         <div th:text="${reply.content}">답글</div>
 
-                                        답글 삭제 버튼
+                                        <!-- 답글 삭제 버튼 -->
                                         <div class="text-end"
                                              th:if="${loginUser != null and reply.author.id == loginUser.id}">
                                             <button type="button"
@@ -165,7 +164,7 @@
                             </div>
                         </div>
 
-                         댓글 작성 폼
+                         <!-- 댓글 작성 폼 -->
                         <form id="commentForm">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <input type="hidden" name="postID" id="commentPostID">
