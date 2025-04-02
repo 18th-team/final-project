@@ -24,6 +24,7 @@ public class ChatRoomService {
     private final ChatMessageService chatMessageService;
     private final ChatMessageRepository chatMessageRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final ChatRoomParticipantRepository chatRoomParticipantRepository;
 
     @Transactional(readOnly = true)
     public ChatRoom findChatRoomById(Long chatRoomId) {
@@ -109,10 +110,26 @@ public class ChatRoomService {
                 .requestReason(reason)
                 .status("PENDING")
                 .lastMessageTime(LocalDateTime.now())
-                .unreadCount(0)
                 .build();
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+
+        // requester에 대한 ChatRoomParticipant
+        ChatRoomParticipant requesterParticipant = new ChatRoomParticipant();
+        requesterParticipant.setChatRoom(savedChatRoom);
+        requesterParticipant.setUser(requester);
+        requesterParticipant.setNotificationEnabled(true);
+        savedChatRoom.addParticipantSetting(requesterParticipant);
+        chatRoomParticipantRepository.save(requesterParticipant);
+
+        // owner에 대한 ChatRoomParticipant (PENDING 상태에서도 생성)
+        ChatRoomParticipant ownerParticipant = new ChatRoomParticipant();
+        ownerParticipant.setChatRoom(savedChatRoom);
+        ownerParticipant.setUser(receiver);
+        ownerParticipant.setNotificationEnabled(true);
+        savedChatRoom.addParticipantSetting(ownerParticipant);
+        chatRoomParticipantRepository.save(ownerParticipant);
+
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(requester.getUuid(), receiver.getUuid()));
         return savedChatRoom;
     }
@@ -146,10 +163,21 @@ public class ChatRoomService {
         List<ChatRoom> chatRooms = chatRoomRepository.findByParticipantsContainingOrPendingForUser(user);
         return chatRooms.stream().map(chat -> {
             ChatRoomDTO dto = convertToChatRoomDTO(chat);
+            int unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat)
+                    .stream()
+                    .filter(msg -> !msg.getSender().getUuid().equals(user.getUuid()))
+                    .filter(msg -> !msg.getReadBy().contains(user))
+                    .collect(Collectors.toList())
+                    .size();
+            dto.setUnreadCount(unreadCount);
             if (includeMessages) {
                 dto.setMessages(chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat)
                         .stream().map(this::convertToChatMessageDTO).collect(Collectors.toList()));
             }
+            // 사용자별 notificationEnabled 설정
+            ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chat, user)
+                    .orElseThrow(() -> new IllegalStateException("Participant not found"));
+            dto.setNotificationEnabled(participant.isNotificationEnabled());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -179,6 +207,15 @@ public class ChatRoomService {
         if (chatRoom.getParticipants().stream().noneMatch(p -> p.getUuid().equals(user.getUuid()))) {
             chatRoom.getParticipants().add(user);
         }
+        // ChatRoomParticipant 확인 및 생성
+        Optional<ChatRoomParticipant> participantOpt = chatRoomParticipantRepository.findByChatRoomAndUser(chatRoom, user);
+        if (participantOpt.isEmpty()) {
+            ChatRoomParticipant participant = new ChatRoomParticipant();
+            participant.setUser(user);
+            participant.setNotificationEnabled(true);
+            chatRoom.addParticipantSetting(participant);
+            chatRoomParticipantRepository.save(participant);
+        }
         chatMessageService.createMessage(chatRoom, user, user.getName() + "님이 채팅을 수락하셨습니다.", MessageType.SYSTEM);
         chatRoomRepository.save(chatRoom);
     }
@@ -202,29 +239,30 @@ public class ChatRoomService {
         dto.setName(chat.getName());
         dto.setType(chat.getType());
         dto.setLastMessage(chat.getLastMessage());
-        dto.setLastMessageTime(chat.getLastMessageTime());
-        dto.setParticipants(chat.getParticipants().stream().map(p -> new ChatRoomDTO.SiteUserDTO(p.getUuid(), p.getName())).collect(Collectors.toList()));
-        dto.setOwner(toSiteUserDTO(chat.getOwner()));
-        dto.setRequester(toSiteUserDTO(chat.getRequester()));
-        dto.setUnreadCount(chat.getUnreadCount());
+        dto.setLastMessageTime(chat.getLastMessageTime() != null ?
+                chat.getLastMessageTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() : null);
+        dto.setParticipants(chat.getParticipants().stream()
+                .map(p -> new ChatRoomDTO.SiteUserDTO(p.getUuid(), p.getName()))
+                .collect(Collectors.toList()));
+        dto.setOwner(chat.getOwner() != null ?
+                new ChatRoomDTO.SiteUserDTO(chat.getOwner().getUuid(), chat.getOwner().getName()) : null);
+        dto.setRequester(chat.getRequester() != null ?
+                new ChatRoomDTO.SiteUserDTO(chat.getRequester().getUuid(), chat.getRequester().getName()) : null);
         dto.setRequestReason(chat.getRequestReason());
         dto.setStatus(chat.getStatus());
         chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
             dto.setLastMessage(msg.getContent());
-            dto.setLastMessageTime(msg.getTimestamp());
+            dto.setLastMessageTime(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         });
         return dto;
-    }
-
-    private ChatRoomDTO.SiteUserDTO toSiteUserDTO(SiteUser user) {
-        return user == null ? null : new ChatRoomDTO.SiteUserDTO(user.getUuid(), user.getName());
     }
 
     public ChatRoomDTO.ChatMessageDTO convertToChatMessageDTO(ChatMessage msg) {
         ChatRoomDTO.ChatMessageDTO dto = new ChatRoomDTO.ChatMessageDTO();
         dto.setId(msg.getId());
         dto.setChatRoomId(msg.getChatRoom().getId());
-        dto.setSender(msg.getSender() != null ? new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()) : null);
+        dto.setSender(msg.getSender() != null ?
+                new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()) : null);
         dto.setContent(msg.getContent());
         dto.setTimestamp(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         dto.setType(msg.getType().name());

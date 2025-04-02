@@ -5,12 +5,43 @@
 </head>
 <body>
 <div class="container-fluid px-0">
+    <!--메시지 알림-->
+    <div class="notification-container" id="notificationContainer">
+        <div class="notification-box" role="alert" aria-live="polite">
+            <div class="avatar-container" id="avatarContainer">
+                <!-- Avatar content will be dynamically inserted -->
+            </div>
+            <div class="content-container">
+                <div class="header-container">
+                    <span class="name-text" id="notificationName">
+                      <!-- Name will be dynamically inserted -->
+                    </span>
+                    <span class="timestamp-text">06:06 오후</span>
+                </div>
+                <p class="notification-text" id="notificationMessage">
+                    <!-- Message will be dynamically inserted -->
+                </p>
+            </div>
+            <button class="close-button" aria-label="Close notification">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                            d="M12 4L4 12M4 4L12 12"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                    ></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!--  메시지   -->
     <div class="chat-system">
         <!-- Messages List -->
         <section class="messages-list" aria-label="Messages List" id="messagesList">
-            <header class="messages-header">
+            <div class="messages-header">
                 <h1>채팅</h1>
-            </header>
+            </div>
 
             <div class="messages-tabs">
                 <button class="tab-button tab-group">
@@ -29,7 +60,7 @@
         </section>
         <!-- Personal Chat Window -->
         <section class="chat-window personal-chat" aria-label="Personal Chat Window">
-            <header class="chat-header p-3 border-bottom-f0f0f0 justify-content-around">
+            <div class="chat-header p-3 border-bottom-f0f0f0 justify-content-around">
                 <button class="back-button" aria-label="Go back">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M12.5 15L7.5 10L12.5 5" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -45,6 +76,19 @@
                         <p class="chat-status">Active now</p> <!-- 상태는 추후 동적 업데이트 가능 -->
                     </div>
                 </div>
+                <button
+                        class="notification-toggle"
+                        aria-label="Toggle notifications"
+                        aria-pressed="false"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path
+                                class="notification-icon"
+                                d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16ZM16 17H8V11C8 8.52 9.51 6.5 12 6.5C14.49 6.5 16 8.52 16 11V17Z"
+                        ></path>
+                    </svg>
+                </button>
+
                 <div class="chat-options">
                     <button class="options-button" aria-label="More options">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -58,12 +102,12 @@
                         <button class="leave-option">나가기</button>
                     </div>
                 </div>
-            </header>
+            </div>
 
             <div class="messages-container">
             </div>
 
-            <footer class="chat-input">
+            <div class="chat-input">
                 <div class="input-container">
                     <input type="text" placeholder="메시지를 입력하세요" class="message-input" aria-label="Type a message" />
                     <button class="send-button" aria-label="Send message">
@@ -72,7 +116,7 @@
                         </svg>
                     </button>
                 </div>
-            </footer>
+            </div>
         </section>
 
 

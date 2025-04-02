@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
     public ChatMessage createMessage(ChatRoom chatRoom, SiteUser sender, String content, MessageType type) {
@@ -25,18 +27,8 @@ public class ChatMessageService {
         message.setContent(content);
         message.setTimestamp(LocalDateTime.now());
         message.setType(type);
+        message.setReadBy(new HashSet<>()); // 빈 Set으로 초기화, sender 추가 안 함
         return chatMessageRepository.save(message);
     }
-    @Transactional
-    public void deleteMessagesByChatRoomId(Long chatRoomId) {
-        // chatRoomId로 메시지 조회
-        List<ChatMessage> messages = chatMessageRepository.findByChatRoomId(chatRoomId);
-        if (!messages.isEmpty()) {
-            // 메시지 삭제
-            chatMessageRepository.deleteAll(messages);
-            System.out.println("Deleted " + messages.size() + " messages for chatRoomId: " + chatRoomId);
-        } else {
-            System.out.println("No messages found for chatRoomId: " + chatRoomId);
-        }
-    }
+
 }

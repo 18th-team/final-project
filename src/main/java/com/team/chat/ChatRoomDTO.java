@@ -13,7 +13,7 @@ public class ChatRoomDTO {
     private String name;
     private String type;
     private String lastMessage;
-    private LocalDateTime lastMessageTime;
+    private Long lastMessageTime;
     private List<SiteUserDTO> participants;
     private SiteUserDTO owner;
     private SiteUserDTO requester;
@@ -21,7 +21,7 @@ public class ChatRoomDTO {
     private String requestReason;
     private String status;
     private List<ChatMessageDTO> messages;
-
+    private boolean notificationEnabled;
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

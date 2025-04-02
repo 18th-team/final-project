@@ -40,19 +40,17 @@ public class ChatRoom {
     @JsonBackReference
     private SiteUser requester; // 개인 채팅에서만 사용 (요청자)
 
-    private int unreadCount;
     private String requestReason;
     private String status; // PENDING, ACTIVE, REJECTED, BLOCKED 등
 
-    // 참여자 추가 메서드
-    public void addParticipant(SiteUser user) {
-        if (!participants.contains(user)) {
-            participants.add(user);
-        }
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<ChatRoomParticipant> participantSettings = new ArrayList<>(); // 초기화 추가
+
+    // 관계 설정 헬퍼 메서드 (선택적)
+    public void addParticipantSetting(ChatRoomParticipant participant) {
+        this.participantSettings.add(participant);
+        participant.setChatRoom(this);
     }
 
-    // 참여자 제거 메서드
-    public void removeParticipant(SiteUser user) {
-        participants.remove(user);
-    }
 }

@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -31,4 +35,7 @@ public class ChatMessage {
 
     @Enumerated(EnumType.STRING)
     private MessageType type = MessageType.NORMAL; // 메시지 타입 (일반, 시스템)
+
+    @ManyToMany
+    private Set<SiteUser> readBy = new HashSet<>(); // HashSet<SiteUser>로 변경
 }
