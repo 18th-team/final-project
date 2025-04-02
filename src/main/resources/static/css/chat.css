@@ -585,6 +585,9 @@
 /* Options Menu */
 .chat-options {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .options-button {
