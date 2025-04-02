@@ -37,12 +37,49 @@
             <label for="tags">태그</label>
             <input type="text" class="form-control" name="tags" id="tags" th:field="*{tags}" placeholder="예시) 강남,소셜다이닝,맛집">
         </div>
+        <!-- 기존 이미지 미리보기 -->
+        <!-- 기존 이미지가 있는 경우 보여주기 -->
+        <div class="form-group" id="existing-image-wrapper" th:if="${postID != null and existingImage != null}">
+            <p>현재 등록된 이미지:</p>
+            <img th:src="@{${existingImage}}" alt="기존 이미지" style="max-width: 200px; display: block; margin-bottom: 10px;">
+        </div>
+
         <div class="form-group">
             <label for="imageURL">이미지 업로드</label>
             <input type="file" class="form-control" name="imageURL" id="imageURL" accept="image/*">
         </div>
+        <div class="form-group mt-2">
+            <p id="preview-label" style="display: none;">미리보기:</p>
+            <img id="preview-image" style="max-width: 200px; display: none;" />
+        </div>
         <button type="submit" class="btn btn-primary">등록하기</button>
     </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script layout:fragment="script">
+    $(document).ready(function () {
+        $('#imageURL').on('change', function () {
+            const file = this.files[0];
+            const reader = new FileReader();
+
+            if (file) {
+                reader.onload = function (e) {
+                    // 새 프리뷰 보여주기
+                    $('#preview-image').attr('src', e.target.result).show();
+                    $('#preview-label').show();
+
+                    // 기존 이미지 숨기기
+                    $('#existing-image-wrapper').hide();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                $('#preview-image').hide().attr('src', '');
+                $('#preview-label').hide();
+                $('#existing-image-wrapper').show(); // 다시 기존 이미지 보이게
+            }
+        });
+    });
+</script>
+
 </body>
 </html>

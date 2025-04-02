@@ -135,3 +135,8 @@ a.active:hover {
     color: #ff6600;
 }
 
+#loadMoreBtn {
+    border: 1px solid #E36D1D;
+    border-radius: 10px;
+    color: #E36D1D;
+}

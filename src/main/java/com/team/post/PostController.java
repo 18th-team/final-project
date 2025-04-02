@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RequestMapping("/post")
@@ -165,6 +166,7 @@ public class PostController {
 
         model.addAttribute("postForm", form);
         model.addAttribute("postID", post.getPostID());
+        model.addAttribute("existingImage", post.getImageURL());
 
         return "post_form";
     }
@@ -173,6 +175,7 @@ public class PostController {
     public String modify(@PathVariable Integer id,
                          @ModelAttribute PostForm form,
                          @RequestParam("imageURL") MultipartFile imageFile,
+                         @RequestParam(value = "existingImage", required = false) String existingImage,
                          Principal principal) {
         Post post = postService.getPost(id);
         SiteUser user = userService.getUser(principal.getName());
@@ -186,6 +189,8 @@ public class PostController {
         String imagePath = null;
         if (!imageFile.isEmpty()) {
             imagePath = fileService.saveImage(imageFile);
+        } else {
+            imagePath = existingImage; // 기존 이미지 유지
         }
 
         postService.modify(post, form.getTitle(), form.getContent(), form.getTags(), imagePath, club);
