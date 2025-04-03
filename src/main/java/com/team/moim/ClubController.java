@@ -142,8 +142,12 @@ private final KeywordRepository keywordRepository;
             redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다!");
             return "redirect:/login";
         }
-        clubService.joinClub(clubId, user.getUsername()); // email 반환
-        redirectAttributes.addFlashAttribute("message", "참여완료!");
+        // 서비스 호출
+        boolean isJoined = clubService.joinClub(clubId, user.getUsername()); // email 반환
+        if (isJoined) {
+            redirectAttributes.addFlashAttribute("message", "참여완료!");
+        }else {
+        redirectAttributes.addFlashAttribute("message", "이미 참여하셨습니다 😁");}
         return "redirect:/clubs/" + clubId;
     }
 

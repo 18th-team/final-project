@@ -50,6 +50,7 @@ public class ClubDTO {
     private List<String> memberNames = new ArrayList<>();
     private List<String> memberDescriptions = new ArrayList<>();
     private List<String> memberImages = new ArrayList<>(); // 프로필 사진 리스트로 변경
+    private List<String> memberEmails = new ArrayList<>(); // 추가
     private int memberCount;
 
 
@@ -96,6 +97,7 @@ public class ClubDTO {
             clubDTO.setMemberDescriptions(club.getMembers().stream().map(SiteUser::getIntroduction).collect(Collectors.toList()));
             clubDTO.setMemberCount(club.getMembers().size());
             clubDTO.setMemberImages(club.getMembers().stream().map(SiteUser::getProfileImage).map(img -> img != null ? img : "/img/default-profile.png").collect(Collectors.toList()));
+            clubDTO.setMemberEmails(club.getMembers().stream().map(SiteUser::getEmail).collect(Collectors.toList()));
             return clubDTO;
         }
         return clubDTO;

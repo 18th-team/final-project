@@ -184,17 +184,21 @@ public class ClubService {
     }
 
     //클럽 참여하기
-    public void joinClub(Long clubId, String userEmail) {
+    public boolean joinClub(Long clubId, String userEmail) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
         SiteUser user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        // 멤버 추가 로직
-        if (!club.getMembers().contains(user)) {
-            club.getMembers().add(user);
-            user.getClubs().add(club); // 양방향 동기화
+        // 이미 가입했는지 체크
+        if (club.getMembers().contains(user)) {
+            return false; // 중복이면 false 반환
         }
+
+        // 가입 처리
+        club.getMembers().add(user);
+        user.getClubs().add(club);
         clubRepository.save(club);
+        return true; // 성공하면 true 반환
     }
 
     // 상세 조회용 (필요 시)

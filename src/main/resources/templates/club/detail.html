@@ -44,7 +44,7 @@
 
         }
 
-        dd, .content-box{
+        dd, .content-box {
             font-family: 'Pretendard-ExtraLight';
             font-size: calc(0.9rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
 
@@ -91,22 +91,27 @@
             color: #333333;
 
         }
-.custom-badge{
-    font-size: calc(0.9rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
-}
 
+        .custom-badge {
+            font-size: calc(0.9rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
+        }
+        ul,li {
+            text-decoration: none;
+            list-style: none;
+
+        }
     </style>
 </head>
 <body>
 <div class="container my-5">
     <!--                            버튼추가 !! -->
     <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-primary" onclick="alert('참여완료!')">모임 참여하기</button>
+        <button type="submit" class="btn btn-primary" onsubmit="validateJoin()">모임 참여하기</button>
     </form>
     <!-- 모임 상세 정보 -->
     <div class="card" style="overflow: hidden">
         <dd class="col-12 mb-md-5 mb-2">
-            <div th:if="${clubDTO.fileAttached == 1}" >
+            <div th:if="${clubDTO.fileAttached == 1}">
                 <div id="clubCarousel" class="carousel slide" data-bs-ride="carousel">
                     <!-- 인디케이터 -->
                     <div class="carousel-indicators">
@@ -149,6 +154,9 @@
         <div class="card-body">
 
             <div class="row my-3 d-flex justify-content-between">
+                <!-- 메시지와 에러를 HTML로 표시 (선택적) -->
+                <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
                 <div class="col-lg-8">
                     <h2 th:text="${clubDTO.title}"></h2>
                 </div>
@@ -220,11 +228,11 @@
                 <div class="col-8 col-md-9 mb-4 mt-5">
                     <div class="row align-items-center">
                         <div class="col-md-3 "><img th:if="${clubDTO.hostImg != null}"
-                                                th:src="${clubDTO.hostImg}"
-                                                alt="프로필 사진"
-                                                class="rounded-circle img-fluid "
-                                                                   style="max-width: 150px;max-height: 150px"
-                            />
+                                                    th:src="${clubDTO.hostImg}"
+                                                    alt="프로필 사진"
+                                                    class="rounded-circle img-fluid "
+                                                    style="max-width: 150px;max-height: 150px"
+                        />
                             <span th:if="${clubDTO.hostImg == null}">이미지 없음</span></div>
                         <div class="col-md-9 ">
                             <div class="row px-sm-4">
@@ -240,19 +248,24 @@
 
                     </div>
                 </div>
-                <!-- Host -->
+                <!-- 참여자 -->
+                <dt class="col-md-3 col-4 mt-5">참여자 수 🍙</dt>
+                <dd class="col-md-9 col-8 mb-4 mt-5"
+                    th:text="${clubDTO.memberCount + '명'}">
+                </dd>
+
                 <dt class="col-4 col-md-3 mt-5">참여자 목록📚</dt>
                 <div class="col-8 col-md-9 mb-4 mt-5">
-                    <h3>참여자 수: <span th:text="${clubDTO.memberCount}"></span></h3>
-                    <h4>참여자 목록</h4>
-                    <ul>
-                        <li th:each="name, iterStat : ${clubDTO.memberNames}">
-                            <img th:src="${clubDTO.memberImages[iterStat.index]}" style="width: 50px; height: 50px; border-radius: 50%;" />
-                            <span th:text="${name}"></span> -
-                            <span th:text="${clubDTO.memberDescriptions[iterStat.index]}"></span>
-                        </li>
-                    </ul>
-                    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+                    <div class="row mb-3" th:each="name, iterStat : ${clubDTO.memberNames}">
+                        <div class="col-md-3 col-12 d-flex align-items-center mb-2 mb-md-0">
+                            <img th:src="${clubDTO.memberImages[iterStat.index]}"
+                                 style="width: 50px; height: 50px; border-radius: 50%;" class="mr-1"/>
+                            <div th:text="${name}">
+                        </div>
+                        </div>
+                        <div class="col-md-9 col-12 text-left   d-flex align-items-center" th:text="${clubDTO.memberDescriptions[iterStat.index]}"></div>
+                    </div>
+
                 </div>
 
             </dl>
@@ -260,5 +273,20 @@
     </div>
 
 </div>
+<!-- alert 팝업 처리 -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // message가 있으면 alert 띄우기
+    const message = /*[[${message}]]*/ null;
+    if (message) {
+        alert(message);
+    }
+    // error가 있으면 alert 띄우기
+    const error = /*[[${error}]]*/ null;
+    if (error) {
+        alert(error);
+    }
+    /*]]>*/
+</script>
 </body>
 </html>
