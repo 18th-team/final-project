@@ -70,6 +70,8 @@
                             <span th:if="${post.voter.contains(loginUser)}" th:text="'🧡' + ${#lists.size(post.voter)}"></span>
                             <span th:unless="${post.voter.contains(loginUser)}" th:text="'🤍' + ${#lists.size(post.voter)}"></span>
                         </a>
+                        <span class="ms-3 comment-toggle" th:attr="data-post-id=${post.postID}">
+                    💬 <span th:text="${commentCountMap[post.postID]}">0</span>
                     </div>
 
                     <div class="mt-2 d-flex justify-content-end"
@@ -101,19 +103,26 @@
 
                     <!-- 댓글 목록 -->
                     <div th:each="post : ${postList}" th:id="'comment-list-' + ${post.postID}" class="comment-list d-none">
-                        <div th:each="comment : ${commentMap[post.postID]}" class="mb-3">
+                        <div th:each="comment : ${commentMap[post.postID]}"
+                             th:id="'comment-' + ${comment.id}" class="mb-3">
+
+                            <!-- 프로필 및 작성자 -->
                             <div>
                                 <img th:src="${comment.author.profileImage != null ? comment.author.profileImage : '/img/default-profile.png'}"
                                      class="rounded-circle me-2" style="width:30px; height:30px;">
                                 <strong th:text="${comment.author.name}">작성자</strong>
                             </div>
-                            <div th:text="${comment.content}">댓글 내용</div>
+
+                            <!-- 댓글 본문 -->
+                            <div class="comment-content" th:text="${comment.content}">댓글 내용</div>
                             <div class="text-muted small" th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
 
                             <!-- 수정/삭제 버튼 -->
                             <div th:if="${loginUser != null and loginUser.id == comment.author.id}">
-                                <button type="button" class="btn btn-sm btn-outline-secondary edit-comment-btn" th:data-comment-id="${comment.id}">수정</button>
-                                <button type="button" class="btn btn-sm btn-outline-danger delete-comment-btn" th:data-comment-id="${comment.id}" th:data-post-id="${post.postID}">삭제</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary edit-comment-btn"
+                                        th:data-comment-id="${comment.id}">수정</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger delete-comment-btn"
+                                        th:data-comment-id="${comment.id}" th:data-post-id="${post.postID}">삭제</button>
                             </div>
 
                             <!-- 답글 버튼 -->
@@ -126,16 +135,22 @@
                             </div>
 
                             <!-- 대댓글 -->
-                            <div th:each="child : ${comment.children}" class="ms-4 border-start ps-3 mt-3">
+                            <div th:each="child : ${comment.children}"
+                                 th:id="'comment-' + ${child.id}"
+                                 class="ms-4 border-start ps-3 mt-3">
+
                                 <img th:src="${child.author.profileImage != null ? child.author.profileImage : '/img/default-profile.png'}"
                                      class="rounded-circle me-2" style="width:30px; height:30px;">
                                 <strong th:text="${child.author.name}">작성자</strong>
-                                <div th:text="${child.content}">답글 내용</div>
+
+                                <div class="comment-content" th:text="${child.content}">답글 내용</div>
                                 <div class="text-muted small" th:text="${#temporals.format(child.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
 
                                 <div th:if="${loginUser != null and loginUser.id == child.author.id}">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary edit-comment-btn" th:data-comment-id="${child.id}">수정</button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger delete-comment-btn" th:data-comment-id="${child.id}" th:data-post-id="${post.postID}">삭제</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary edit-comment-btn"
+                                            th:data-comment-id="${child.id}">수정</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger delete-comment-btn"
+                                            th:data-comment-id="${child.id}" th:data-post-id="${post.postID}">삭제</button>
                                 </div>
                             </div>
                             <hr>
@@ -165,6 +180,14 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script layout:fragment="script">
+    $(function () {
+        const token = $("meta[name='_csrf']").attr("content");
+        const header = $("meta[name='_csrf_header']").attr("content");
+
+        $(document).ajaxSend(function (e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+    });
 
     let msnry;
 
@@ -275,7 +298,7 @@
             const csrfToken = $("input[name='_csrf']").val();
 
             $.ajax({
-                url: "/comment/review",
+                url: "/comment",
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: {
@@ -300,23 +323,63 @@
         });
     });
 
+    // 수정 버튼 클릭 시 입력창 토글
+    $(document).on("click", ".edit-comment-btn", function () {
+        const commentId = $(this).data("comment-id");
+        const $commentDiv = $(`#comment-${commentId}`);
+        const originalContent = $commentDiv.find(".comment-content").text();
+
+        const editForm = `
+        <div class="edit-form mt-2">
+            <textarea class="form-control edit-content" rows="2">${originalContent}</textarea>
+            <button class="btn btn-sm btn-primary mt-1 submit-edit" data-comment-id="${commentId}">수정 완료</button>
+        </div>`;
+
+        $commentDiv.append(editForm);
+    });
+
+    $(document).on("click", ".submit-edit", function () {
+        const commentId = $(this).data("comment-id");
+        const newContent = $(this).siblings(".edit-content").val();
+        const csrfToken = $("input[name='_csrf']").val();
+
+        $.ajax({
+            url: `/comment/edit/${commentId}`,
+            type: "POST",
+            data: {
+                content: newContent,
+                _csrf: csrfToken
+            },
+            success: function () {
+                // 화면 업데이트
+                const $commentBlock = $(`#comment-${commentId}`);
+                $commentBlock.find(".comment-content").text(newContent);
+                $commentBlock.find(".edit-form").remove();
+            },
+            error: function (xhr) {
+                alert("수정 실패: " + xhr.responseText);
+            }
+        });
+    });
+
     $(document).on("click", ".delete-comment-btn", function () {
         if (!confirm("삭제할까요?")) return;
 
         const commentId = $(this).data("comment-id");
         const postId = $(this).data("post-id");
-        const csrfToken = $("input[name='_csrf']").val();
+
+        // 메타 태그에서 CSRF 토큰과 헤더 이름을 가져옴
+        const csrfToken = $("meta[name='_csrf']").attr("content");
+        const csrfHeader = $("meta[name='_csrf_header']").attr("content");
 
         $.ajax({
-            url: `/comment/review/delete/${commentId}`,
+            url: `/comment/delete/${commentId}`,
             type: "POST",
             data: {
                 _csrf: csrfToken
             },
             success: function () {
-                // 해당 댓글 DOM 제거
-                $(`#comment-list-${postId} .delete-comment-btn[data-comment-id='${commentId}']`)
-                    .closest("div").parent().remove(); // 댓글 div 전체 삭제
+                $(`#comment-${commentId}`).remove();
             },
             error: function () {
                 alert("댓글 삭제 실패");
@@ -339,7 +402,7 @@
         const csrfToken = $("input[name='_csrf']").val();
 
         $.ajax({
-            url: "/comment/review/reply",
+            url: "/comment/reply",
             type: "POST",
             data: {
                 postId: postId,

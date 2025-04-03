@@ -80,8 +80,9 @@ public class CommentController {
         }
 
         Comment comment = commentService.getById(id);
+        SiteUser user = userService.getUser(principal.getName());
 
-        if (!comment.getAuthor().getName().equals(principal.getName())) {
+        if (!comment.getAuthor().getId().equals(user.getId())) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -89,4 +90,5 @@ public class CommentController {
         commentService.delete(comment);
         response.setStatus(HttpServletResponse.SC_OK);
     }
+
 }

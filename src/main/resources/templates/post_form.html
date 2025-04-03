@@ -5,7 +5,7 @@
 
 <body class="bg-light">
 <div class="container mt-4">
-    <h2 th:text="${postID != null} ? (isReview ? '후기 수정' : '피드 수정') : (isReview ? '후기 작성' : '피드 작성')">피드 작성</h2>
+    <h2 th:text="${postID != null} ? '수정' : '작성'">피드 작성</h2>
     <form th:action="@{${postID != null} ? '/post/modify/' + ${postID} : '/post/create'}"
           method="post"
           th:object="${postForm}"
