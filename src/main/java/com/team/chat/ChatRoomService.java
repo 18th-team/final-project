@@ -5,16 +5,20 @@ import com.team.user.SiteUser;
 import com.team.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +31,7 @@ public class ChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional(readOnly = true)
     public ChatRoom findChatRoomById(Long chatRoomId) {
@@ -53,7 +58,13 @@ public class ChatRoomService {
             chatMessageService.createMessage(chatRoom, user, user.getName() + "님이 채팅방을 떠났습니다.", MessageType.SYSTEM);
             chatRoomRepository.save(chatRoom);
         }
-        eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), chatRoom.getOwner().getUuid()));
+        // 모든 참가자에게 이벤트 발행
+        Set<String> affectedUuids = chatRoom.getParticipants().stream()
+                .map(SiteUser::getUuid)
+                .collect(Collectors.toSet());
+        affectedUuids.add(chatRoom.getRequester().getUuid());
+        affectedUuids.add(chatRoom.getOwner().getUuid());
+        eventPublisher.publishEvent(new ChatRoomUpdateEvent(affectedUuids));
     }
 
     @Transactional
@@ -122,6 +133,8 @@ public class ChatRoomService {
     @Transactional
     public void handleChatRequest(SiteUser currentUser, Long chatRoomId, String action) {
         ChatRoom chatRoom = validateChatRoom(chatRoomId, currentUser);
+        String requesterUuid = chatRoom.getRequester().getUuid();
+        String ownerUuid = chatRoom.getOwner().getUuid();
         switch (action.toUpperCase()) {
             case "APPROVE":
                 chatRoom.setStatus("ACTIVE");
@@ -143,7 +156,7 @@ public class ChatRoomService {
             default:
                 throw new IllegalArgumentException("지원하지 않는 액션: " + action);
         }
-        eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), currentUser.getUuid()));
+        eventPublisher.publishEvent(new ChatRoomUpdateEvent(requesterUuid, ownerUuid));
     }
 
     @Transactional(readOnly = true)
@@ -154,25 +167,25 @@ public class ChatRoomService {
             long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat)
                     .stream()
                     .filter(msg -> !msg.getSender().getUuid().equals(user.getUuid()))
-                    .filter(msg -> !msg.getReadBy().contains(user))
+                    .filter(msg -> msg.getReadBy() == null || !msg.getReadBy().contains(user))
                     .count();
             dto.setUnreadCount((int) unreadCount);
 
-            // 마지막 메시지 설정
             chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
                 dto.setLastMessage(msg.getContent());
                 dto.setLastMessageTime(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             });
 
             ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chat, user)
-                    .orElseThrow(() -> new IllegalStateException("Participant not found"));
+                    .orElseThrow(() -> new IllegalStateException("참여자를 찾을 수 없습니다."));
             dto.setNotificationEnabled(participant.isNotificationEnabled());
             return dto;
         }).collect(Collectors.toList());
     }
+
     @Transactional(readOnly = true)
     public List<ChatRoomDTO.ChatMessageDTO> getMessages(ChatRoom chatRoom, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").ascending()); // 최신 메시지부터
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").ascending());
         Page<ChatMessage> messagePage = chatMessageRepository.findByChatRoom(chatRoom, pageable);
         return messagePage.getContent().stream()
                 .map(this::convertToChatMessageDTO)
@@ -222,5 +235,15 @@ public class ChatRoomService {
         dto.setTimestamp(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         dto.setType(msg.getType().name());
         return dto;
+    }
+
+    @EventListener(ChatRoomUpdateEvent.class)
+    public void handleChatRoomUpdate(ChatRoomUpdateEvent event) {
+        for (String uuid : event.getAffectedUuids()) {
+            userRepository.findByUuid(uuid).ifPresent(user -> {
+                List<ChatRoomDTO> chatRooms = getChatRoomsForUser(user);
+                messagingTemplate.convertAndSend("/user/" + uuid + "/topic/chatrooms", chatRooms);
+            });
+        }
     }
 }

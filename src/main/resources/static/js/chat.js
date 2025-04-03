@@ -19,18 +19,14 @@ const chatApp = (function() {
     const markCooldown = 1000;
     let renderedMessageIds = new Map();
     let messageSubscription = null;
-
     let currentPage = 0;
     const pageSize = 50;
-
     let state = { isChatOpen: false, isChatRoomOpen: false, isLoading: false };
-
     // 상태 저장
     function saveChatState() {
         const chatState = { isChatOpen: state.isChatOpen, isChatRoomOpen: state.isChatRoomOpen, currentChatRoomId, activeTab };
         localStorage.setItem('chatState', JSON.stringify(chatState));
     }
-
     // 상태 로드
     function loadChatState() {
         try {
@@ -50,7 +46,6 @@ const chatApp = (function() {
             activeTab = 'PRIVATE';
         }
     }
-
     // 서버 연결
     function connect() {
         if (Date.now() - lastConnectTime < connectRateLimit || isConnected) {
@@ -111,7 +106,6 @@ const chatApp = (function() {
             updateChatUI();
         });
     }
-
     // 총 메시지 수 요청
     function getMessageCount(chatId) {
         return new Promise((resolve, reject) => {
@@ -632,22 +626,18 @@ const chatApp = (function() {
             element.style.opacity = '1';
             console.log(`Message ${item.id} added to DOM:`, element);
         }, 0);
-
         messagesContainer.offsetHeight;
     }
-
     // 알림 토글 업데이트
     function updateNotificationToggle() {
         const toggleButton = document.querySelector('.notification-toggle');
         if (!toggleButton || !currentChatRoomId) return;
-
         const chat = chatRoomsCache.find(c => c.id === currentChatRoomId);
         const isEnabled = chat?.notificationEnabled !== false;
         toggleButton.setAttribute('aria-pressed', isEnabled.toString());
         const icon = toggleButton.querySelector('.notification-icon');
         if (icon) icon.style.fill = isEnabled ? '#333' : '#ccc';
     }
-
     // 채팅 입력 UI 업데이트
     function updateChatInput(chat, messageInput, sendButton) {
         const isDisabled = chat.status === 'CLOSED' || chat.status === 'BLOCKED';
@@ -655,7 +645,6 @@ const chatApp = (function() {
         sendButton.disabled = isDisabled;
         messageInput.placeholder = isDisabled ? "채팅방이 종료되었습니다." : "메시지를 입력하세요.";
     }
-
     // 에러 메시지 표시
     function showError(message) {
         const errorDiv = document.createElement('div');
@@ -664,7 +653,6 @@ const chatApp = (function() {
         document.body.appendChild(errorDiv);
         setTimeout(() => errorDiv.remove(), 5000);
     }
-
     // 이벤트 리스너 설정
     function setupEventListeners() {
         const messagesContainer = document.querySelector('.messages-container');
@@ -675,7 +663,6 @@ const chatApp = (function() {
             });
             messagesContainer.dataset.listenerAdded = 'true';
         }
-
         const optionsMenu = document.querySelector('.options-menu');
         const optionsButton = document.querySelector('.options-button');
         if (optionsButton) {
@@ -683,21 +670,17 @@ const chatApp = (function() {
                 optionsMenu.style.display = optionsMenu.style.display === 'block' ? 'none' : 'block';
             });
         }
-
         document.addEventListener('click', event => {
             if (!optionsButton?.contains(event.target) && !optionsMenu?.contains(event.target)) {
                 optionsMenu.style.display = 'none';
             }
         });
-
         const sendButton = document.querySelector('.send-button');
         const messageInput = document.querySelector('.message-input');
         if (sendButton) sendButton.addEventListener('click', sendMessage);
         if (messageInput) messageInput.addEventListener('keypress', e => e.key === 'Enter' && sendMessage());
-
         const backButton = document.querySelector('.back-button');
         if (backButton) backButton.addEventListener('click', resetChatWindow);
-
         const blockOption = document.querySelector('.block-option');
         if (blockOption) {
             blockOption.addEventListener('click', () => {
@@ -707,7 +690,6 @@ const chatApp = (function() {
                 }
             });
         }
-
         const leaveOption = document.querySelector('.leave-option');
         if (leaveOption) {
             leaveOption.addEventListener('click', () => {
@@ -717,7 +699,6 @@ const chatApp = (function() {
                 }
             });
         }
-
         const notificationToggle = document.querySelector('.notification-toggle');
         if (notificationToggle) {
             notificationToggle.addEventListener('click', () => {
@@ -727,7 +708,6 @@ const chatApp = (function() {
                 stompClient.send("/app/toggleNotification", {}, JSON.stringify({ chatRoomId: currentChatRoomId, action }));
             });
         }
-
         const groupTab = document.querySelector('.tab-group');
         const personalTab = document.querySelector('.tab-personal');
         if (groupTab) groupTab.addEventListener('click', () => switchTab('GROUP'));
@@ -755,7 +735,6 @@ const chatApp = (function() {
             });
         }
     }
-
     // 메시지 전송
     function sendMessage() {
         const messageInput = document.querySelector('.message-input');
@@ -773,7 +752,6 @@ const chatApp = (function() {
             showError("연결 상태가 올바르지 않습니다. 다시 시도해주세요.");
         }
     }
-
     // 탭 전환
     function switchTab(tab) {
         activeTab = tab;
@@ -781,7 +759,6 @@ const chatApp = (function() {
         renderChatList(chatRoomsCache);
         saveChatState();
     }
-
     // 채팅 창 초기화
     function resetChatWindow() {
         document.querySelector('.personal-chat').classList.remove('visible');
@@ -796,7 +773,6 @@ const chatApp = (function() {
             messageSubscription = null;
         }
     }
-
     // 채팅 UI 업데이트
     function updateChatUI() {
         const messagesList = document.getElementById('messagesList');
@@ -821,7 +797,6 @@ const chatApp = (function() {
             closeButton.classList.add('hidden');
         }
     }
-
     // 탭 UI 업데이트
     function updateTabUI() {
         const groupTab = document.querySelector('.tab-group');
@@ -834,18 +809,12 @@ const chatApp = (function() {
             groupTab?.classList.remove('active');
         }
     }
-
     return {
         connect,
-        handleRequest,
         setupEventListeners,
         loadChatState,
         updateChatUI,
         updateTabUI,
-        getState: () => state,
-        getCurrentChatRoomId: () => currentChatRoomId,
-        getChatRoomsCache: () => chatRoomsCache,
-        openPersonalChat
     };
 })();
 

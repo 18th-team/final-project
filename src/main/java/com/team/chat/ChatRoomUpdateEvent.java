@@ -1,19 +1,22 @@
 package com.team.chat;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ChatRoomUpdateEvent {
-    private final String requesterUuid;
-    private final String ownerUuid;
+    private Set<String> affectedUuids;
+
+    public ChatRoomUpdateEvent(Set<String> affectedUuids) {
+        this.affectedUuids = affectedUuids;
+    }
 
     public ChatRoomUpdateEvent(String requesterUuid, String ownerUuid) {
-        this.requesterUuid = requesterUuid;
-        this.ownerUuid = ownerUuid;
+        this.affectedUuids = new HashSet<>();
+        this.affectedUuids.add(requesterUuid);
+        this.affectedUuids.add(ownerUuid);
     }
 
-    public String getRequesterUuid() {
-        return requesterUuid;
-    }
-
-    public String getOwnerUuid() {
-        return ownerUuid;
+    public Set<String> getAffectedUuids() {
+        return affectedUuids;
     }
 }

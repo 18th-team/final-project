@@ -2,8 +2,7 @@ package com.team.chat;
 
 import com.team.user.SiteUser;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +13,9 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +38,20 @@ public class ChatMessage {
     @Enumerated(EnumType.STRING)
     private MessageType type = MessageType.NORMAL; // 메시지 타입 (일반, 시스템)
 
-    @ManyToMany
-    private Set<SiteUser> readBy = new HashSet<>(); // HashSet<SiteUser>로 변경
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "chat_message_read_by",
+            joinColumns = @JoinColumn(name = "chat_message_id"),
+            inverseJoinColumns = @JoinColumn(name = "read_by_id")
+    )
+    @Builder.Default // 초기값 보장
+    private Set<SiteUser> readBy = new HashSet<>();
+
+    // 방어 로직 추가
+    public Set<SiteUser> getReadBy() {
+        if (readBy == null) {
+            readBy = new HashSet<>();
+        }
+        return readBy;
+    }
 }
