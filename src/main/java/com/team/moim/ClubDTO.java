@@ -46,8 +46,11 @@ public class ClubDTO {
     private int fileAttached;//파일 첨부 여부(1:첨부,0:미첨부)
 
     // 새로 추가
-    private Set<String> memberUsernames = new HashSet<>(); // 참여자 이름 목록
-    private int memberCount; // 참여자 수
+// 참여자 정보
+    private List<String> memberNames = new ArrayList<>();
+    private List<String> memberDescriptions = new ArrayList<>();
+    private List<String> memberImages = new ArrayList<>(); // 프로필 사진 리스트로 변경
+    private int memberCount;
 
 
     // Entity -> DTO로 변환
@@ -60,6 +63,9 @@ public class ClubDTO {
         clubDTO.setDistrict(club.getDistrict());
         clubDTO.setAgeRestriction(club.getAgeRestriction());
         clubDTO.setSelectedTheme(club.getKeywords().isEmpty() ? null : club.getKeywords().iterator().next().getName());
+        clubDTO.setMemberNames(club.getMembers().stream().map(SiteUser::getName).collect(Collectors.toList()));
+        clubDTO.setMemberDescriptions(club.getMembers().stream().map(SiteUser::getIntroduction).collect(Collectors.toList()));
+        clubDTO.setMemberCount(club.getMembers().size());
         clubDTO.setCreatedAt(club.getCreatedAt()); // BaseEntity에서 상속
         clubDTO.setUpdatedAt(club.getUpdatedAt()); // BaseEntity에서 상속
         //note 로그인한사용자 세팅하기
@@ -86,8 +92,11 @@ public class ClubDTO {
             }
             clubDTO.setOriginalFileName(originalFileName);
             clubDTO.setStoredFileName(storedFileName);
-            clubDTO.setMemberUsernames(club.getMembers().stream().map(SiteUser::getName).collect(Collectors.toSet()));
-       clubDTO.setMemberCount(club.getMembers().size());
+            clubDTO.setMemberNames(club.getMembers().stream().map(SiteUser::getName).collect(Collectors.toList()));
+            clubDTO.setMemberDescriptions(club.getMembers().stream().map(SiteUser::getIntroduction).collect(Collectors.toList()));
+            clubDTO.setMemberCount(club.getMembers().size());
+            clubDTO.setMemberImages(club.getMembers().stream().map(SiteUser::getProfileImage).map(img -> img != null ? img : "/img/default-profile.png").collect(Collectors.toList()));
+            return clubDTO;
         }
         return clubDTO;
     }

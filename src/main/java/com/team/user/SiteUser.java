@@ -4,6 +4,7 @@ import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor // 기본 생성자
 @AllArgsConstructor // 모든 필드 포함 생성자
 @Builder
-public class SiteUser {
+public class SiteUser{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -66,11 +67,7 @@ public class SiteUser {
     @OneToMany(mappedBy = "host", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Club> hostedClubs = new ArrayList<>();
 
-    // 편의 메서드 (선택 사항)
-    public void addHostedClub(Club club) {
-        hostedClubs.add(club);
-        club.setHost(this);
-    }
+
 
     // 키워드 연결 추가
     @ManyToMany
@@ -81,14 +78,10 @@ public class SiteUser {
     )
     private Set<Keyword> keywords = new HashSet<>();
 
+    //클럽가입관계추가
     @ManyToMany(mappedBy = "members")
-    private Set<Club> clubs = new HashSet<>();
-    // Getter, Setter
-    public Set<Club> getClubs() {
-        return clubs;
-    }
+    private Set<Club>clubs = new HashSet<>();
 
-    public void joinClub(Club club) {
-        clubs.add(club);
-    }
+
+
 }

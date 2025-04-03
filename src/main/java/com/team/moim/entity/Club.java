@@ -63,14 +63,7 @@ public class Club extends BaseEntity {
     )
     private Set<SiteUser> members = new HashSet<>();
 
-    // Getter, Setter
-    public Set<SiteUser> getMembers() {
-        return members;
-    }
 
-    public void addMember(SiteUser user) {
-        members.add(user);
-    }
     // DTO -> Entity로 저장 (기본)
     public static Club toSaveEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
         return Club.builder()
@@ -129,7 +122,5 @@ public class Club extends BaseEntity {
                 .build();
     }
 
-    public String getHostName() {
-        return host != null ? host.getName() : null;
-    }
+
 }

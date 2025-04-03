@@ -183,12 +183,24 @@ public class ClubService {
         return clubs.stream().map(ClubDTO::toDTO).collect(Collectors.toList());
     }
 
-    //가입로직
-    public void joinClub(Long clubId, Long userId) {
-        Club club = clubRepository.findById(clubId).orElseThrow();
-        SiteUser user = userRepository.findById(userId).orElseThrow();
-        club.addMember(user);
-        user.joinClub(club);
+    //클럽 참여하기
+    public void joinClub(Long clubId, String userEmail) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+        SiteUser user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        // 멤버 추가 로직
+        if (!club.getMembers().contains(user)) {
+            club.getMembers().add(user);
+            user.getClubs().add(club); // 양방향 동기화
+        }
         clubRepository.save(club);
+    }
+
+    // 상세 조회용 (필요 시)
+    public ClubDTO getClubDetail(Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+        return ClubDTO.toDTO(club);
     }
 }

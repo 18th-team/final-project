@@ -99,7 +99,10 @@
 </head>
 <body>
 <div class="container my-5">
-
+    <!--                            버튼추가 !! -->
+    <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
+        <button type="submit" class="btn btn-primary" onclick="alert('참여완료!')">모임 참여하기</button>
+    </form>
     <!-- 모임 상세 정보 -->
     <div class="card" style="overflow: hidden">
         <dd class="col-12 mb-md-5 mb-2">
@@ -240,27 +243,16 @@
                 <!-- Host -->
                 <dt class="col-4 col-md-3 mt-5">참여자 목록📚</dt>
                 <div class="col-8 col-md-9 mb-4 mt-5">
-                    <div class="row align-items-center">
-                        <div class="col-md-3 "><img th:if="${clubDTO.hostImg != null}"
-                                                    th:src="${clubDTO.hostImg}"
-                                                    alt="프로필 사진"
-                                                    class="rounded-circle img-fluid "
-                                                    style="max-width: 150px;max-height: 150px"
-                        />
-                            <span th:if="${clubDTO.hostImg == null}">이미지 없음</span></div>
-                        <div class="col-md-9 ">
-                            <div class="row px-sm-4">
-                                <div class="col-12 mt-3 ">
-                                    <dd class="hostName" th:text="${clubDTO.hostName}">Host Name (ID)</dd>
-                                </div>
-                                <div class="col-12 ">
-                                    <dd class="hostIntro" th:text="${clubDTO.hostIntro}">Host Introduction</dd>
-
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
+                    <h3>참여자 수: <span th:text="${clubDTO.memberCount}"></span></h3>
+                    <h4>참여자 목록</h4>
+                    <ul>
+                        <li th:each="name, iterStat : ${clubDTO.memberNames}">
+                            <img th:src="${clubDTO.memberImages[iterStat.index]}" style="width: 50px; height: 50px; border-radius: 50%;" />
+                            <span th:text="${name}"></span> -
+                            <span th:text="${clubDTO.memberDescriptions[iterStat.index]}"></span>
+                        </li>
+                    </ul>
+                    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
                 </div>
 
             </dl>

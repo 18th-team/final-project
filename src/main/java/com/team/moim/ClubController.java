@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -97,24 +98,11 @@ private final KeywordRepository keywordRepository;
 
     //상세보기 (사용자정보 저장하기)
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id, Model model, Authentication authentication) {
-        if (id == null) {
-            return "redirect:/clubs";
-        }
-        ClubDTO clubDTO = clubService.findById(id);
+    public String getClubDetail(@PathVariable("id") Long id, Model model) {
+        ClubDTO clubDTO = clubService.getClubDetail(id);
         model.addAttribute("clubDTO", clubDTO);
-
-        //note  현재 로그인한 사용자 ID 추가
-        if (authentication != null && authentication.isAuthenticated()) {
-            CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
-            model.addAttribute("currentUserId", userDetails.getSiteUser().getId());
-        } else {
-            model.addAttribute("currentUserId", null);
-        }
-
         return "club/detail";
     }
-
     //수정하기
     //수정 컨트롤러
     @GetMapping("/update/{id}")
@@ -144,15 +132,20 @@ private final KeywordRepository keywordRepository;
         return "redirect:/clubs";
     }
 
-//클럽 가입 요청 처리
-@PostMapping("/join/{clubId}")
-public String joinClub(@PathVariable("clubId") Long clubId,
-                       @AuthenticationPrincipal SiteUser user, // 로그인한 유저 정보
-                       RedirectAttributes redirectAttributes) {
-    clubService.joinClub(clubId, user.getId());
-    redirectAttributes.addFlashAttribute("message", "참여완료!");
-    return "redirect:/clubs/" + clubId; // 상세 페이지로 리다이렉트
-}
+
+    //해당 클럽 참여하기
+    @PostMapping("/join/{clubId}")
+    public String joinClub(@PathVariable("clubId") Long clubId,
+                           @AuthenticationPrincipal CustomSecurityUserDetails user,
+                           RedirectAttributes redirectAttributes) {
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다!");
+            return "redirect:/login";
+        }
+        clubService.joinClub(clubId, user.getUsername()); // email 반환
+        redirectAttributes.addFlashAttribute("message", "참여완료!");
+        return "redirect:/clubs/" + clubId;
+    }
 
 
 
