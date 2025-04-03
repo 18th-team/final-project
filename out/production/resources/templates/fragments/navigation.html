@@ -35,8 +35,8 @@
 
             </ul>
         </div>
-        <form  th:action="@{/clubs/search}" class="search-bar d-flex align-items-right" role="search">
-            <input class="form-control" type="search" placeholder="키워드 검색" aria-label="Search" />
+        <form th:action="@{/clubs/search}" class="search-bar d-flex align-items-right" role="search" method="get">
+            <input class="form-control" type="search" name="query" placeholder="키워드 검색" aria-label="Search" />
             <button class="btn" type="submit">
                 <img th:src="@{/img/search-heart-fill.svg}" alt="Search Icon" style="width: 24px; height: 24px;" />
             </button>
