@@ -489,21 +489,27 @@ const chatApp = (function() {
         while (messagesContainer.firstChild) {
             messagesContainer.removeChild(messagesContainer.firstChild);
         }
-
-        // 모든 페이지의 메시지를 순차적으로 로드 (마지막 페이지부터 첫 페이지까지)
-        for (let page = lastPage; page >= 0; page--) {
+        // 모든 메시지를 저장할 배열
+        let allMessages = [];
+        // 모든 페이지의 메시지를 순차적으로 로드 (첫 페이지부터 마지막 페이지까지)
+        for (let page = 0; page <= lastPage; page++) {
             console.log(`Requesting messages for chat ${chat.id}, page ${page}`);
-            await new Promise((resolve) => {
-                refreshMessages(chat.id, page);
-                const checkMessagesLoaded = setInterval(() => {
-                    if (!state.isLoading) {
-                        clearInterval(checkMessagesLoaded);
-                        resolve();
-                    }
-                }, 100);
-            });
+            try {
+                const messages = await refreshMessages(chat.id, page);
+                allMessages = allMessages.concat(messages);
+            } catch (error) {
+                console.error(`Failed to load messages for page ${page}:`, error);
+            }
         }
 
+        allMessages.forEach(msg => {
+            if (!renderedMessageIds.get(chat.id).has(msg.id)) {
+                renderedMessageIds.get(chat.id).add(msg.id);
+                if (msg.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
+                    renderMessage(msg, 'append');
+                }
+            }
+        });
         // currentPage를 0으로 설정
         currentPage = 0;
 
