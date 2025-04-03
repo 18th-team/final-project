@@ -17,8 +17,11 @@ const chatApp = (function() {
     let isChatOpening = false;
     let lastMarkTime = 0;
     const markCooldown = 1000;
-    let renderedMessageIds = new Set();
+    let renderedMessageIds = new Map();
     let messageSubscription = null;
+
+    let currentPage = 0;
+    const pageSize = 50;
 
     let state = { isChatOpen: false, isChatRoomOpen: false, isLoading: false };
 
@@ -60,7 +63,12 @@ const chatApp = (function() {
 
         const socket = new SockJS('/chat', null, { transports: ['websocket'] });
         stompClient = Stomp.over(socket);
-
+        stompClient.heartbeat = { outgoing: 10000, incoming: 10000 };
+        stompClient.onWebSocketClose = function() {
+            isConnected = false;
+            showError("연결이 끊겼습니다. 재연결을 시도합니다.");
+            setTimeout(connect, 1000);
+        };
         const timeout = setTimeout(() => {
             if (!isConnected) {
                 showError("서버 연결 시간이 초과되었습니다.");
@@ -82,6 +90,13 @@ const chatApp = (function() {
             }
             subscribeToTopics();
             refreshChatRooms();
+
+            setInterval(() => {
+                if (!stompClient?.connected) {
+                    console.warn("WebSocket disconnected, reconnecting...");
+                    connect();
+                }
+            }, 5000);
         }, error => {
             clearTimeout(timeout);
             state.isLoading = false;
@@ -94,6 +109,25 @@ const chatApp = (function() {
             }
             isConnected = false;
             updateChatUI();
+        });
+    }
+
+    // 총 메시지 수 요청
+    function getMessageCount(chatId) {
+        return new Promise((resolve, reject) => {
+            if (!chatId || !stompClient?.connected) {
+                reject(new Error('Chat ID or connection not available'));
+                return;
+            }
+            stompClient.send("/app/getMessageCount", {}, JSON.stringify({ id: chatId }));
+            const subscription = stompClient.subscribe(`/user/${currentUser}/topic/messageCount`, message => {
+                const count = JSON.parse(message.body);
+                subscription.unsubscribe();
+                resolve(count);
+            }, error => {
+                subscription.unsubscribe();
+                reject(error);
+            });
         });
     }
 
@@ -112,11 +146,14 @@ const chatApp = (function() {
 
         stompClient.subscribe('/user/' + currentUser + '/topic/messages', message => {
             const items = JSON.parse(message.body);
-            if (Array.isArray(items)) {
-                items.forEach(handleMessage);
-            } else {
-                handleMessage(items);
-            }
+            const processedItems = Array.isArray(items) ? items : [items];
+            processedItems.forEach(item => {
+                handleMessage(item);
+                if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
+                    markMessagesAsRead();
+                }
+            });
+            state.isLoading = false;
         });
 
         stompClient.subscribe('/user/' + currentUser + '/topic/errors', message => {
@@ -141,18 +178,6 @@ const chatApp = (function() {
                 if (currentChatRoomId === update.chatRoomId) updateNotificationToggle();
             }
         });
-
-        // 메시지 자동 읽기 처리
-        if (!messageSubscription) {
-            messageSubscription = stompClient.subscribe('/user/' + currentUser + '/topic/messages', message => {
-                const items = JSON.parse(message.body);
-                const item = Array.isArray(items) ? items[0] : items;
-                if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
-                    markMessagesAsRead();
-                }
-                handleMessage(item);
-            });
-        }
     }
 
     // 채팅방 목록 새로고침
@@ -163,9 +188,28 @@ const chatApp = (function() {
     }
 
     // 메시지 새로고침
-    function refreshMessages(chatId = currentChatRoomId) {
-        if (!chatId || !stompClient?.connected) return;
-        stompClient.send("/app/getMessages", {}, JSON.stringify({ id: chatId }));
+    function refreshMessages(chatId = currentChatRoomId, page = currentPage) {
+        return new Promise((resolve, reject) => {
+            if (!chatId || !stompClient?.connected) {
+                reject(new Error('Chat ID or connection not available'));
+                return;
+            }
+            state.isLoading = true;
+            const subscription = stompClient.subscribe(`/user/${currentUser}/topic/messages`, (message) => {
+                const items = JSON.parse(message.body);
+                const processedItems = Array.isArray(items) ? items : [items];
+                subscription.unsubscribe();
+                state.isLoading = false;
+                resolve(processedItems);
+            }, error => {
+                subscription.unsubscribe();
+                state.isLoading = false;
+                reject(error);
+            });
+
+            stompClient.send("/app/getMessages", {}, JSON.stringify({ id: chatId, page, size: pageSize }));
+            console.log(`Requesting messages for chat ${chatId}, page ${page}`);
+        });
     }
 
     // 메시지 읽음 처리
@@ -177,26 +221,46 @@ const chatApp = (function() {
 
     // 메시지 처리
     function handleMessage(item) {
+        console.log('Handling message:', item);
         const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
-        if (!chat) return;
-
-        if (!chat.messages) chat.messages = [];
-        if (!chat.messages.some(m => m.id === item.id)) {
-            chat.messages.push(item);
-            chat.lastMessage = item.content;
-            chat.lastMessageTime = item.timestamp;
-            if (state.isChatOpen && !state.isChatRoomOpen) {
-                renderChatList(chatRoomsCache);
-            }
-            if (state.isChatRoomOpen && item.chatRoomId === currentChatRoomId) {
-                refreshMessages(currentChatRoomId);
-            }
+        if (!chat) {
+            console.log(`Chat room ${item.chatRoomId} not found in cache.`);
+            return;
         }
 
-        if (item.chatRoomId === currentChatRoomId && !renderedMessageIds.has(item.id)) {
-            renderedMessageIds.add(item.id);
-            renderMessage(item);
+        const items = Array.isArray(item) ? item : [item];
+        console.log(`Received ${items.length} messages for chat ${item.chatRoomId}, page ${currentPage}`);
+
+        if (!renderedMessageIds.has(chat.id)) {
+            renderedMessageIds.set(chat.id, new Set());
         }
+        const messageIds = renderedMessageIds.get(chat.id);
+
+        items.forEach(msg => {
+            if (!messageIds.has(msg.id)) {
+                messageIds.add(msg.id);
+                console.log(`Message ${msg.id} not rendered yet. Current chat room: ${currentChatRoomId}, Message chat room: ${msg.chatRoomId}, isChatRoomOpen: ${state.isChatRoomOpen}`);
+                if (msg.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
+                    renderMessage(msg, 'append');
+                } else {
+                    console.log(`Message ${msg.id} skipped: Not current chat room or chat not open.`);
+                }
+            } else {
+                console.log(`Message ${msg.id} already rendered, skipping.`);
+            }
+        });
+
+        if (items.length > 0) {
+            const latestMsg = items[items.length - 1]; // 최신 메시지
+            chat.lastMessage = latestMsg.content;
+            chat.lastMessageTime = latestMsg.timestamp;
+        }
+
+        if (state.isChatOpen && !state.isChatRoomOpen) {
+            setTimeout(() => renderChatList(chatRoomsCache), 0);
+        }
+
+        state.isLoading = false;
     }
 
     // 읽지 않은 메시지 수 업데이트
@@ -388,7 +452,7 @@ const chatApp = (function() {
     }
 
     // 개인 채팅 열기
-    function openPersonalChat(chat) {
+    async function openPersonalChat(chat) {
         if (!chat || !chat.id || isChatOpening) return;
         isChatOpening = true;
 
@@ -396,10 +460,53 @@ const chatApp = (function() {
         state.isChatRoomOpen = true;
         state.isChatOpen = false;
 
-        // 항상 메시지 새로고침
-        refreshMessages(chat.id);
+        // 총 메시지 수 요청
+        let totalMessages;
+        try {
+            totalMessages = await getMessageCount(chat.id);
+            console.log(`Total messages in chat ${chat.id}: ${totalMessages}`);
+        } catch (error) {
+            console.error('Failed to get message count:', error);
+            totalMessages = 0; // 기본값
+        }
+
+        // 마지막 페이지 계산
+        const lastPage = Math.max(0, Math.ceil(totalMessages / pageSize) - 1);
+
+        // renderedMessageIds 초기화
+        renderedMessageIds.set(chat.id, new Set());
 
         const chatWindow = document.querySelector('.personal-chat');
+        let messagesContainer = chatWindow.querySelector('.messages-container');
+        if (!messagesContainer) {
+            console.warn('Messages container missing, creating one');
+            messagesContainer = document.createElement('div');
+            messagesContainer.className = 'messages-container';
+            chatWindow.appendChild(messagesContainer);
+        }
+
+        // messagesContainer 초기화
+        while (messagesContainer.firstChild) {
+            messagesContainer.removeChild(messagesContainer.firstChild);
+        }
+
+        // 모든 페이지의 메시지를 순차적으로 로드 (마지막 페이지부터 첫 페이지까지)
+        for (let page = lastPage; page >= 0; page--) {
+            console.log(`Requesting messages for chat ${chat.id}, page ${page}`);
+            await new Promise((resolve) => {
+                refreshMessages(chat.id, page);
+                const checkMessagesLoaded = setInterval(() => {
+                    if (!state.isLoading) {
+                        clearInterval(checkMessagesLoaded);
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+
+        // currentPage를 0으로 설정
+        currentPage = 0;
+
         document.getElementById('messagesList').classList.remove('visible');
         chatWindow.classList.add('visible');
 
@@ -420,15 +527,18 @@ const chatApp = (function() {
         isChatOpening = false;
     }
 
-    // 메시지 렌더링
-    function renderMessage(item) {
+    function renderMessage(item, position = 'append') {
         const messagesContainer = document.querySelector('.messages-container');
-        if (!messagesContainer) return;
+        if (!messagesContainer) {
+            console.error('Messages container not found in DOM');
+            return;
+        }
+        console.log(`Rendering message: ${item.id}, position: ${position}`);
 
-        const lastMessage = messagesContainer.lastElementChild;
+        const lastMessage = position === 'append' ? messagesContainer.lastElementChild : messagesContainer.firstElementChild;
         const lastDate = lastMessage?.dataset.date;
         const currentDate = item.timestamp ? new Date(item.timestamp).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
-
+        console.log(`Current date: ${currentDate}, Last date: ${lastDate}`);
         if (!lastDate || lastDate !== currentDate) {
             const dateElement = document.createElement('article');
             dateElement.className = 'date-notification';
@@ -437,7 +547,12 @@ const chatApp = (function() {
             time.className = 'date-text';
             time.textContent = currentDate;
             dateElement.appendChild(time);
-            messagesContainer.appendChild(dateElement);
+            if (position === 'prepend') {
+                messagesContainer.insertBefore(dateElement, messagesContainer.firstChild);
+            } else {
+                messagesContainer.appendChild(dateElement);
+            }
+            console.log('Date element added:', dateElement);
         }
 
         const element = document.createElement('article');
@@ -451,7 +566,7 @@ const chatApp = (function() {
             const isOwnMessage = item.sender?.uuid === currentUser;
             element.className = isOwnMessage ? 'message-sent' : 'message-received';
             const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) : '';
-
+            console.log(`Message type: ${item.type}, isOwnMessage: ${isOwnMessage}, timeStr: ${timeStr}`);
             if (isOwnMessage) {
                 const header = document.createElement('header');
                 header.className = 'message-header';
@@ -495,13 +610,24 @@ const chatApp = (function() {
             }
         }
         element.dataset.date = currentDate;
+
         element.style.opacity = '0';
-        requestAnimationFrame(() => {
+        if (position === 'prepend') {
+            const previousHeight = messagesContainer.scrollHeight;
+            messagesContainer.insertBefore(element, messagesContainer.firstChild);
+            messagesContainer.scrollTop = messagesContainer.scrollTop + (messagesContainer.scrollHeight - previousHeight);
+        } else {
+            messagesContainer.appendChild(element);
+            if (isScrollable) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        setTimeout(() => {
             element.style.transition = 'opacity 0.3s ease-in';
             element.style.opacity = '1';
-        });
-        messagesContainer.appendChild(element);
-        if (isScrollable) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            console.log(`Message ${item.id} added to DOM:`, element);
+        }, 0);
+
+        messagesContainer.offsetHeight;
     }
 
     // 알림 토글 업데이트
@@ -516,7 +642,7 @@ const chatApp = (function() {
         if (icon) icon.style.fill = isEnabled ? '#333' : '#ccc';
     }
 
-    // 채팅 입력 UI 업데이트-업데이트
+    // 채팅 입력 UI 업데이트
     function updateChatInput(chat, messageInput, sendButton) {
         const isDisabled = chat.status === 'CLOSED' || chat.status === 'BLOCKED';
         messageInput.disabled = isDisabled;
@@ -637,6 +763,8 @@ const chatApp = (function() {
             stompClient.send('/app/sendMessage', {}, JSON.stringify({ chatRoomId: currentChatRoomId, content }));
             lastSendTime = Date.now();
             messageInput.value = '';
+        } else {
+            showError("연결 상태가 올바르지 않습니다. 다시 시도해주세요.");
         }
     }
 
@@ -705,9 +833,9 @@ const chatApp = (function() {
         connect,
         handleRequest,
         setupEventListeners,
-        loadChatState,    // 노출 추가
-        updateChatUI,     // 노출 추가
-        updateTabUI,      // 노출 추가
+        loadChatState,
+        updateChatUI,
+        updateTabUI,
         getState: () => state,
         getCurrentChatRoomId: () => currentChatRoomId,
         getChatRoomsCache: () => chatRoomsCache,
@@ -725,7 +853,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chatApp.getState().isChatRoomOpen && chatApp.getCurrentChatRoomId()) {
         setTimeout(() => {
             const chat = chatApp.getChatRoomsCache().find(c => c.id === chatApp.getCurrentChatRoomId());
-            if (chat) chatApp.openPersonalChat(chat); // openPersonalChat도 추가 필요
+            if (chat) chatApp.openPersonalChat(chat);
         }, 1000);
     }
 });

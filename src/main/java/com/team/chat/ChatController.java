@@ -36,15 +36,15 @@ public class ChatController {
     @Transactional(readOnly = true)
     public void refreshChatRooms(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
-        List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(currentUser, false);
+        List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(currentUser);
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms", chatRooms);
     }
-
-    @MessageMapping("/getMessages")
+    @MessageMapping("/getMessageCount")
     @Transactional(readOnly = true)
-    public void getMessages(Principal principal, @Payload ChatRoomDTO request) {
+    public void getMessageCount(Principal principal, @Payload ChatRoomDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
         Long chatRoomId = request.getId();
+
         if (chatRoomId == null) {
             messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방 ID가 제공되지 않았습니다.");
             return;
@@ -56,7 +56,30 @@ public class ChatController {
             return;
         }
 
-        List<ChatRoomDTO.ChatMessageDTO> messages = chatRoomService.getMessages(chatRoom);
+        long messageCount = chatMessageRepository.countByChatRoom(chatRoom);
+        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/messageCount", messageCount);
+    }
+    @MessageMapping("/getMessages")
+    @Transactional(readOnly = true)
+    public void getMessages(Principal principal, @Payload ChatRoomDTO request) {
+        SiteUser currentUser = getCurrentUser(principal);
+        Long chatRoomId = request.getId();
+        int page = request.getPage() != null ? request.getPage() : 0; // 기본값: 0
+        System.out.println(page);
+        int size = request.getSize() != null ? Math.min(request.getSize(), 50) : 50; // 최대 50개로 제한
+
+        if (chatRoomId == null) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방 ID가 제공되지 않았습니다.");
+            return;
+        }
+
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(chatRoomId);
+        if (chatRoom == null || !chatRoom.getParticipants().contains(currentUser)) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방에 접근할 권한이 없습니다.");
+            return;
+        }
+
+        List<ChatRoomDTO.ChatMessageDTO> messages = chatRoomService.getMessages(chatRoom, page, size);
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/messages", messages);
     }
 
@@ -157,20 +180,6 @@ public class ChatController {
         update.put("chatRoomId", chatRoom.getId());
         update.put("unreadCount", unreadCount);
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/readUpdate", update);
-    }
-
-    @EventListener
-    public void onChatRoomUpdated(ChatRoomUpdateEvent event) {
-        SiteUser requester = userRepository.findByUuid(event.getRequesterUuid()).orElse(null);
-        SiteUser owner = userRepository.findByUuid(event.getOwnerUuid()).orElse(null);
-        if (requester != null) {
-            messagingTemplate.convertAndSend("/user/" + requester.getUuid() + "/topic/chatrooms",
-                    chatRoomService.getChatRoomsForUser(requester, false));
-        }
-        if (owner != null) {
-            messagingTemplate.convertAndSend("/user/" + owner.getUuid() + "/topic/chatrooms",
-                    chatRoomService.getChatRoomsForUser(owner, false));
-        }
     }
 
     private SiteUser getCurrentUser(Principal principal) {

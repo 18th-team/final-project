@@ -22,6 +22,8 @@ public class ChatRoomDTO {
     private String status;
     private List<ChatMessageDTO> messages;
     private boolean notificationEnabled;
+    private Integer page; // 페이징: 페이지 번호
+    private Integer size; // 페이징: 페이지 크기
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

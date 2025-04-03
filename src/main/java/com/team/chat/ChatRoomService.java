@@ -5,6 +5,10 @@ import com.team.user.SiteUser;
 import com.team.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,31 +147,34 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomDTO> getChatRoomsForUser(SiteUser user, boolean includeMessages) {
+    public List<ChatRoomDTO> getChatRoomsForUser(SiteUser user) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByParticipantsContainingOrPendingForUser(user);
         return chatRooms.stream().map(chat -> {
             ChatRoomDTO dto = convertToChatRoomDTO(chat);
-            // long을 int로 캐스팅
             long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat)
                     .stream()
                     .filter(msg -> !msg.getSender().getUuid().equals(user.getUuid()))
                     .filter(msg -> !msg.getReadBy().contains(user))
                     .count();
-            dto.setUnreadCount((int) unreadCount); // 캐스팅 추가
-            if (includeMessages) {
-                dto.setMessages(getMessages(chat));
-            }
+            dto.setUnreadCount((int) unreadCount);
+
+            // 마지막 메시지 설정
+            chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
+                dto.setLastMessage(msg.getContent());
+                dto.setLastMessageTime(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+            });
+
             ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chat, user)
                     .orElseThrow(() -> new IllegalStateException("Participant not found"));
             dto.setNotificationEnabled(participant.isNotificationEnabled());
             return dto;
         }).collect(Collectors.toList());
     }
-
     @Transactional(readOnly = true)
-    public List<ChatRoomDTO.ChatMessageDTO> getMessages(ChatRoom chatRoom) {
-        return chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
-                .stream()
+    public List<ChatRoomDTO.ChatMessageDTO> getMessages(ChatRoom chatRoom, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").ascending()); // 최신 메시지부터
+        Page<ChatMessage> messagePage = chatMessageRepository.findByChatRoom(chatRoom, pageable);
+        return messagePage.getContent().stream()
                 .map(this::convertToChatMessageDTO)
                 .collect(Collectors.toList());
     }
