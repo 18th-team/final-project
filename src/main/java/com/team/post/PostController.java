@@ -1,6 +1,8 @@
 package com.team.post;
 
 import com.team.FileService;
+import com.team.comment.Comment;
+import com.team.comment.CommentService;
 import com.team.moim.entity.Club;
 import com.team.moim.service.ClubService;
 import com.team.user.SiteUser;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +29,7 @@ public class PostController {
     private final UserService userService;
     private final ClubService clubService;
     private final FileService fileService;
+    private final CommentService commentService;
 
     // ========================
     // 피드 리스트
@@ -52,6 +56,19 @@ public class PostController {
             SiteUser loginUser = userService.getUser(principal.getName());
             model.addAttribute("loginUser", loginUser);
         }
+
+        Map<Long, List<Comment>> commentMap = new HashMap<>();
+        Map<Long, Long> commentCountMap = new HashMap<>();
+
+        for (Post post : postList) {
+            List<Comment> commentList = commentService.getCommentsByPost(post);
+            commentMap.put(post.getPostID(), commentList);
+            commentCountMap.put(post.getPostID(), (long) commentList.size());
+        }
+
+        model.addAttribute("commentMap", commentMap);
+        model.addAttribute("commentCountMap", commentCountMap);
+
 
         return "post_feed_list";
     }
@@ -93,6 +110,17 @@ public class PostController {
             model.addAttribute("loginUser", loginUser);
         }
 
+        Map<Long, List<Comment>> commentMap = new HashMap<>();
+        Map<Long, Long> commentCountMap = new HashMap<>();
+
+        for (Post post : postList) {
+            List<Comment> commentList = commentService.getCommentsByPost(post);
+            commentMap.put(post.getPostID(), commentList);
+            commentCountMap.put(post.getPostID(), (long) commentList.size());
+        }
+
+        model.addAttribute("commentMap", commentMap);
+        model.addAttribute("commentCountMap", commentCountMap);
 
         return "post_review_list";
     }
