@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="재 랜더링 현상 해결중2">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="openPersonalChat 수정">
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" afterDir="false" />
@@ -32,12 +32,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/resources/templates/test.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/resources/templates/test2.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/chat.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/chat.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -255,7 +250,7 @@
       <workItem from="1743379525170" duration="29457000" />
       <workItem from="1743465831257" duration="26532000" />
       <workItem from="1743552863897" duration="29483000" />
-      <workItem from="1743638889575" duration="12683000" />
+      <workItem from="1743638889575" duration="14030000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -497,7 +492,23 @@
       <option name="project" value="LOCAL" />
       <updated>1743583910219</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="메시지 불러오는 부분 수정중&#10;메시지가 많아지면 웹소켓 오류가 발생 한번에 불러오는 방식에서 페이징 처리해서 불러오는 방식으로 변경 작업중">
+      <option name="closed" value="true" />
+      <created>1743651895646</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1743651895646</updated>
+    </task>
+    <task id="LOCAL-00032" summary="openPersonalChat 수정">
+      <option name="closed" value="true" />
+      <created>1743652417477</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1743652417477</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -542,8 +553,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="재시도 부분 수정" />
-    <MESSAGE value="Oauth 작업중" />
     <MESSAGE value="Oauth 로그인 추가 디비 저장 부분 수정 해야됨" />
     <MESSAGE value="Oauth 디비 저장 오류 수정, 로그인 수정 해야됨" />
     <MESSAGE value="커뮤니티 기능 작업 중" />
@@ -567,7 +576,9 @@
     <MESSAGE value="메시지 알림 작업중" />
     <MESSAGE value="재 랜더링 현상 해결중" />
     <MESSAGE value="재 랜더링 현상 해결중2" />
-    <option name="LAST_COMMIT_MESSAGE" value="재 랜더링 현상 해결중2" />
+    <MESSAGE value="메시지 불러오는 부분 수정중&#10;메시지가 많아지면 웹소켓 오류가 발생 한번에 불러오는 방식에서 페이징 처리해서 불러오는 방식으로 변경 작업중" />
+    <MESSAGE value="openPersonalChat 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="openPersonalChat 수정" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

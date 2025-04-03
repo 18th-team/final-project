@@ -856,10 +856,4 @@ document.addEventListener('DOMContentLoaded', () => {
     chatApp.setupEventListeners();
     chatApp.updateChatUI();
     chatApp.updateTabUI();
-    if (chatApp.getState().isChatRoomOpen && chatApp.getCurrentChatRoomId()) {
-        setTimeout(() => {
-            const chat = chatApp.getChatRoomsCache().find(c => c.id === chatApp.getCurrentChatRoomId());
-            if (chat) chatApp.openPersonalChat(chat);
-        }, 1000);
-    }
 });
