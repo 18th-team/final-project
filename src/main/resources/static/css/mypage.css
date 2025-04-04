@@ -1,0 +1,83 @@
+body {
+    font-family: sans-serif;
+    background-color: #fffaf7;
+    margin: 0;
+    padding: 0;
+}
+
+.mypage-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.mypage-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.main-tabs, .sub-tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.main-tabs a, .sub-tabs a {
+    padding: 12px;
+    text-decoration: none;
+    color: #666;
+    font-weight: 500;
+}
+
+.main-tabs a.active, .sub-tabs a.active {
+    color: #ff7f00;
+    border-bottom: 2px solid #ff7f00;
+}
+
+.profile-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #ffe4cc;
+    margin: 0 auto 20px;
+}
+
+.post-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.post-title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.post-content {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.post-icons {
+    font-size: 13px;
+    color: #888;
+}
+
+.post-icons span {
+    margin-right: 10px;
+}
+
+.nav-link {
+    color: black;
+}
+
+.nav-link.active {
+    color: #e36d1d;
+}

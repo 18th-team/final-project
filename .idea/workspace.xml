@@ -4,16 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="커뮤니티 댓글 삭제 빼고 완료">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/mypage.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/mypage.html" afterDir="false" />
+    <list default="true" id="bafc10c2-c1cc-4603-a401-e859572d96c2" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/static/img/default-profile.png" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/static/img/default-profile.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/fragments/navigation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/mypage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/mypage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/mypage.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/mypage.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/post_feed_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/post_feed_list.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -21,304 +15,31 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExternalProjectsData">
-    <projectState path="$PROJECT_DIR$">
-      <ProjectState />
-    </projectState>
-  </component>
-  <component name="ExternalProjectsManager">
-    <system id="GRADLE">
-      <state>
-        <projects_view>
-          <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="18th_final" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="18th_final" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="18th_final" type="f1a62948:ProjectNode" />
-                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
-              </path>
-            </expand>
-            <select />
-          </tree_state>
-        </projects_view>
-      </state>
-    </system>
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Interface" />
-        <option value="Class" />
-        <option value="HTML File" />
-        <option value="CSS File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="main" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;yeeun-kor&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
-    &quot;accountId&quot;: &quot;a2336eb3-8307-4f91-88cb-ff973b603d13&quot;
-  }
-}</component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 8
-}</component>
-  <component name="ProjectId" id="2usawrrdtQkgDbPQMQkyxq52EOJ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
-  <component name="ProjectViewState">
-    <option name="flattenModules" value="true" />
-    <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="false" />
-    <option name="showLibraryContents" value="true" />
-    <option name="showScratchesAndConsoles" value="false" />
-  </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Gradle.Build final-project2.executor": "Run",
-    "Gradle.final-project 빌드.executor": "Run",
-    "JavaScript Debug.signup.html.executor": "Run",
+    "JavaScript 디버그.mypage.html.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
     "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.Application.executor": "Run",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/GREEN/IdeaProjects/final-project2/src/main/resources/static/img",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.javacompiler",
-    "vue.rearranger.settings.migration": "true"
+    "git-widget-placeholder": "jy",
+    "node.js.selected.package.tslint": "(autodetect)"
   }
 }]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\GREEN\IdeaProjects\final-project2\src\main\resources\static\img" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\GREEN\IdeaProjects\final-project2\src\main\resources\static\img\svg" />
-    </key>
-  </component>
-  <component name="RunManager">
-    <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
-      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-      <module name="18th_final.main" />
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.team.Application" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.team.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Spring Boot.Application" />
-        <item itemvalue="Spring Boot.Application" />
-      </list>
-    </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59" />
-      </set>
-    </attachedChunks>
-  </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="c50fed09-1950-4765-9145-d0d9546e62f4" name="변경" comment="변경" />
-      <created>1743039978299</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1743039978299</updated>
-      <workItem from="1743039979607" duration="266000" />
-      <workItem from="1743331207471" duration="3012000" />
-      <workItem from="1743382219402" duration="8302000" />
-      <workItem from="1743391827401" duration="9244000" />
-      <workItem from="1743407164325" duration="3755000" />
-      <workItem from="1743470381466" duration="24300000" />
-      <workItem from="1743675778888" duration="2945000" />
-    </task>
-    <task id="LOCAL-00001" summary="h2콘솔 server모드(다중접속TCP)">
-      <option name="closed" value="true" />
-      <created>1743401888220</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1743401888220</updated>
-    </task>
-    <task id="LOCAL-00002" summary="사용자 키워드 추천 모임 랜더링(BE완료)">
-      <option name="closed" value="true" />
-      <created>1743402405711</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1743402405711</updated>
-    </task>
-    <task id="LOCAL-00003" summary="랜덤모임 랜더링 완료(BE)">
-      <option name="closed" value="true" />
-      <created>1743406167905</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1743406167906</updated>
-    </task>
-    <task id="LOCAL-00004" summary="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동">
-      <option name="closed" value="true" />
-      <created>1743410923465</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1743410923465</updated>
-    </task>
-    <task id="LOCAL-00005" summary="카테고리 설정 -&gt; 클릭시 리스트로 이동 &#10;하드코딩 -&gt; 동적코딩 변경">
-      <option name="closed" value="true" />
-      <created>1743478467336</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1743478467336</updated>
-    </task>
-    <task id="LOCAL-00006" summary="카테고리메뉴바 UI변경">
-      <option name="closed" value="true" />
-      <created>1743478494269</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1743478494269</updated>
-    </task>
-    <task id="LOCAL-00007" summary="메인+크루리스트만 카테고리 컨트롤러 설정 -&gt; UI크기 수정 필요">
-      <option name="closed" value="true" />
-      <created>1743480515130</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1743480515130</updated>
-    </task>
-    <task id="LOCAL-00008" summary="카테고리 비회원 접근 가능">
-      <option name="closed" value="true" />
-      <created>1743481041468</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1743481041468</updated>
-    </task>
-    <task id="LOCAL-00009" summary="카테고리메뉴바 UI변경">
-      <option name="closed" value="true" />
-      <created>1743561235562</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1743561235562</updated>
-    </task>
-    <task id="LOCAL-00010" summary="클럽 참여하기&amp;회원관리">
-      <option name="closed" value="true" />
-      <created>1743651463684</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1743651463684</updated>
-    </task>
-    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="커뮤니티 - 피드 페이지 완성&#10;커뮤니티 - 후기 페이지 시작" />
-    <MESSAGE value="키워드테이블생성(join:회원가입&amp;크루생성)&#10;sql 고정 키워드 설정" />
-    <MESSAGE value="회원가입:관심키워드 선택지 추가" />
-    <MESSAGE value="h2콘솔 server모드(다중접속TCP)" />
-    <MESSAGE value="사용자 키워드 추천 모임 랜더링(BE완료)" />
-    <MESSAGE value="랜덤모임 랜더링 완료(BE)" />
-    <MESSAGE value="비회원-&gt;랜덤모임 접근 가능 &amp; UI변동" />
-    <MESSAGE value="카테고리 설정 -&gt; 클릭시 리스트로 이동 &#10;하드코딩 -&gt; 동적코딩 변경" />
-    <MESSAGE value="메인+크루리스트만 카테고리 컨트롤러 설정 -&gt; UI크기 수정 필요" />
-    <MESSAGE value="카테고리 비회원 접근 가능" />
-    <MESSAGE value="카테고리메뉴바 UI변경" />
-    <MESSAGE value="클럽 참여하기&amp;회원관리" />
-    <MESSAGE value="커뮤니티 댓글 삭제 빼고 완료" />
-    <option name="LAST_COMMIT_MESSAGE" value="커뮤니티 댓글 삭제 빼고 완료" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java</url>
-          <line>60</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java</url>
-          <line>53</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/18th_final$Application.ic" NAME="Application Coverage Results" MODIFIED="1743470222890" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
-      <FILTER>com.team.*</FILTER>
-    </SUITE>
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
 </project>

@@ -6,9 +6,65 @@
 <body class="bg-light">
 
 <div class="container mt-4">
+    <div class="mypage-title">마이 페이지</div>
 
+    <div class="nav main-tabs" id="mypage-tab" role="tablist">
+        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-pane" type="button" role="tab" aria-controls="profile-pane" aria-selected="true">프로필</button>
+        <button class="nav-link" id="club-tab" data-bs-toggle="tab" data-bs-target="#club-pane" type="button" role="tab" aria-controls="club-pane" aria-selected="false">모임내역</button>
+        <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment-pane" type="button" role="tab" aria-controls="payment-pane" aria-selected="false">결제내역</button>
+    </div>
+
+    <div class="tab-content mt-3" id="mypage-tab-content">
+        <div class="tab-pane fade show active" id="profile-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <p>프로필 정보 표시</p>
+        </div>
+        <div class="tab-pane fade" id="club-pane" role="tabpanel" aria-labelledby="club-tab" tabindex="0">
+            <p>모임내역 내용</p>
+        </div>
+        <div class="tab-pane fade" id="payment-pane" role="tabpanel" aria-labelledby="payment-tab" tabindex="0">
+            <p>결제내역 내용</p>
+        </div>
+    </div>
+
+
+    <div class="profile-circle"></div>
+
+    <div class="sub-tabs">
+        <a href="#" class="active">내가 쓴 글</a>
+        <a href="#">모임</a>
+        <a href="#">내 정보</a>
+    </div>
+
+    <div class="post-card">
+        <div class="post-title">독서 모임 멤버 구함</div>
+        <div class="post-content">매주 토요일 오후 2시에 모여서 책 읽고 이야기 나눠요.</div>
+        <div class="post-icons">
+            <span>🤍 15</span>
+            <span>💬 6</span>
+        </div>
+    </div>
+
+    <div class="post-card">
+        <div class="post-title">오늘 저녁 같이 식사하실 분!</div>
+        <div class="post-content">강남역 근처에서 같이 식사하실 분 구합니다. 맛있는 식당 많이 알고 있어요!</div>
+        <div class="post-icons">
+            <span>🤍 24</span>
+            <span>💬 12</span>
+        </div>
+    </div>
+
+    <div class="post-card">
+        <div class="post-title">주말 등산 모임</div>
+        <div class="post-content">북한산 등산하실 분 모집합니다. 초보자도 환영해요!</div>
+        <div class="post-icons">
+            <span>🤍 18</span>
+            <span>💬 8</span>
+        </div>
+    </div>
 </div>
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script layout:fragment="script">
 
