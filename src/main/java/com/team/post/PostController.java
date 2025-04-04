@@ -63,11 +63,20 @@ public class PostController {
         for (Post post : postList) {
             List<Comment> commentList = commentService.getCommentsByPost(post);
             commentMap.put(post.getPostID(), commentList);
-            commentCountMap.put(post.getPostID(), (long) commentList.size());
+
+            // 댓글 + 답글 수 계산
+            long total = 0;
+            for (Comment comment : commentList) {
+                total++; // 댓글
+                total += comment.getChildren().size(); // 답글
+            }
+
+            commentCountMap.put(post.getPostID(), total);
         }
 
         model.addAttribute("commentMap", commentMap);
         model.addAttribute("commentCountMap", commentCountMap);
+
 
 
         return "post_feed_list";

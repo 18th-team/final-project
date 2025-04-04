@@ -306,13 +306,32 @@
                 },
                 success: function () {
                     const commentHtml = `
-                        <strong>나</strong>
-                        <div>${content}</div>
-                        <div class="text-muted">${new Date().toLocaleString()}</div>
-                        <hr>
-                    `;
+    <div class="mb-3" id="comment-temp">
+        <div>
+            <img src="/img/default-profile.png" class="rounded-circle me-2" style="width:30px; height:30px;">
+            <strong>나</strong>
+        </div>
+        <div class="comment-content">${content}</div>
+        <div class="text-muted small">${new Date().toLocaleString()}</div>
+
+        <div>
+            <button type="button" class="btn btn-sm btn-outline-secondary edit-comment-btn" data-comment-id="temp">수정</button>
+            <button type="button" class="btn btn-sm btn-outline-danger delete-comment-btn" data-comment-id="temp" data-post-id="${postID}">삭제</button>
+        </div>
+        <button type="button" class="btn btn-sm btn-link reply-btn" data-parent-id="temp">답글</button>
+
+        <div id="reply-form-temp" class="reply-form mt-2 d-none">
+            <textarea class="form-control reply-content" rows="2" placeholder="답글을 입력하세요"></textarea>
+            <button type="button" class="btn btn-sm btn-primary mt-1 submit-reply">등록</button>
+        </div>
+        <hr>
+    </div>
+`;
+
                     $(`#comment-list-${postID}`).append(commentHtml);
                     $("#commentContent").val(""); // 입력창 비우기
+
+
                 },
                 error: function () {
                     alert("댓글 등록 실패");
