@@ -411,6 +411,7 @@
     flex-direction: column;
     gap: 6px;
     overflow-y: auto;
+    max-height: 271px;
 }
 
 .chat-item {
@@ -436,8 +437,7 @@
 
 .chat-title-group {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
 }
 
 .chat-name {
@@ -783,7 +783,7 @@
     justify-content: center;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s;
     background: transparent;
     border: none;
     padding: 0;

@@ -283,15 +283,23 @@ const chatApp = (function() {
 
     // 알림 처리
     function handleNotification(item) {
-        if (!item.sender || item.sender.uuid === currentUser) return;
+        console.log('handleNotification called with:', item);
+        if (!item.senderName || (item.sender && item.sender.uuid === currentUser)) {
+            console.log('Notification skipped: no senderName or self-message');
+            return;
+        }
         const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
+        console.log('Chat found:', chat);
         if (chat?.notificationEnabled && (!state.isChatRoomOpen || item.chatRoomId !== currentChatRoomId)) {
+            console.log('Showing push notification');
             showPushNotification({
-                senderName: item.sender?.name || "Unknown",
+                senderName: item.senderName || "시스템 알림",
                 content: item.content || "",
                 timestamp: item.timestamp,
                 chatRoomId: item.chatRoomId
             });
+        }else{
+            console.log('Notification not shown due to conditions');
         }
     }
 
@@ -407,7 +415,7 @@ const chatApp = (function() {
                 previewP.className = 'chat-preview';
                 previewP.textContent = isRequest ? (isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`) :
                     (chat.lastMessage || '대화가 없습니다.');
-                contentDiv.appendChild(previewP);
+                titleGroupDiv.appendChild(previewP);
 
                 if (isRequest && isOwner && !isRequester) {
                     const actionsDiv = document.createElement('div');
