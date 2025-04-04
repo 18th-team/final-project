@@ -82,6 +82,9 @@ public class SiteUser{
     @ManyToMany(mappedBy = "members")
     private Set<Club>clubs = new HashSet<>();
 
-
+    @Override
+    public String toString() {
+        return "SiteUser{id=" + id + ", email=" + email + "}";
+    }
 
 }

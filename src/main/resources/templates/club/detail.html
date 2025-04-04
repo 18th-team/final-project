@@ -104,10 +104,20 @@
 </head>
 <body>
 <div class="container my-5">
-    <!--                            버튼추가 !! -->
-    <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-primary" onsubmit="validateJoin()">모임 참여하기</button>
-    </form>
+    <div class="row">
+        <div class="col">
+            <!--                            모임 참여 버튼추가 !! -->
+            <!-- 참여하기 -->
+            <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-secondary">모임 참여하기</button>
+            </form>
+            <!-- 취소하기 -->
+            <form th:action="@{/clubs/leave/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">참여 취소하기</button>
+            </form>
+        </div>
+    </div>
+
     <!-- 모임 상세 정보 -->
     <div class="card" style="overflow: hidden">
         <dd class="col-12 mb-md-5 mb-2">

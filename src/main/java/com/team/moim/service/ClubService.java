@@ -207,4 +207,24 @@ public class ClubService {
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
         return ClubDTO.toDTO(club);
     }
+
+    // 클럽 참여 취소하기 ( 참여인이면 true, 참여안했으면 false )
+    public boolean leaveClub(Long clubId, String userEmail) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+        SiteUser user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        System.out.println("Before remove: " + club.getMembers().size());
+        // 가입되어 있는지 체크
+        if (!club.getMembers().contains(user)) {
+            return false; // 가입 안 했으면 false
+        }
+
+        // 가입했으면 -> 가입 취소
+        club.getMembers().remove(user);
+        user.getClubs().remove(club);
+        System.out.println("After remove: " + club.getMembers().size());
+        clubRepository.save(club);
+        return true;
+    }
 }

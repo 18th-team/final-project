@@ -122,5 +122,9 @@ public class Club extends BaseEntity {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "Club{id=" + id + ", title=" + title + ", memberCount=" + members.size() + "}";
+    }
 
 }

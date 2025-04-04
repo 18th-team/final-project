@@ -11,6 +11,7 @@ import com.team.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +35,7 @@ public class ClubController {
     private final ClubService clubService;
     private final UserService userService;
     private final ClubRepository clubRepository;
-private final KeywordRepository keywordRepository;
+    private final KeywordRepository keywordRepository;
 
     // ✅ 중복 코드 줄이기 ->
     @ModelAttribute("keywordList")
@@ -46,8 +47,7 @@ private final KeywordRepository keywordRepository;
         return null; // /clubs/10 같은 경로에서는 키워드 목록 안 보냄
     }
 
-    
-    
+
     @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("clubDTO", new ClubDTO());
@@ -74,6 +74,7 @@ private final KeywordRepository keywordRepository;
         System.out.println("All clubs: " + clubDTOList.size()); // 디버깅
         return "club/list";
     }
+
     // 검색 처리
     @GetMapping("/search")
     public String searchClubs(@RequestParam("query") String query, Model model) {
@@ -81,6 +82,7 @@ private final KeywordRepository keywordRepository;
         model.addAttribute("clubList", clubDTOList);
         return "club/list"; // list.html로 렌더링
     }
+
     //카테고리 클랙시 -> 해당 카테고리와 연관된 클럽목록 불러오기
     // 키워드 ID로 클럽 목록 조회
     @GetMapping("/category/{id}")
@@ -103,6 +105,7 @@ private final KeywordRepository keywordRepository;
         model.addAttribute("clubDTO", clubDTO);
         return "club/detail";
     }
+
     //수정하기
     //수정 컨트롤러
     @GetMapping("/update/{id}")
@@ -146,11 +149,25 @@ private final KeywordRepository keywordRepository;
         boolean isJoined = clubService.joinClub(clubId, user.getUsername()); // email 반환
         if (isJoined) {
             redirectAttributes.addFlashAttribute("message", "참여완료!");
-        }else {
-        redirectAttributes.addFlashAttribute("message", "이미 참여하셨습니다 😁");}
+        } else {
+            redirectAttributes.addFlashAttribute("message", "이미 참여하셨습니다 😁");
+        }
         return "redirect:/clubs/" + clubId;
     }
 
-
-
+    //    //클럽 취소하기
+    @PostMapping("/leave/{clubId}")
+    public String leaveClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal CustomSecurityUserDetails user, RedirectAttributes redirectAttributes) {
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다!");
+            return "redirect:/login";
+        }
+        boolean isLeft = clubService.leaveClub(clubId, user.getUsername());
+        if (isLeft) {
+            redirectAttributes.addFlashAttribute("message","참여 취소 되었습니다 ! ");
+        }
+        else {redirectAttributes.addFlashAttribute("error","참여하지 않은 클럽입니다.");
+        }
+        return "redirect:/clubs/" + clubId;
+    }
 }

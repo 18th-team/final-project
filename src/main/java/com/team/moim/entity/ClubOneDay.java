@@ -22,7 +22,7 @@ public class ClubOneDay {
     @Column(name = "event_time") //모임시간
     private LocalTime time;
 
-    @Column(name = "is_online")
+    @Column(name = "is_online") //온라인여부
     private Boolean isOnline;
 
     @Column(name = "min_participants") //최소인원
