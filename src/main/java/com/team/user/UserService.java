@@ -29,7 +29,7 @@ public class UserService {
         if (existingUserByEmail.isPresent()) {
             SiteUser existingUser = existingUserByEmail.get();
             // provider와 providerId가 없는 경우 (일반 계정)만 true 반환
-            return existingUser.getProvider() == null && existingUser.getProviderId() == null && existingUser.getPassword() == null;
+            return existingUser.getProvider() == null && existingUser.getProviderId() == null&& existingUser.getPassword() == null;
         }
         return false;
     }
@@ -72,6 +72,7 @@ public class UserService {
                 existingUser.setKeywords(keywords);
                 return userRepository.save(existingUser);
             }
+            // provider와 providerId가 없는 경우 (일반 계정) -> 컨트롤러에서 처리
         }
 
         // 키워드 변환 (여기도 동일하게 수정)
@@ -86,10 +87,11 @@ public class UserService {
         SiteUser.SiteUserBuilder builder = SiteUser.builder()
                 .name(name)
                 .email(email)
-                .password(passwordEncoder.encode(password))
+                .password(passwordEncoder.encode(password)) // 비밀번호 암호화
                 .phone(phone)
                 .introduction(introduction)
                 .keywords(keywords)
+                .uuid(String.valueOf(UUID.randomUUID()))
                 .role(MemberRole.USER);
 
         // 성별 계산

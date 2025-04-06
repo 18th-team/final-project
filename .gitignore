@@ -13,10 +13,6 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-.idea/
-.idea/workspace.xml
-
-
 
 # External tool builders
 .externalToolBuilders/
@@ -237,5 +233,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,java,eclipse,intellij
-/src/main/resources/static/img/upload
-/src/main/resources/static/img/user
