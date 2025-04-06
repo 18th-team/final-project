@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 
 .chat-system {
-    font-family: "Inter", sans-serif;
+    font-family: "Pretendard-Medium", sans-serif;
     overflow: hidden;
     position: relative;
 }
@@ -79,7 +79,6 @@
     border-radius: 50%;
     color: #fff;
     font-size: 14px;
-    font-weight: 600;
     background-color: #357abd;
     display: flex;
     align-items: center;
@@ -247,7 +246,6 @@
 .user-name {
     color: #111;
     font-size: 14px;
-    font-weight: 600;
     margin: 0;
 }
 
@@ -356,6 +354,7 @@
 }
 
 .messages-header h1 {
+    font-family: Pretendard-Regular, sans-serif;
     font-size: 24px;
     font-weight: 700;
     color: #111;
@@ -442,7 +441,6 @@
 
 .chat-name {
     font-size: 16px;
-    font-weight: 700;
     color: #111;
     margin: 0;
     max-width: 173.55px;
@@ -699,7 +697,6 @@
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    font-weight: 600;
     font-size: 14px;
     flex-shrink: 0;
 }
@@ -719,7 +716,6 @@
 
 .name-text {
     font-size: 14px;
-    font-weight: 600;
     color: #111111;
 }
 

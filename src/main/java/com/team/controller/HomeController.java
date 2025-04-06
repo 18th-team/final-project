@@ -1,28 +1,21 @@
 package com.team.controller;
 
-import com.team.authentication.AuthenticationDTO;
-import com.team.authentication.AuthenticationService;
 import com.team.user.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Controller
@@ -63,7 +56,9 @@ public class HomeController {
     public String signUp(
             @Valid UserCreateForm userCreateForm,
             BindingResult bindingResult,
-            @RequestParam("profileImage") MultipartFile profileImage, HttpSession session) {
+            @RequestParam("profileImage") MultipartFile profileImage,
+            @RequestParam(value = "theme[]", required = false) List<String> keywordNames,
+            HttpSession session) {
         // 폼 검증 에러 체크
         System.out.println(userCreateForm);
         if (bindingResult.hasErrors()) {
@@ -95,7 +90,10 @@ public class HomeController {
                         userCreateForm.getBirthDay1(),
                         userCreateForm.getBirthDay2(),
                         userCreateForm.getPhone(),
-                        profileImage);
+                        profileImage,
+                        userCreateForm.getIntroduction(),
+                        keywordNames
+                );
                 return "redirect:/login";
             } else {
                 bindingResult.rejectValue("email", "duplicate.email", "이미 가입된 이메일입니다.");
@@ -115,13 +113,16 @@ public class HomeController {
                         userCreateForm.getBirthDay1(),
                         userCreateForm.getBirthDay2(),
                         userCreateForm.getPhone(),
-                        profileImage);
+                        profileImage,
+                        userCreateForm.getIntroduction(), keywordNames
+                );
                 return "redirect:/login";
             } else {
                 bindingResult.rejectValue("phone", "duplicate.phone", "이미 가입된 전화번호입니다.");
                 return "signup";
             }
         }
+        //신규 사용자 생성
         userService.createSiteUser(
                 userCreateForm.getName(),
                 userCreateForm.getEmail(),
@@ -129,7 +130,9 @@ public class HomeController {
                 userCreateForm.getBirthDay1(),
                 userCreateForm.getBirthDay2(),
                 userCreateForm.getPhone(),
-                profileImage);
+                profileImage,
+                userCreateForm.getIntroduction(),
+                keywordNames);
         return "redirect:/login";
     }
 

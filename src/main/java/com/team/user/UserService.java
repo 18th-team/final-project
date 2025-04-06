@@ -2,6 +2,10 @@ package com.team.user;
 
 import com.team.moim.entity.Keyword;
 import com.team.moim.repository.KeywordRepository;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,7 +66,7 @@ public class UserService {
                         throw new RuntimeException(e);
                     }
                 }
-// 키워드 업데이트 (name 중복 해결)
+                // 키워드 업데이트 (name 중복 해결)
                 Set<Keyword> keywords = keywordNames != null
                         ? keywordNames.stream()
                         .map(keywordName -> keywordRepository.findByName(keywordName)
