@@ -52,6 +52,7 @@ class ApplicationTests {
 				.uuid(UUID.randomUUID().toString())
 				.introduction("테스트용 계정 입니다")
 				.keywords(keywords)
+				.lastOnline(null)
 				.build();
 		userRepository.save(user1);
 		SiteUser user2 = SiteUser.builder()
@@ -70,6 +71,7 @@ class ApplicationTests {
 				.uuid(UUID.randomUUID().toString())
 				.introduction("테스트용 계정 입니다")
 				.keywords(keywords)
+				.lastOnline(null)
 				.build();
 		userRepository.save(user2);
 	}

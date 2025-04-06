@@ -1,111 +1,29 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title layout:title-pattern="$CONTENT_TITLE | 모락모락">모락모락</title>
-    <link th:href="@{/css/category_menu.css}" rel="stylesheet"/>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link th:href="@{/css/navigation.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
-    <link rel="icon" th:href="@{/icon/favicon.ico}" type="image/x-icon">
     <style>
-        * {
-            font-family: 'Pretendard-SemiBold';
-
-        }
-
+    *{
+      font-family: 'Pretendard-SemiBold';
+    }
     </style>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- jQuery와 Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
+
+
 
 
 </head>
 <body>
-<nav th:replace="~{fragments/navigation :: navigation}"></nav>
-<!-- /clubs, /clubs/category/**, / 일 때만 카테고리 메뉴 표시 -->
-<div th:replace="~{fragments/category_menu :: category}"
-     th:if="${#httpServletRequest.requestURI == '/clubs' or
-                 #httpServletRequest.requestURI.startsWith('/clubs/category') or
-                 #httpServletRequest.requestURI == '/'}"></div>
-<div layout:fragment="content"></div>
-<footer th:replace="~{fragments/footer :: footer}"></footer>
+    <nav th:replace="~{fragments/navigation :: navigation}"></nav>
+    <hr>
+    <div layout:fragment="content"></div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<th:block layout:fragment="script"></th:block>
-<!-- 공통 스크립트 조각 -->
-<th:block th:fragment="club-scripts">
-    <script>
-        $(document).ready(function () {
-            // City 변경 시 District 업데이트
-            $('#city').on('change', function () {
-                var city = $(this).val();
-                var districtSelect = $('#district');
-                districtSelect.empty();
-                districtSelect.append('<option value="">선택하세요</option>');
-
-                if (city === '서울시') {
-                    var seoulDistricts = [
-                        '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
-                        '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
-                        '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'
-                    ];
-                    $.each(seoulDistricts, function (index, district) {
-                        districtSelect.append($('<option>').val(district).text(district));
-                    });
-                } else if (city === '수원시') {
-                    var suwonDistricts = ['영통구', '권선구', '장안구', '팔달구'];
-                    $.each(suwonDistricts, function (index, district) {
-                        districtSelect.append($('<option>').val(district).text(district));
-                    });
-                }
-            });
-
-            // 페이지 로드 시 기존 값 설정
-            var currentCity = $('#city').val();
-            if (currentCity) {
-                $('#city').trigger('change');
-                var currentDistrict = /*[[${districtValue}]]*/ null; // 페이지에서 주입
-                if (currentDistrict) {
-                    $('#district').val(currentDistrict);
-                }
-            }
-
-            // Age Restriction 실시간 검증
-            $('#ageRestriction').on('input', function () {
-                var age = parseInt($(this).val());
-                if (age < 20) {
-                    $(this).val(20);
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
-            });
-        });
-
-        // Bootstrap 유효성 검사
-        (function () {
-            'use strict';
-            var forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        })();
-    </script>
-</th:block>
+    <th:block layout:fragment="script"></th:block>
+    <div th:replace="~{fragments/chat :: chat}" sec:authorize="isAuthenticated()"></div>
 </body>
 </html>

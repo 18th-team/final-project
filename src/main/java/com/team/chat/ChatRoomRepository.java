@@ -23,4 +23,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
          "LEFT JOIN FETCH p.blockedUsers " +
          "WHERE cr.id = :id")
  Optional<ChatRoom> findByIdWithParticipantsAndBlockedUsers(@Param("id") Long id);
+
+ @Query("SELECT DISTINCT cr FROM ChatRoom cr JOIN FETCH cr.participants p WHERE p.uuid = :uuid")
+ List<ChatRoom> findRoomsAndFetchParticipantsByUserUuid(@Param("uuid") String uuid);
 }

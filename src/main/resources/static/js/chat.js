@@ -106,6 +106,62 @@ const chatApp = (function() {
             updateChatUI();
         });
     }
+    // 온라인 상태 확인 요청
+    function checkOnlineStatus(chatRoomId) {
+        if (stompClient?.connected && chatRoomId) {
+            stompClient.send("/app/onlineStatus", {}, JSON.stringify({ chatRoomId: chatRoomId }));
+        }
+    }
+    // 온라인 상태 업데이트
+    function updateOnlineStatus(uuid, lastOnlineTimestamp, isOnline) {
+        console.log(`상태 업데이트 - uuid: ${uuid}, 온라인: ${isOnline}`);
+
+        // 채팅방 목록의 상태 표시 업데이트
+        const statusIndicators = document.querySelectorAll(`.status-indicator[data-uuid="${uuid}"]`);
+        statusIndicators.forEach(indicator => {
+            indicator.style.backgroundColor = isOnline ? '#00cc00' : '#666';
+        });
+
+        // 현재 열린 채팅방의 상태 업데이트
+        const chat = chatRoomsCache.find(c => {
+            const targetUuid = c.type === 'PRIVATE' ?
+                (c.requester?.uuid === currentUser ? c.owner?.uuid : c.requester?.uuid) : null;
+            return targetUuid === uuid;
+        });
+        if (!chat) return;
+
+        const statusElement = document.querySelector('.chat-status');
+        if (statusElement && chat.id === currentChatRoomId && state.isChatRoomOpen) {
+            if (isOnline) {
+                statusElement.textContent = '온라인';
+                statusElement.style.color = '#00cc00';
+            } else if (lastOnlineTimestamp) {
+                const lastOnlineDate = new Date(lastOnlineTimestamp);
+                const now = new Date();
+                const diffMs = now - lastOnlineDate;
+                const diffMins = Math.floor(diffMs / 60000);
+                let statusText;
+                if (diffMins < 1) {
+                    statusText = "마지막 접속 방금 전";
+                } else if (diffMins < 60) {
+                    statusText = `마지막 접속 ${diffMins}분 전`;
+                } else {
+                    const diffHours = Math.floor(diffMins / 60);
+                    if (diffHours < 24) {
+                        statusText = `마지막 접속 ${diffHours}시간 전`;
+                    } else {
+                        const diffDays = Math.floor(diffHours / 24);
+                        statusText = `마지막 접속 ${diffDays}일 전`;
+                    }
+                }
+                statusElement.textContent = statusText;
+                statusElement.style.color = '#666';
+            } else {
+                statusElement.textContent = '마지막 접속 정보 없음';
+                statusElement.style.color = '#666';
+            }
+        }
+    }
     // 총 메시지 수 요청
     function getMessageCount(chatId) {
         return new Promise((resolve, reject) => {
@@ -171,6 +227,12 @@ const chatApp = (function() {
                 chat.notificationEnabled = update.notificationEnabled;
                 if (currentChatRoomId === update.chatRoomId) updateNotificationToggle();
             }
+        });
+        // 온라인 상태 구독
+        stompClient.subscribe(`/user/${currentUser}/topic/onlineStatus`, message => { // <--- 이렇게 수정하세요!
+            console.log('수신된 메시지:', message.body);
+            const status = JSON.parse(message.body);
+            updateOnlineStatus(status.uuid, status.lastOnline, status.isOnline);
         });
     }
 
@@ -375,6 +437,17 @@ const chatApp = (function() {
                 avatarInnerDiv.textContent = chatName.slice(0, 2);
                 avatarDiv.appendChild(avatarInnerDiv);
                 item.appendChild(avatarDiv);
+                const targetUuid = chat.type === 'PRIVATE' ?
+                    (isRequester ? chat.owner?.uuid : chat.requester?.uuid) : null;
+                if(targetUuid){
+                    const statusIndicator = document.createElement('div');
+                    statusIndicator.className = 'status-indicator';
+                    statusIndicator.dataset.uuid = targetUuid;
+                    // 초기 상태는 기본값(오프라인)으로 설정하고, 실시간 메시지로 업데이트
+                    statusIndicator.style.backgroundColor = '#666';
+                    avatarDiv.appendChild(statusIndicator);
+                    checkOnlineStatus(chat.id); // 초기 상태 요청
+                }
 
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'chat-content';
@@ -525,7 +598,7 @@ const chatApp = (function() {
 
         markMessagesAsRead();
         updateNotificationToggle();
-
+        checkOnlineStatus(chat.id); // 채팅방 열 때 상태 다시 확인
         const messageInput = document.querySelector('.message-input');
         const sendButton = document.querySelector('.send-button');
         updateChatInput(chat, messageInput, sendButton);

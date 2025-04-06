@@ -13,12 +13,14 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,12 +34,119 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
 
+    // UUID와 세션 ID를 매핑하여 온라인 상태 관리
+    private final Map<String, Set<String>> userSessions = new ConcurrentHashMap<>();
+
+    @EventListener
+    public void handleWebSocketConnect(SessionConnectEvent event) {
+        Principal principal = event.getUser();
+        if (principal != null) {
+            SiteUser user = getCurrentUser(principal);
+            String uuid = user.getUuid();
+            String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+            userSessions.computeIfAbsent(uuid, k -> new HashSet<>()).add(sessionId);
+            broadcastOnlineStatus(uuid, true);
+            userRepository.save(user);
+        }
+    }
+
+    @EventListener
+    public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
+        Principal principal = event.getUser();
+        if (principal != null) {
+            SiteUser user = getCurrentUser(principal);
+            String uuid = user.getUuid();
+            String sessionId = event.getSessionId();
+            Set<String> sessions = userSessions.getOrDefault(uuid, new HashSet<>());
+            sessions.remove(sessionId);
+            System.out.println("Session removed: " + sessionId + ", Remaining sessions: " + sessions.size());
+            if (sessions.isEmpty()) {
+                userSessions.remove(uuid);
+                System.out.println("Broadcasting offline status for user: " + uuid);
+                broadcastOnlineStatus(uuid, false);
+                user.setLastOnline(LocalDateTime.now());
+                userRepository.save(user);
+            }
+        }
+    }
+    private void broadcastOnlineStatus(String uuid, boolean isOnline) {
+        List<ChatRoom> chatRooms = chatRoomRepository.findRoomsAndFetchParticipantsByUserUuid(uuid);
+        for (ChatRoom chatRoom : chatRooms) {
+            SiteUser targetUser = chatRoom.getParticipants().stream()
+                    .filter(p -> !p.getUuid().equals(uuid))
+                    .findFirst()
+                    .orElse(null);
+            if (targetUser != null) {
+                Map<String, Object> status = new HashMap<>();
+                status.put("uuid", uuid);
+                status.put("isOnline", isOnline);
+                if (!isOnline) {
+                    SiteUser user = userRepository.findByUuid(uuid).orElse(null);
+                    if (user != null && user.getLastOnline() != null) {
+                        Long lastTime = user.getLastOnline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                        status.put("lastOnline", lastTime);
+                    }
+                }
+                System.out.println("Sending to: /user/" + targetUser.getUuid() + "/topic/onlineStatus, Status: " + status);
+                messagingTemplate.convertAndSend("/user/" + targetUser.getUuid() + "/topic/onlineStatus", status);
+            }
+        }
+    }
     @MessageMapping("/refreshChatRooms")
     @Transactional(readOnly = true)
     public void refreshChatRooms(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
         List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(currentUser);
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms", chatRooms);
+    }
+    // 온라인 여부 확인, 오프라인일 경우 마지막 접속 시간 반환
+    @MessageMapping("/onlineStatus")
+    @Transactional(readOnly = true)
+    public void OnlineStatus(Principal principal, @Payload ChatRequestDTO request) {
+        SiteUser currentUser = getCurrentUser(principal);
+        if (request == null || request.getChatRoomId() == null) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방 ID가 제공되지 않았습니다.");
+            return;
+        }
+
+
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
+        if (chatRoom == null) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방을 찾을 수 없습니다.");
+            return;
+        }
+        if (!chatRoom.getParticipants().stream().anyMatch(p -> p.getUuid().equals(currentUser.getUuid()))) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "이 채팅방에 접근할 권한이 없습니다.");
+            return;
+        }
+        // 상대방 유저 찾기 (1:1 채팅이므로 현재 유저를 제외한 나머지 한 명)
+        SiteUser targetUser = chatRoom.getParticipants().stream()
+                .filter(p -> !p.getUuid().equals(currentUser.getUuid()))
+                .findFirst()
+                .orElse(null);
+
+        if (targetUser == null) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "대상 사용자를 찾을 수 없습니다.");
+            return;
+        }
+
+        // 상대방 유저의 온라인 상태 반환
+        String targetUuid = targetUser.getUuid();
+        boolean isOnline = userSessions.containsKey(targetUuid);
+        if (targetUuid == null) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "대상 사용자를 찾을 수 없습니다.");
+            return;
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("uuid", targetUuid);
+        response.put("isOnline", isOnline);
+        if (!isOnline) {
+            Long lastTime = targetUser.getLastOnline() != null
+                    ? targetUser.getLastOnline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                    : null; // null일 경우 프론트에서 "접속 기록 없음" 처리
+            response.put("lastOnline", lastTime);
+        }
+        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/onlineStatus", response);
     }
     @MessageMapping("/getMessageCount")
     @Transactional(readOnly = true)

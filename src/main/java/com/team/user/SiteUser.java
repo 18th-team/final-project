@@ -7,6 +7,7 @@ import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -99,7 +100,8 @@ public class SiteUser {
             inverseJoinColumns = @JoinColumn(name = "blocked_uuid")
     )
     private Set<SiteUser> blockedUsers = new HashSet<>();
-
+    @Column
+    private LocalDateTime lastOnline;
     // 차단 유저 추가 메서드
     public void blockUser(SiteUser blocked) {
         this.blockedUsers.add(blocked);
@@ -109,6 +111,7 @@ public class SiteUser {
     public void unblockUser(SiteUser blocked) {
         this.blockedUsers.remove(blocked);
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
