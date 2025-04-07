@@ -22,6 +22,8 @@ const chatApp = (function() {
     let currentPage = 0;
     const pageSize = 50;
     let state = { isChatOpen: false, isChatRoomOpen: false, isLoading: false };
+
+
     // 상태 저장
     function saveChatState() {
         const chatState = { isChatOpen: state.isChatOpen, isChatRoomOpen: state.isChatRoomOpen, currentChatRoomId, activeTab };
@@ -85,7 +87,10 @@ const chatApp = (function() {
             }
             subscribeToTopics();
             refreshChatRooms();
-
+            // 주기적 상태 갱신 시작
+            if (!statusUpdateInterval) {
+                statusUpdateInterval = setInterval(updateOfflineStatus, 60000); // 1분마다 갱신
+            }
             setInterval(() => {
                 if (!stompClient?.connected) {
                     console.warn("WebSocket disconnected, reconnecting...");
@@ -114,53 +119,51 @@ const chatApp = (function() {
     }
     // 온라인 상태 업데이트
     function updateOnlineStatus(uuid, lastOnlineTimestamp, isOnline) {
-        console.log(`상태 업데이트 - uuid: ${uuid}, 온라인: ${isOnline}`);
-
-        // 채팅방 목록의 상태 표시 업데이트
-        const statusIndicators = document.querySelectorAll(`.status-indicator[data-uuid="${uuid}"]`);
-        statusIndicators.forEach(indicator => {
+        console.log(`Updating status - uuid: ${uuid}, isOnline: ${isOnline}, lastOnline: ${lastOnlineTimestamp}`);
+        const indicators = document.querySelectorAll(`.status-indicator[data-uuid="${uuid}"]`);
+        if (indicators.length === 0) {
+            console.warn(`No status indicators found for UUID: ${uuid}. Forcing chat list render.`);
+            renderChatList(chatRoomsCache); // 상태 표시기가 없으면 강제로 목록 갱신
+            return;
+        }
+        indicators.forEach(indicator => {
             indicator.style.backgroundColor = isOnline ? '#00cc00' : '#666';
+            console.log(`Updated indicator for UUID: ${uuid} to color: ${indicator.style.backgroundColor}`);
         });
 
-        // 현재 열린 채팅방의 상태 업데이트
         const chat = chatRoomsCache.find(c => {
             const targetUuid = c.type === 'PRIVATE' ?
                 (c.requester?.uuid === currentUser ? c.owner?.uuid : c.requester?.uuid) : null;
             return targetUuid === uuid;
         });
-        if (!chat) return;
-
-        const statusElement = document.querySelector('.chat-status');
-        if (statusElement && chat.id === currentChatRoomId && state.isChatRoomOpen) {
-            if (isOnline) {
-                statusElement.textContent = '온라인';
-                statusElement.style.color = '#00cc00';
-            } else if (lastOnlineTimestamp) {
-                const lastOnlineDate = new Date(lastOnlineTimestamp);
-                const now = new Date();
-                const diffMs = now - lastOnlineDate;
-                const diffMins = Math.floor(diffMs / 60000);
-                let statusText;
-                if (diffMins < 1) {
-                    statusText = "마지막 접속 방금 전";
-                } else if (diffMins < 60) {
-                    statusText = `마지막 접속 ${diffMins}분 전`;
+        if (chat && state.isChatRoomOpen && chat.id === currentChatRoomId) {
+            const statusElement = document.querySelector('.chat-status');
+            if (statusElement) {
+                if (isOnline) {
+                    statusElement.textContent = '온라인';
+                    statusElement.style.color = '#00cc00';
                 } else {
-                    const diffHours = Math.floor(diffMins / 60);
-                    if (diffHours < 24) {
-                        statusText = `마지막 접속 ${diffHours}시간 전`;
-                    } else {
-                        const diffDays = Math.floor(diffHours / 24);
-                        statusText = `마지막 접속 ${diffDays}일 전`;
-                    }
+                    const lastOnlineDate = lastOnlineTimestamp ? new Date(lastOnlineTimestamp) : null;
+                    statusElement.textContent = lastOnlineDate ?
+                        `마지막 접속 ${formatTimeAgo(lastOnlineDate)}` :
+                        '마지막 접속 정보 없음';
+                    statusElement.style.color = '#666';
                 }
-                statusElement.textContent = statusText;
-                statusElement.style.color = '#666';
-            } else {
-                statusElement.textContent = '마지막 접속 정보 없음';
-                statusElement.style.color = '#666';
+                console.log(`Updated chat status: ${statusElement.textContent}`);
             }
         }
+    }
+
+    function formatTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) return '방금 전';
+        if (diffMins < 60) return `${diffMins}분 전`;
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours}시간 전`;
+        const diffDays = Math.floor(diffHours / 24);
+        return `${diffDays}일 전`;
     }
     // 총 메시지 수 요청
     function getMessageCount(chatId) {
@@ -229,9 +232,10 @@ const chatApp = (function() {
             }
         });
         // 온라인 상태 구독
-        stompClient.subscribe(`/user/${currentUser}/topic/onlineStatus`, message => { // <--- 이렇게 수정하세요!
-            console.log('수신된 메시지:', message.body);
+        stompClient.subscribe(`/user/${currentUser}/topic/onlineStatus`, message => {
+            console.log('Received online status:', message.body);
             const status = JSON.parse(message.body);
+            console.log('Parsed status:', status);
             updateOnlineStatus(status.uuid, status.lastOnline, status.isOnline);
         });
     }
