@@ -225,5 +225,15 @@ public class HomeController {
                 keywordNames);
         return "redirect:/login";
     }
+    /**
+     * 검색을 요청할 페이지로 이동합니다.
+     *
+     * @param model 검색 결과를 뷰에 전달하기 위한 데이터 모델
+     * @return 검색 결과를 표시할 뷰의 경로
+     */
+    @GetMapping(value = "/search")
+    public String search(Model model) {
+        return "api/search";
+    }
 
 }

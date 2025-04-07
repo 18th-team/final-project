@@ -30,7 +30,10 @@ public class ClubDTO {
     private String selectedTheme; // 클럽 카테고리 선택 (단일 선택)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
+    // 합친 주소 반환
+    public String getFullAddress() {
+        return city + " " + district;
+    }
     // 작성자 정보
     private Long hostId;    // 작성자의 ID
     private String hostName; // 작성자의 이름

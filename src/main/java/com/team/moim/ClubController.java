@@ -1,5 +1,7 @@
 package com.team.moim;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubRepository;
@@ -11,22 +13,25 @@ import com.team.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 @Controller
 @RequestMapping("/clubs")
@@ -36,6 +41,17 @@ public class ClubController {
     private final UserService userService;
     private final ClubRepository clubRepository;
     private final KeywordRepository keywordRepository;
+
+    //지도API
+    @Autowired
+    private RestTemplate restTemplate; // HTTP 요청용
+
+    private static final String GEOCODING_API_URL = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=";
+    private static final String CLIENT_ID = "nlpedkwvft";
+    private static final String CLIENT_SECRET = "3cKYBuFWFl9j1tmZiJQzu5gzzZjgDTIX5XkoP60D";
+
+
+
 
     // ✅ 중복 코드 줄이기 ->
     @ModelAttribute("keywordList")
@@ -103,6 +119,41 @@ public class ClubController {
     public String getClubDetail(@PathVariable("id") Long id, Model model) {
         ClubDTO clubDTO = clubService.getClubDetail(id);
         model.addAttribute("clubDTO", clubDTO);
+
+        // Geocoding API 호출
+        try {
+            String fullAddress = clubDTO.getFullAddress(); // "수원시 장안구"
+            String url = GEOCODING_API_URL + URLEncoder.encode(fullAddress, StandardCharsets.UTF_8.name());
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-NCP-APIGW-API-KEY-ID", CLIENT_ID);
+            headers.set("X-NCP-APIGW-API-KEY", CLIENT_SECRET);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            String jsonResponse = response.getBody();
+            System.out.println("API Response: " + jsonResponse); // 디버깅
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(jsonResponse);
+            JsonNode addresses = root.path("addresses");
+            if (addresses.isEmpty()) {
+                System.out.println("No addresses found for: " + fullAddress);
+                model.addAttribute("latitude", 37.5665);
+                model.addAttribute("longitude", 126.9780);
+            } else {
+                JsonNode address = addresses.get(0);
+                double latitude = address.path("y").asDouble();
+                double longitude = address.path("x").asDouble();
+                model.addAttribute("latitude", latitude);
+                model.addAttribute("longitude", longitude);
+            }
+        } catch (Exception e) {
+            System.out.println("Geocoding API Error: " + e.getMessage());
+            model.addAttribute("latitude", 37.5665);
+            model.addAttribute("longitude", 126.9780);
+        }
+
         return "club/detail";
     }
 
@@ -170,4 +221,7 @@ public class ClubController {
         }
         return "redirect:/clubs/" + clubId;
     }
+
+
+
 }
