@@ -319,6 +319,7 @@ public class ChatController {
         chatRoomRepository.save(chatRoom);
 
         ChatRoomDTO.ChatMessageDTO messageDto = chatRoomService.convertToChatMessageDTO(message);
+        messageDto.getSender().setProfileImage(sender.getProfileImage());
         chatRoom.getParticipants().forEach(p ->
                 messagingTemplate.convertAndSend("/user/" + p.getUuid() + "/topic/messages", messageDto));
 

@@ -30,6 +30,7 @@ public class ChatRoomDTO {
     public static class SiteUserDTO {
         private String uuid;
         private String name;
+        private String profileImage;
     }
     @Data
     public static class ChatMessageDTO {

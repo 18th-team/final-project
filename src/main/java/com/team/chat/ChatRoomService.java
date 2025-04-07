@@ -210,12 +210,12 @@ public class ChatRoomService {
         dto.setLastMessageTime(chat.getLastMessageTime() != null ?
                 chat.getLastMessageTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() : null);
         dto.setParticipants(chat.getParticipants().stream()
-                .map(p -> new ChatRoomDTO.SiteUserDTO(p.getUuid(), p.getName()))
+                .map(p -> new ChatRoomDTO.SiteUserDTO(p.getUuid(), p.getName(), p.getProfileImage())) // profileImage 추가
                 .collect(Collectors.toList()));
         dto.setOwner(chat.getOwner() != null ?
-                new ChatRoomDTO.SiteUserDTO(chat.getOwner().getUuid(), chat.getOwner().getName()) : null);
+                new ChatRoomDTO.SiteUserDTO(chat.getOwner().getUuid(), chat.getOwner().getName(), chat.getOwner().getProfileImage()) : null); // profileImag
         dto.setRequester(chat.getRequester() != null ?
-                new ChatRoomDTO.SiteUserDTO(chat.getRequester().getUuid(), chat.getRequester().getName()) : null);
+                new ChatRoomDTO.SiteUserDTO(chat.getRequester().getUuid(), chat.getRequester().getName(), chat.getRequester().getProfileImage()) : null); // profileImage 추가
         dto.setRequestReason(chat.getRequestReason());
         dto.setStatus(chat.getStatus());
         chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
@@ -230,7 +230,7 @@ public class ChatRoomService {
         dto.setId(msg.getId());
         dto.setChatRoomId(msg.getChatRoom().getId());
         dto.setSender(msg.getSender() != null ?
-                new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName()) : null);
+            new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName(), msg.getSender().getProfileImage()) : null); // profileImage 추가
         dto.setContent(msg.getContent());
         dto.setTimestamp(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         dto.setType(msg.getType().name());

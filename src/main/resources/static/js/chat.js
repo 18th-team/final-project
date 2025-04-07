@@ -443,6 +443,15 @@ const chatApp = (function() {
                 const avatarInnerDiv = document.createElement('div');
                 avatarInnerDiv.className = `avatar ${chat.type === 'GROUP' ? 'avatar-design' : 'avatar-request'}`;
                 avatarInnerDiv.textContent = chatName.slice(0, 2);
+                // profileImage 적용
+                const profileImage = chat.type === 'PRIVATE' ? (isRequester ? chat.owner?.profileImage : chat.requester?.profileImage) : null;
+                console.log('Chat ID:', chat.id, 'Type:', chat.type, 'isRequester:', isRequester, 'Profile Image:', profileImage);
+                if (profileImage) {
+                    avatarInnerDiv.style.backgroundImage = `url("${profileImage}")`;
+                    avatarInnerDiv.style.backgroundSize = 'cover';
+                    avatarInnerDiv.style.backgroundPosition = 'center';
+                    avatarInnerDiv.textContent = '';
+                }
                 avatarDiv.appendChild(avatarInnerDiv);
                 item.appendChild(avatarDiv);
                 const targetUuid = chat.type === 'PRIVATE' ?
@@ -602,7 +611,15 @@ const chatApp = (function() {
             (chat.requester?.uuid === currentUser ? chat.owner?.name : chat.requester?.name) || 'Unknown';
         chatWindow.querySelector('.chat-name').textContent = chatName;
         chatWindow.querySelector('.avatar').textContent = chatName.slice(0, 2);
-
+        const profileImage = chat.type === 'PRIVATE' ?
+            (chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage) : null;
+        if(profileImage) {
+            chatWindow.querySelector('.avatar').style.backgroundImage = `url("${profileImage}")`;
+            chatWindow.querySelector('.avatar').style.backgroundSize = 'cover';
+            chatWindow.querySelector('.avatar').style.backgroundPosition = 'center';
+            chatWindow.querySelector('.avatar').textContent = ''; // 텍스트 제거
+            console.log('Applied styles to avatar:', chatWindow.querySelector('.avatar').style.backgroundImage);
+        }
         markMessagesAsRead();
         updateNotificationToggle();
         checkOnlineStatus(chat.id); // 채팅방 열 때 상태 다시 확인
@@ -673,7 +690,14 @@ const chatApp = (function() {
                 avatar.className = 'avatar';
                 avatar.textContent = item.sender.name.slice(0, 2);
                 element.appendChild(avatar);
-
+                const profileImage = item.sender?.profileImage;
+                if (profileImage){
+                    avatar.style.backgroundImage = `url("${profileImage}")`;
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.style.backgroundPosition = 'center';
+                    avatar.textContent = ''; // 텍스트 제거
+                    console.log('Applied styles to avatar:', avatar.style.backgroundImage);
+                }
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'message-content';
 
