@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ClubService {
+public class
+ClubService {
     private final ClubRepository clubRepository;
     private final ClubFileRepository clubFileRepository;
     private final KeywordRepository keywordRepository; // 의존성 추가
@@ -185,9 +186,10 @@ public class ClubService {
 
     //클럽 참여하기
     public boolean joinClub(Long clubId, String userEmail) {
+        System.out.println(userEmail);
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
-        SiteUser user = userRepository.findByEmail(userEmail)
+        SiteUser user = userRepository.findByUuid(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         // 이미 가입했는지 체크
         if (club.getMembers().contains(user)) {
@@ -201,6 +203,7 @@ public class ClubService {
         return true; // 성공하면 true 반환
     }
 
+
     // 상세 조회용 (필요 시)
     public ClubDTO getClubDetail(Long clubId) {
         Club club = clubRepository.findById(clubId)
@@ -212,7 +215,7 @@ public class ClubService {
     public boolean leaveClub(Long clubId, String userEmail) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
-        SiteUser user = userRepository.findByEmail(userEmail)
+        SiteUser user = userRepository.findByUuid(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         System.out.println("Before remove: " + club.getMembers().size());
         // 가입되어 있는지 체크

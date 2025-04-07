@@ -66,13 +66,11 @@ public class ClubController {
 
     @GetMapping("/create")
     public String createForm(Model model) {
-        model.addAttribute("clubDTO", new ClubDTO());
         return "club/create";
     }
 
     @PostMapping("/insert")
     public String createClub(@ModelAttribute ClubDTO clubDTO, Authentication authentication) throws IOException {
-
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
         clubService.save(clubDTO, host);
@@ -188,6 +186,7 @@ public class ClubController {
 
 
     //해당 클럽 참여하기
+    @Transactional
     @PostMapping("/join/{clubId}")
     public String joinClub(@PathVariable("clubId") Long clubId,
                            @AuthenticationPrincipal CustomSecurityUserDetails user,
