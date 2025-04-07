@@ -82,6 +82,7 @@ public class SiteUser {
     private Set<Keyword> keywords = new HashSet<>();
 
     //클럽가입관계추가
+    //가입된 모임 <- 모임 채팅방 출력 할떄 사용 ?
     @ManyToMany(mappedBy = "members")
     private Set<Club>clubs = new HashSet<>();
 

@@ -30,6 +30,7 @@ public class ClubService {
     // 1. 클럽 저장
     @Transactional
     public void save(ClubDTO clubDTO, SiteUser host) throws IOException {
+
         // theme을 Keyword로 변환
         Set<Keyword> keywords = new HashSet<>();
         if (clubDTO.getSelectedTheme() != null && !clubDTO.getSelectedTheme().isEmpty()) {
@@ -67,6 +68,9 @@ public class ClubService {
                     // 파일 엔티티 저장
                     ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
                     clubFileRepository.save(clubFileEntity);
+                    //모임 채팅방 생성
+
+
                 }
             }
         }
@@ -185,9 +189,10 @@ public class ClubService {
 
     //클럽 참여하기
     public boolean joinClub(Long clubId, String userEmail) {
+        System.out.println(userEmail);
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
-        SiteUser user = userRepository.findByEmail(userEmail)
+        SiteUser user = userRepository.findByUuid(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         // 이미 가입했는지 체크
         if (club.getMembers().contains(user)) {
@@ -210,9 +215,10 @@ public class ClubService {
 
     // 클럽 참여 취소하기 ( 참여인이면 true, 참여안했으면 false )
     public boolean leaveClub(Long clubId, String userEmail) {
+        System.out.println(userEmail);
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
-        SiteUser user = userRepository.findByEmail(userEmail)
+        SiteUser user = userRepository.findByUuid(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         System.out.println("Before remove: " + club.getMembers().size());
         // 가입되어 있는지 체크

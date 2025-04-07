@@ -1,5 +1,6 @@
 package com.team;
 
+import com.team.chat.ChatRoomService;
 import com.team.moim.entity.Keyword;
 import com.team.moim.repository.KeywordRepository;
 import com.team.user.MemberRole;
@@ -24,10 +25,11 @@ class ApplicationTests {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private KeywordRepository keywordRepository;
-
+	@Autowired
+	private ChatRoomService chatRoomService;
 	@Test
 	void contextLoads() {
-		List<String> keywordNames = new ArrayList<>();
+	/*	List<String> keywordNames = new ArrayList<>();
 		keywordNames.add("액티비티");
 		keywordNames.add("자기계발");
 		Set<Keyword> keywords = keywordNames != null
@@ -73,26 +75,8 @@ class ApplicationTests {
 				.keywords(keywords)
 				.lastOnline(null)
 				.build();
-		userRepository.save(user2);
-		SiteUser user3 = SiteUser.builder()
-				.name("테스트용3")
-				.email("test3@t")
-				.password(passwordEncoder.encode("1"))
-				.age(1)
-				.gender("남성")
-				.phone("010-1234-5674")
-				.profileImage(null)
-				.money(10000)
-				.createdAt(LocalDate.now())
-				.role(MemberRole.USER)
-				.provider(null) // 폼 로그인
-				.providerId(null)
-				.uuid(UUID.randomUUID().toString())
-				.introduction("테스트용 계정 입니다")
-				.keywords(keywords)
-				.lastOnline(null)
-				.build();
-		userRepository.save(user2);
+		userRepository.save(user2);*/
+		chatRoomService.CreateMoimChatRoom("모임이름", "5bcbc319-3b9e-4e08-b1e5-9ba56cfc7937");
 	}
 
 }

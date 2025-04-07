@@ -22,7 +22,6 @@
     <hr>
     <div layout:fragment="content"></div>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
-
     <th:block layout:fragment="script"></th:block>
     <div th:replace="~{fragments/chat :: chat}" sec:authorize="isAuthenticated()"></div>
 </body>

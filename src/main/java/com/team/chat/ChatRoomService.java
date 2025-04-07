@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -92,7 +93,21 @@ public class ChatRoomService {
         }
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), chatRoom.getOwner().getUuid()));
     }
-
+    @Transactional
+    public void CreateMoimChatRoom(String name, String ownerUuid) {
+        Optional<SiteUser> User = userRepository.findByUuid(ownerUuid);
+        if (!User.isPresent()) {
+            throw new IllegalStateException("사용자를 찾을 수 없습니다");
+        }
+        SiteUser ownerUser = User.get();
+        ChatRoom chatRoom = ChatRoom.builder()
+                .type("GROUP")
+                .name(name)
+                .owner(ownerUser)
+                .participants(List.of(ownerUser))
+                .build();
+        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+    }
     @Transactional
     public ChatRoom requestPersonalChat(CustomSecurityUserDetails userDetails, String receiverUuid, String reason) {
         SiteUser requester = userRepository.findByUuidWithBlockedUsers(userDetails.getSiteUser().getUuid())

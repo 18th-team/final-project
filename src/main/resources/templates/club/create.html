@@ -108,9 +108,70 @@
         </div>
     </form>
 </div>
-<th:block th:replace="~{layouts/main-layout :: club-scripts}"/>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>
-    $(document).ready(function () {
+    // Bootstrap 유효성 검사
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+    $(function (){
+        // City 변경 시 District 업데이트
+        $("#city").change(function (){
+            var city = $(this).val();
+            var districtSelect = $('#district');
+            districtSelect.empty();
+            districtSelect.append('<option value="">선택하세요</option>');
+
+            if (city === '서울시') {
+                var seoulDistricts = [
+                    '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
+                    '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
+                    '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'
+                ];
+                $.each(seoulDistricts, function (index, district) {
+                    districtSelect.append($('<option>').val(district).text(district));
+                });
+            } else if (city === '수원시') {
+                var suwonDistricts = ['영통구', '권선구', '장안구', '팔달구'];
+                $.each(suwonDistricts, function (index, district) {
+                    districtSelect.append($('<option>').val(district).text(district));
+                });
+            }
+        })
+      /*  $('#city').on('change', function () {
+
+        });*/
+
+        // 페이지 로드 시 기존 값 설정
+        var currentCity = $('#city').val();
+        if (currentCity) {
+            $('#city').trigger('change');
+            var currentDistrict = /*[[${districtValue}]]*/ null; // 페이지에서 주입
+            if (currentDistrict) {
+                $('#district').val(currentDistrict);
+            }
+        }
+
+        // Age Restriction 실시간 검증
+        $('#ageRestriction').on('input', function () {
+            var age = parseInt($(this).val());
+            if (age < 20) {
+                $(this).val(20);
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
         // 파일 선택 시 미리보기
         $('#clubFile').on('change', function (event) {
             var preview = $('#preview');
