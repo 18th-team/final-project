@@ -23,6 +23,8 @@ const chatApp = (function() {
     const pageSize = 50;
     let state = { isChatOpen: false, isChatRoomOpen: false, isLoading: false };
 
+    let offlineTimers = new Map(); // 오프라인 사용자별 타이머
+    let statusCache = new Map();
 
     // 상태 저장
     function saveChatState() {
@@ -86,11 +88,8 @@ const chatApp = (function() {
                 return;
             }
             subscribeToTopics();
+            stompClient.send("/app/initialStatus", {}, "{}");
             refreshChatRooms();
-            // 주기적 상태 갱신 시작
-            if (!statusUpdateInterval) {
-                statusUpdateInterval = setInterval(updateOfflineStatus, 60000); // 1분마다 갱신
-            }
             setInterval(() => {
                 if (!stompClient?.connected) {
                     console.warn("WebSocket disconnected, reconnecting...");
@@ -118,42 +117,48 @@ const chatApp = (function() {
         }
     }
     // 온라인 상태 업데이트
-    function updateOnlineStatus(uuid, lastOnlineTimestamp, isOnline) {
+    function updateOnlineStatus(uuid, lastOnlineTimestamp, isOnline, lastOnlineRelative) {
+        statusCache.set(uuid, { isOnline, lastOnlineTimestamp });
         console.log(`Updating status - uuid: ${uuid}, isOnline: ${isOnline}, lastOnline: ${lastOnlineTimestamp}`);
         const indicators = document.querySelectorAll(`.status-indicator[data-uuid="${uuid}"]`);
-        if (indicators.length === 0) {
-            console.warn(`No status indicators found for UUID: ${uuid}. Forcing chat list render.`);
-            renderChatList(chatRoomsCache); // 상태 표시기가 없으면 강제로 목록 갱신
-            return;
-        }
         indicators.forEach(indicator => {
             indicator.style.backgroundColor = isOnline ? '#00cc00' : '#666';
-            console.log(`Updated indicator for UUID: ${uuid} to color: ${indicator.style.backgroundColor}`);
         });
+
+        if (offlineTimers.has(uuid)) {
+            clearInterval(offlineTimers.get(uuid));
+            offlineTimers.delete(uuid);
+        }
 
         const chat = chatRoomsCache.find(c => {
             const targetUuid = c.type === 'PRIVATE' ?
                 (c.requester?.uuid === currentUser ? c.owner?.uuid : c.requester?.uuid) : null;
             return targetUuid === uuid;
         });
+
+        if (isOnline) {
+            updateChatStatus(chat, uuid, '온라인', '#00cc00');
+        } else if (lastOnlineTimestamp) {
+            const updateOfflineStatus = () => {
+                const now = Date.now();
+                const minutesAgo = Math.floor((now - lastOnlineTimestamp) / 60000);
+                const relativeText = minutesAgo >= 1 ? `${minutesAgo}분 전` : '방금 전';
+                updateChatStatus(chat, uuid, `마지막 접속 ${relativeText}`, '#666');
+            };
+            updateOfflineStatus();
+            const timer = setInterval(updateOfflineStatus, 60000);
+            offlineTimers.set(uuid, timer);
+        }
+    }
+    function updateChatStatus(chat, uuid, text, color) {
         if (chat && state.isChatRoomOpen && chat.id === currentChatRoomId) {
             const statusElement = document.querySelector('.chat-status');
             if (statusElement) {
-                if (isOnline) {
-                    statusElement.textContent = '온라인';
-                    statusElement.style.color = '#00cc00';
-                } else {
-                    const lastOnlineDate = lastOnlineTimestamp ? new Date(lastOnlineTimestamp) : null;
-                    statusElement.textContent = lastOnlineDate ?
-                        `마지막 접속 ${formatTimeAgo(lastOnlineDate)}` :
-                        '마지막 접속 정보 없음';
-                    statusElement.style.color = '#666';
-                }
-                console.log(`Updated chat status: ${statusElement.textContent}`);
+                statusElement.textContent = text;
+                statusElement.style.color = color;
             }
         }
     }
-
     function formatTimeAgo(date) {
         const now = new Date();
         const diffMs = now - date;
@@ -232,11 +237,10 @@ const chatApp = (function() {
             }
         });
         // 온라인 상태 구독
-        stompClient.subscribe(`/user/${currentUser}/topic/onlineStatus`, message => {
-            console.log('Received online status:', message.body);
+        stompClient.subscribe('/user/' + currentUser + '/topic/onlineStatus', message => {
             const status = JSON.parse(message.body);
-            console.log('Parsed status:', status);
-            updateOnlineStatus(status.uuid, status.lastOnline, status.isOnline);
+            console.log('Received online status:', status);
+            updateOnlineStatus(status.uuid, status.lastOnline, status.isOnline, status.lastOnlineRelative);
         });
     }
 
@@ -443,16 +447,15 @@ const chatApp = (function() {
                 item.appendChild(avatarDiv);
                 const targetUuid = chat.type === 'PRIVATE' ?
                     (isRequester ? chat.owner?.uuid : chat.requester?.uuid) : null;
-                if(targetUuid){
-                    const statusIndicator = document.createElement('div');
-                    statusIndicator.className = 'status-indicator';
-                    statusIndicator.dataset.uuid = targetUuid;
-                    // 초기 상태는 기본값(오프라인)으로 설정하고, 실시간 메시지로 업데이트
-                    statusIndicator.style.backgroundColor = '#666';
-                    avatarDiv.appendChild(statusIndicator);
-                    checkOnlineStatus(chat.id); // 초기 상태 요청
+                /*if(targetUuid){
+                    const statusIndicator = item.querySelector('.status-indicator');
+                    const status = statusCache.get(targetUuid);
+                    if (status) {
+                        statusIndicator.style.backgroundColor = status.isOnline ? '#00cc00' : '#666';
+                    }
+                    checkOnlineStatus(chat.id); // Still request for real-time accuracy
                 }
-
+*/
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'chat-content';
 
