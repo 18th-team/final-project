@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor // 기본 생성자
 @AllArgsConstructor // 모든 필드 포함 생성자
 @Builder
-public class SiteUser{
+public class SiteUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -86,5 +88,37 @@ public class SiteUser{
     public String toString() {
         return "SiteUser{id=" + id + ", email=" + email + "}";
     }
+    @Column(nullable = false, unique = true)
+    private String uuid; // 유저 구분
 
+    // 차단 유저 목록 (다대다 관계)
+    @ManyToMany
+    @JoinTable(
+            name = "blocked_users",
+            joinColumns = @JoinColumn(name = "blocker_uuid"),
+            inverseJoinColumns = @JoinColumn(name = "blocked_uuid")
+    )
+    private Set<SiteUser> blockedUsers = new HashSet<>();
+
+    // 차단 유저 추가 메서드
+    public void blockUser(SiteUser blocked) {
+        this.blockedUsers.add(blocked);
+    }
+
+    // 차단 해제 메서드
+    public void unblockUser(SiteUser blocked) {
+        this.blockedUsers.remove(blocked);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SiteUser siteUser = (SiteUser) o;
+        return uuid != null && uuid.equals(siteUser.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid != null ? uuid.hashCode() : 0;
+    }
 }

@@ -1,30 +1,21 @@
 package com.team.controller;
 
-import com.team.moim.ClubDTO;
-import com.team.moim.entity.Club;
-import com.team.moim.entity.Keyword;
-import com.team.moim.repository.ClubRepository;
-import com.team.moim.repository.KeywordRepository;
 import com.team.user.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Controller
@@ -32,83 +23,11 @@ public class HomeController {
     private final UserService userService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ClubRepository clubRepository;
-    private final KeywordRepository keywordRepository;
 
     @GetMapping("/")
-    public String home(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        ClubDTO clubDTO = new ClubDTO();
-
-        //만약 비회원이라면?
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
-// ClubRepository에서 모든 클럽 데이터를 가져오고, 이를 ClubDTO로 변환하여 리스트에 담기
-            List<ClubDTO> clubList = clubRepository.findAll().stream()
-                    .map(club -> ClubDTO.toDTO(club))  // Club 엔티티를 ClubDTO로 변환
-                    .collect(Collectors.toList());
-            if (!clubList.isEmpty()) {
-                // 랜덤으로 섞기
-                Collections.shuffle(clubList);
-                // 최대 8개로 제한
-                if (clubList.size() > 8) {
-                    clubList = clubList.subList(0, 8); // 8개만 남기기
-                }
-            }
-            // 키워드 목록 조회
-            List<Keyword> keywordList = keywordRepository.findAll();
-            model.addAttribute("keywordList", keywordList);
-            model.addAttribute("clubList", clubList);
-            return "index";
-        }
-
-        // 로그인된 사용자 처리
-        String userEmail = authentication.getName();
-        SiteUser user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-        clubDTO.setHostName(user.getName());
-        model.addAttribute("userList", clubDTO);
-
-        // 사용자 선택 키워드 가져오기
-        List<String> userKeywords = user.getKeywords().stream()
-                .map(Keyword::getName)
-                .collect(Collectors.toList());
-// 1. Club 엔티티에서 키워드와 매칭되는 클럽을 조회
-        List<Club> recommendedClubs = clubRepository.findByKeywords(userKeywords);
-// 2. Club 엔티티 리스트를 ClubDTO 리스트로 변환
-        List<ClubDTO> recommendedClubDTOs = recommendedClubs.stream()
-                .map(club -> ClubDTO.toDTO(club))  // Club 엔티티에서 ClubDTO로 변환
-                .collect(Collectors.toList());
-        // 랜덤으로 돌리기
-        if (!recommendedClubDTOs.isEmpty()){
-            Collections.shuffle(recommendedClubDTOs);
-            //최대3개제한
-            if (recommendedClubDTOs.size() > 3){
-                recommendedClubDTOs = recommendedClubDTOs.subList(0, 3);
-            }
-        }
-// 모델에 변환된 ClubDTO 리스트 추가
-        model.addAttribute("recommendedClubs", recommendedClubDTOs);
-
-        List<ClubDTO> clubList = clubRepository.findAll().stream()
-                .map(club -> ClubDTO.toDTO(club))  // Club 엔티티를 ClubDTO로 변환
-                .collect(Collectors.toList());
-        if (!clubList.isEmpty()) {
-            // 랜덤으로 섞기
-            Collections.shuffle(clubList);
-            // 최대 8개로 제한
-            if (clubList.size() > 8) {
-                clubList = clubList.subList(0, 8); // 8개만 남기기
-            }
-        }
-
-        // 키워드 목록 조회
-        List<Keyword> keywordList = keywordRepository.findAll();
-        model.addAttribute("keywordList", keywordList);
-        model.addAttribute("clubList", clubList);
-        return "index";  // view 이름 반환
-
+    public String home() {
+        return "index";
     }
-
 
     @GetMapping("/mobti")
     public String mobtiTest() {
@@ -119,15 +38,9 @@ public class HomeController {
     public String login(Model model) {
         return "login";
     }
-
     @GetMapping("/logout")
     public String logout() {
         return "redirect:/";
-    }
-
-    @GetMapping("/community")
-    public String community() {
-        return "post_feed_list";
     }
 
     @GetMapping("/signup")
@@ -139,7 +52,6 @@ public class HomeController {
         model.addAttribute("userCreateForm", userCreateForm);
         return "signup";
     }
-
     @PostMapping("/signup")
     public String signUp(
             @Valid UserCreateForm userCreateForm,
@@ -201,8 +113,7 @@ public class HomeController {
                         userCreateForm.getBirthDay1(),
                         userCreateForm.getBirthDay2(),
                         userCreateForm.getPhone(),
-                        profileImage
-                        ,
+                        profileImage,
                         userCreateForm.getIntroduction(), keywordNames
                 );
                 return "redirect:/login";
@@ -219,8 +130,7 @@ public class HomeController {
                 userCreateForm.getBirthDay1(),
                 userCreateForm.getBirthDay2(),
                 userCreateForm.getPhone(),
-                profileImage
-                ,
+                profileImage,
                 userCreateForm.getIntroduction(),
                 keywordNames);
         return "redirect:/login";

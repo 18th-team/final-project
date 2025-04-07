@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -86,6 +87,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .phone(Phone)
                 .money(0)
                 .createdAt(LocalDate.now())
+                .uuid(String.valueOf(UUID.randomUUID()))
                 .build();
         userRepository.save(newUser);
         return new CustomSecurityUserDetails(newUser, oAuth2User.getAttributes());
