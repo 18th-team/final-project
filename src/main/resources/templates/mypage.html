@@ -1,0 +1,86 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}"
+      layout:fragment="content">
+<link rel="stylesheet" th:href="@{/css/mypage.css}">
+
+<body class="bg-light">
+
+<div class="container mt-4 mb-5">
+    <h2 class="mypage-title mb-4">마이 페이지</h2>
+
+    <ul class="nav nav-tabs main-tabs" id="mypage-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-pane"
+                    type="button" role="tab" aria-controls="profile-pane" aria-selected="true">프로필</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="club-tab" data-bs-toggle="tab" data-bs-target="#club-pane"
+                    type="button" role="tab" aria-controls="club-pane" aria-selected="false">모임내역</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment-pane"
+                    type="button" role="tab" aria-controls="payment-pane" aria-selected="false">결제내역</button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4" id="mypage-tab-content">
+        <!-- 프로필 -->
+        <div class="tab-pane fade show active" id="profile-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <form th:action="@{/mypage/update}" th:object="${user}" method="post">
+                <div class="mb-3">
+                    <label for="name" class="form-label">이름</label>
+                    <input type="text" th:field="*{name}" id="name" class="form-control"/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">이메일</label>
+                    <input type="email" th:field="*{email}" id="email" class="form-control" readonly/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">전화번호</label>
+                    <input type="text" th:field="*{phone}" id="phone" class="form-control"/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="age" class="form-label">나이</label>
+                    <input type="number" th:field="*{age}" id="age" class="form-control" readonly/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="gender" class="form-label">성별</label>
+                    <input type="text" th:field="*{gender}" id="gender" class="form-control" readonly/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="introduction" class="form-label">자기소개</label>
+                    <textarea th:field="*{introduction}" id="introduction" class="form-control" rows="4"></textarea>
+                </div>
+
+                <button type="submit" class="btn cs-orange">수정하기</button>
+            </form>
+        </div>
+
+        <!-- 모임내역 -->
+        <div class="tab-pane fade" id="club-pane" role="tabpanel" aria-labelledby="club-tab" tabindex="0">
+            <p class="mt-3">모임내역 내용</p>
+        </div>
+
+        <!-- 결제내역 -->
+        <div class="tab-pane fade" id="payment-pane" role="tabpanel" aria-labelledby="payment-tab" tabindex="0">
+            <p class="mt-3">결제내역 내용</p>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap & jQuery CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script layout:fragment="script">
+    // 여기에 JS 작성 가능
+</script>
+
+</body>
+</html>

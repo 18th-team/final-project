@@ -829,6 +829,7 @@ const chatApp = (function() {
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
     chatApp.loadChatState();
+    if (!document.body.classList.contains('authenticated')) return;
     chatApp.connect();
     chatApp.setupEventListeners();
     chatApp.updateChatUI();
