@@ -159,17 +159,6 @@ const chatApp = (function() {
             }
         }
     }
-    function formatTimeAgo(date) {
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        if (diffMins < 1) return '방금 전';
-        if (diffMins < 60) return `${diffMins}분 전`;
-        const diffHours = Math.floor(diffMins / 60);
-        if (diffHours < 24) return `${diffHours}시간 전`;
-        const diffDays = Math.floor(diffHours / 24);
-        return `${diffDays}일 전`;
-    }
     // 총 메시지 수 요청
     function getMessageCount(chatId) {
         return new Promise((resolve, reject) => {
@@ -544,7 +533,9 @@ const chatApp = (function() {
 
     // 개인 채팅 열기
     async function openPersonalChat(chat) {
+        console.log(chat);
         if (!chat || !chat.id || isChatOpening) return;
+
         isChatOpening = true;
 
         currentChatRoomId = chat.id;
@@ -611,6 +602,8 @@ const chatApp = (function() {
             (chat.requester?.uuid === currentUser ? chat.owner?.name : chat.requester?.name) || 'Unknown';
         chatWindow.querySelector('.chat-name').textContent = chatName;
         chatWindow.querySelector('.avatar').textContent = chatName.slice(0, 2);
+
+
         const profileImage = chat.type === 'PRIVATE' ?
             (chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage) : null;
         if(profileImage) {
@@ -619,6 +612,79 @@ const chatApp = (function() {
             chatWindow.querySelector('.avatar').style.backgroundPosition = 'center';
             chatWindow.querySelector('.avatar').textContent = ''; // 텍스트 제거
             console.log('Applied styles to avatar:', chatWindow.querySelector('.avatar').style.backgroundImage);
+        }
+        // "유저 목록" 버튼 추가 (그룹 채팅에만)
+        const optionsMenu = document.querySelector('.options-menu');
+        let participantsDiv = chatWindow.querySelector('.participants-list');
+        if (chat.type === 'GROUP' && chat.participants) {
+            // 기존 참여자 목록 제거
+            if (participantsDiv) {
+                participantsDiv.remove();
+            }
+
+            // 버튼 생성
+            const userListButton = document.createElement('button');
+            userListButton.classList.add('user-list');
+            userListButton.textContent = '유저 목록';
+            optionsMenu.appendChild(userListButton);
+
+            // 참여자 목록 생성 ( 임시 )
+            participantsDiv = document.createElement('div');
+            participantsDiv.className = 'participants-list';
+            participantsDiv.style.display = 'none'; // 기본 숨김
+            chat.participants.forEach(participant => {
+                const isOwner = participant.uuid === chat.owner?.uuid; // 모임장 여부 확인
+                const participantDiv = document.createElement('div');
+                participantDiv.className = `participant ${isOwner ? 'owner' : ''}`;
+
+                const participantAvatar = document.createElement('div');
+                participantAvatar.className = 'avatar';
+                participantAvatar.textContent = participant.name.slice(0, 2);
+                if (participant.profileImage) {
+                    participantAvatar.style.backgroundImage = `url("${participant.profileImage}")`;
+                    participantAvatar.style.backgroundSize = 'cover';
+                    participantAvatar.style.backgroundPosition = 'center';
+                    participantAvatar.textContent = '';
+                }
+
+                const statusIndicator = document.createElement('div');
+                statusIndicator.className = 'status-indicator';
+                statusIndicator.dataset.uuid = participant.uuid;
+                const status = statusCache.get(participant.uuid);
+                statusIndicator.style.backgroundColor = status?.isOnline ? '#00cc00' : '#666';
+                participantAvatar.appendChild(statusIndicator);
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'participant-name';
+                nameSpan.textContent = participant.name;
+                if (isOwner) {
+                    const crownSpan = document.createElement('span');
+                    crownSpan.className = 'crown';
+                    crownSpan.innerHTML = ``;
+                    nameSpan.appendChild(crownSpan);
+                }
+
+                participantDiv.appendChild(participantAvatar);
+                participantDiv.appendChild(nameSpan);
+                participantsDiv.appendChild(participantDiv);
+            });
+            chatWindow.insertBefore(participantsDiv, messagesContainer);
+
+            // 버튼 클릭 시 토글
+            userListButton.addEventListener('click', () => {
+                participantsDiv.style.display = participantsDiv.style.display === 'none' ? 'block' : 'none';
+            });
+
+            checkOnlineStatus(chat.id); // 참여자 상태 확인
+        } else {
+            // 개인 채팅일 경우 버튼 제거
+            const existingButton = optionsMenu.querySelector('.user-list');
+            if (existingButton) {
+                existingButton.remove();
+            }
+            if (participantsDiv) {
+                participantsDiv.remove();
+            }
         }
         markMessagesAsRead();
         updateNotificationToggle();
