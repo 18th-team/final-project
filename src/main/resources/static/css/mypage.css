@@ -1,0 +1,99 @@
+/* 전체 페이지 스타일 */
+body.bg-light {
+    background-color: #f8f9fa;
+}
+
+/* 마이페이지 타이틀 */
+.mypage-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.nav.main-tabs {
+    border: none;
+    justify-content: center;
+}
+
+/* 탭 버튼 스타일 */
+.nav.main-tabs .nav-link {
+    font-size: 18px;
+    font-weight: 600;
+    color: #E36D1D;
+    border: 1px solid #E36D1D;
+    border-radius: 15px;
+    margin-right: 10px;
+    background-color: white;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.nav.main-tabs .nav-link.active {
+    background-color: #E36D1D;
+    color: white;
+}
+
+/* 탭 콘텐츠 패널 */
+.tab-pane {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* 입력 폼 스타일 */
+form input[type="text"],
+form input[type="email"],
+form input[type="number"],
+form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #fff;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* 읽기 전용 필드 스타일 */
+form input[readonly] {
+    background-color: #f0f0f0;
+    color: #888;
+}
+
+/* 수정하기 버튼 */
+form button[type="submit"] {
+    background-color: #E36D1D;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    transition: all 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+    background-color: white;
+    color: #E36D1D;
+    border: 1px solid #E36D1D;
+}
+
+/* 반응형 정렬 */
+@media (max-width: 768px) {
+    .mypage-title {
+        font-size: 24px;
+    }
+
+    .nav.main-tabs .nav-link {
+        font-size: 16px;
+        padding: 8px 15px;
+    }
+
+    form input,
+    form textarea {
+        font-size: 14px;
+    }
+}

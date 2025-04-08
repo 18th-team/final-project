@@ -15,19 +15,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
+
 @Controller
 @RequestMapping("/mypage")
 @RequiredArgsConstructor
 public class MyPageController {
 
-    private final UserService siteUserService;
+    private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
     private final ClubService clubService;
 
     @GetMapping
-    public String showMyPage(@AuthenticationPrincipal SiteUser user, Model model) {
-
+    public String mypage(Model model, Principal principal) {
+        SiteUser user = userService.getUserByUuid(principal.getName());
         model.addAttribute("user", user);
         return "mypage";
     }

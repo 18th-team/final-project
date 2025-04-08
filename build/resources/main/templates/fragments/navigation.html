@@ -29,10 +29,10 @@
                 </div>
                 <div sec:authorize="isAnonymous()">
                     <li class="nav-item"><a class="nav-link" th:href="@{/signup}">회원가입</a></li>
-
                 </div>
-
-
+                <div sec:authorize="isAuthenticated()">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/mypage}">마이페이지</a></li>
+                </div>
             </ul>
         </div>
         <form th:action="@{/clubs/search}" class="search-bar d-flex align-items-right" role="search" method="get">
