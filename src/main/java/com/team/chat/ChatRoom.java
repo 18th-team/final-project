@@ -49,7 +49,7 @@ public class ChatRoom {
     private List<ChatRoomParticipant> participantSettings = new ArrayList<>(); // 초기화 추가
 
     // Club과의 관계 추가
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "club_id")
     private Club club; // 그룹 채팅일 경우 연결된 모임
 

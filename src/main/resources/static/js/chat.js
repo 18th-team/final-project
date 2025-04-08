@@ -495,7 +495,7 @@ const chatApp = (function() {
                     const unreadSpan = document.createElement('span');
                     unreadSpan.className = 'unread-count';
                     unreadSpan.textContent = chat.unreadCount;
-                    metaDiv.appendChild(unreadSpan);
+                    titleGroupDiv.appendChild(unreadSpan);
                 }
                 headerDiv.appendChild(metaDiv);
                 contentDiv.appendChild(headerDiv);
@@ -504,7 +504,7 @@ const chatApp = (function() {
                 previewP.className = 'chat-preview';
                 previewP.textContent = isRequest ? (isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`) :
                     (chat.lastMessage || '대화가 없습니다.');
-                titleGroupDiv.appendChild(previewP);
+                contentDiv.appendChild(previewP);
 
                 if (isRequest && isOwner && !isRequester) {
                     const actionsDiv = document.createElement('div');

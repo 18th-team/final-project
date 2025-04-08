@@ -13,7 +13,7 @@ import java.util.*;
 @Table(name = "club")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Club extends BaseEntity {
@@ -65,15 +65,8 @@ public class Club extends BaseEntity {
     private Set<SiteUser> members = new HashSet<>();
 
     // ChatRoom과의 관계 추가
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<ChatRoom> chatRooms = new ArrayList<>();
-
-    // ChatRoom 추가 헬퍼 메서드
-    public void addChatRoom(ChatRoom chatRoom) {
-        this.chatRooms.add(chatRoom);
-        chatRoom.setClub(this);
-    }
+    @OneToOne(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ChatRoom chatRoom;
 
     // DTO -> Entity로 저장 (기본)
     public static Club toSaveEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {

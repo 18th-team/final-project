@@ -436,7 +436,8 @@
 
 .chat-title-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 3px;
 }
 
 .chat-name {

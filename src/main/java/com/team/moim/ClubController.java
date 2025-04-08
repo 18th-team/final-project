@@ -71,7 +71,8 @@ public class ClubController {
                 getClub.getTitle(),
                 host.getUuid()
         );
-        getClub.addChatRoom(chatRoom);
+        getClub.setChatRoom(chatRoom);
+        clubRepository.save(getClub);
         return "redirect:/clubs";
     }
 
@@ -160,6 +161,12 @@ public class ClubController {
         // 서비스 호출
         boolean isJoined = clubService.joinClub(clubId, user.getUsername()); // email 반환
         if (isJoined) {
+            Optional<Club> getClub = clubRepository.findById(clubId);
+            if (getClub.isPresent()) {
+                Club club = getClub.get();
+                Long chatRoomId = club.getChatRoom().getId();
+                chatRoomService.JoinMoimChatRoom(chatRoomId, user.getUsername());
+            }
             redirectAttributes.addFlashAttribute("message", "참여완료!");
         } else {
             redirectAttributes.addFlashAttribute("message", "이미 참여하셨습니다 😁");
@@ -167,7 +174,7 @@ public class ClubController {
         return "redirect:/clubs/" + clubId;
     }
 
-    //    //클럽 취소하기
+    //클럽 취소하기
     @PostMapping("/leave/{clubId}")
     public String leaveClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal CustomSecurityUserDetails user, RedirectAttributes redirectAttributes) {
         if (user == null) {
