@@ -12,28 +12,46 @@ body.bg-light {
     text-align: center;
 }
 
-.nav.main-tabs {
-    border: none;
+/* 탭 전체 정렬 + 기본 테두리 제거 */
+.main-tabs {
+    border-bottom: 1px solid #eee;
     justify-content: center;
+    gap: 3rem;
 }
 
-/* 탭 버튼 스타일 */
-.nav.main-tabs .nav-link {
-    font-size: 18px;
+/* 공통 탭 스타일 */
+.main-tabs .nav-link {
+    border: none !important; /* Bootstrap 기본 테두리 제거 */
+    background: transparent !important; /* 배경 제거 */
+    font-size: 16px;
+    font-weight: 500;
+    color: #888;
+    border-radius: 0 !important; /* 상단 둥글기 제거 */
+    position: relative;
+}
+
+/* 활성화된 탭 */
+.main-tabs .nav-link.active {
+    color: #F15A24;
     font-weight: 600;
-    color: #E36D1D;
-    border: 1px solid #E36D1D;
-    border-radius: 15px;
-    margin-right: 10px;
-    background-color: white;
-    padding: 10px 20px;
-    transition: all 0.3s ease;
 }
 
-.nav.main-tabs .nav-link.active {
-    background-color: #E36D1D;
-    color: white;
+/* 활성화된 탭 밑줄 */
+.main-tabs .nav-link.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 2px;
+    background-color: #F15A24;
 }
+
+/* 호버 시 강조 */
+.main-tabs .nav-link:hover {
+    color: #F15A24;
+}
+
 
 /* 탭 콘텐츠 패널 */
 .tab-pane {
@@ -41,6 +59,10 @@ body.bg-light {
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.update-container {
+    width: 100%;
 }
 
 /* 입력 폼 스타일 */

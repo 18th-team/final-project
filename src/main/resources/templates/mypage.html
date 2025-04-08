@@ -11,53 +11,66 @@
     <ul class="nav nav-tabs main-tabs" id="mypage-tab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-pane"
-                    type="button" role="tab" aria-controls="profile-pane" aria-selected="true">프로필</button>
+                    type="button" role="tab" aria-controls="profile-pane" aria-selected="true">내 프로필
+            </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="club-tab" data-bs-toggle="tab" data-bs-target="#club-pane"
-                    type="button" role="tab" aria-controls="club-pane" aria-selected="false">모임내역</button>
+                    type="button" role="tab" aria-controls="club-pane" aria-selected="false">내가 쓴 글
+            </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment-pane"
-                    type="button" role="tab" aria-controls="payment-pane" aria-selected="false">결제내역</button>
+                    type="button" role="tab" aria-controls="payment-pane" aria-selected="false">내 모임
+            </button>
         </li>
     </ul>
 
     <div class="tab-content mt-4" id="mypage-tab-content">
         <!-- 프로필 -->
-        <div class="tab-pane fade show active" id="profile-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-            <form th:action="@{/mypage/update}" th:object="${user}" method="post">
-                <div class="mb-3">
-                    <label for="name" class="form-label">이름</label>
-                    <input type="text" th:field="*{name}" id="name" class="form-control"/>
+        <div class="tab-pane fade show active d-flex justify-content-center align-items-center" id="profile-pane"
+             role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+            <form th:action="@{/mypage/update}" th:object="${user}" method="post"
+                  class="d-flex flex-column align-items-center" style="width:60vh; max-width:600px;" enctype="multipart/form-data">
+                <div class="mb-4 text-center profile-container" style="width:20vh;height:20vh;">
+                    <label for="profile-upload" class="profile-label">
+                        <img id="profile-preview" th:src="@{${user.profileImage != null ? user.profileImage : '/img/default-profile.png'}}" alt="프로필 이미지"
+                             class="profile-img w-100 h-100">
+                    </label>
+                    <input type="file" id="profile-upload" th:field="*{profileImage}" accept="image/*" style="display: none;">
                 </div>
-
-                <div class="mb-3">
-                    <label for="email" class="form-label">이메일</label>
-                    <input type="email" th:field="*{email}" id="email" class="form-control" readonly/>
+                <div class="update-container">
+                    <div><label for="profile-upload">
+                        <img th:src="@{/img/svg/1-icon.svg}" alt="업로드 아이콘" class="upload-icon "
+                             style="width: 40px; height: 40px; position: absolute; top: 120px; right: 90px; z-index: 9999;">
+                    </label></div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">이름</label>
+                        <input type="text" th:field="*{name}" id="name" class="form-control"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">이메일</label>
+                        <input type="email" th:field="*{email}" id="email" class="form-control" readonly/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">전화번호</label>
+                        <input type="text" th:field="*{phone}" id="phone" class="form-control"/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="age" class="form-label">나이</label>
+                        <input type="number" th:field="*{age}" id="age" class="form-control" readonly/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">성별</label>
+                        <input type="text" th:field="*{gender}" id="gender" class="form-control" readonly/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="introduction" class="form-label">자기소개</label>
+                        <textarea th:field="*{introduction}" id="introduction" class="form-control" rows="4"></textarea>
+                    </div>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn cs-orange">수정하기</button>
                 </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">전화번호</label>
-                    <input type="text" th:field="*{phone}" id="phone" class="form-control"/>
-                </div>
-
-                <div class="mb-3">
-                    <label for="age" class="form-label">나이</label>
-                    <input type="number" th:field="*{age}" id="age" class="form-control" readonly/>
-                </div>
-
-                <div class="mb-3">
-                    <label for="gender" class="form-label">성별</label>
-                    <input type="text" th:field="*{gender}" id="gender" class="form-control" readonly/>
-                </div>
-
-                <div class="mb-3">
-                    <label for="introduction" class="form-label">자기소개</label>
-                    <textarea th:field="*{introduction}" id="introduction" class="form-control" rows="4"></textarea>
-                </div>
-
-                <button type="submit" class="btn cs-orange">수정하기</button>
             </form>
         </div>
 
@@ -79,7 +92,21 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script layout:fragment="script">
-    // 여기에 JS 작성 가능
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('profile-upload');
+        const preview = document.getElementById('profile-preview');
+
+        input.addEventListener('change', function () {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
 </script>
 
 </body>
