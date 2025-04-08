@@ -1,7 +1,9 @@
 package com.team;
 
 import com.team.chat.ChatRoomService;
+import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
+import com.team.moim.repository.ClubRepository;
 import com.team.moim.repository.KeywordRepository;
 import com.team.user.MemberRole;
 import com.team.user.SiteUser;
@@ -27,9 +29,23 @@ class ApplicationTests {
     private KeywordRepository keywordRepository;
 	@Autowired
 	private ChatRoomService chatRoomService;
+    @Autowired
+    private ClubRepository clubRepository;
+
 	@Test
 	void contextLoads() {
-	/*	List<String> keywordNames = new ArrayList<>();
+	/*	Long clubId = 10L;
+		Optional<Club> clubOptional = clubRepository.findById(clubId);
+		if(clubOptional == null) {
+			throw new IllegalStateException("모임을 찾을 수 없습니다");
+		}
+		if (!clubOptional.isPresent()) {
+			throw new IllegalStateException("모임을 찾을 수 없습니다");
+		}
+		Club club = clubOptional.get();
+		System.out.println(club.getId());*/
+
+	    List<String> keywordNames = new ArrayList<>();
 		keywordNames.add("액티비티");
 		keywordNames.add("자기계발");
 		Set<Keyword> keywords = keywordNames != null
@@ -75,8 +91,8 @@ class ApplicationTests {
 				.keywords(keywords)
 				.lastOnline(null)
 				.build();
-		userRepository.save(user2);*/
-		chatRoomService.CreateMoimChatRoom("모임이름", "5bcbc319-3b9e-4e08-b1e5-9ba56cfc7937");
+		userRepository.save(user2);
+/*        chatRoomService.CreateMoimChatRoom("모임이름", "7cd06dce-2e70-497a-8fec-cb7482c06258");*/
 	}
 
 }

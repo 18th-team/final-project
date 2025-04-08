@@ -4,18 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="프로필 이미지가 있는 경우 프로필 이미지 표시">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/resources/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoom.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoom.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/repository/ClubRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/repository/ClubRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/user/SiteUser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/chat.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/chat.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/com/team/ApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/team/ApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -108,7 +108,7 @@
     "Spring Boot.Application.executor": "Run",
     "git-widget-placeholder": "jsw",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/GREEN/IdeaProjects/final-project/src/main/resources/static/img/user",
+    "last_opened_file_path": "Z:/final-project",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -118,7 +118,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "Errors",
+    "settings.editor.selected.configurable": "preferences.sourceCode",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -236,6 +236,9 @@
       <workItem from="1743465831257" duration="26532000" />
       <workItem from="1743552863897" duration="29483000" />
       <workItem from="1743638889575" duration="14030000" />
+      <workItem from="1744072144886" duration="4775000" />
+      <workItem from="1744076944504" duration="413000" />
+      <workItem from="1744077378790" duration="11973000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -525,7 +528,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744007163910</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="모임 채팅방 생성 작업중&#10;오류 수정 해야됨&#10;java.lang.IllegalStateException: 참여자를 찾을 수 없습니다.&#10;&#9;at com.team.chat.ChatRoomService.lambda$getChatRoomsForUser$9(ChatRoomService.java:195) ~[classes/:na]">
+      <option name="closed" value="true" />
+      <created>1744015948668</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1744015948668</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -570,7 +581,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="로그인 창 수정&#10;피드 작업 중" />
     <MESSAGE value="웹 소켓 연결 부분 추가&#10;개인 채팅 리스트 프론트, 백엔드 작업중" />
     <MESSAGE value="개인 채팅 목록을 보여주는 부분만 완료" />
     <MESSAGE value="개인 채팅 목록 수정: 1대1 채팅 요청자와 수신자 구분 기능 추가" />
@@ -595,7 +605,8 @@
     <MESSAGE value="온라인, 마지막 접속 시간 표시 완료" />
     <MESSAGE value="마지막 접속 시간 수정" />
     <MESSAGE value="프로필 이미지가 있는 경우 프로필 이미지 표시" />
-    <option name="LAST_COMMIT_MESSAGE" value="프로필 이미지가 있는 경우 프로필 이미지 표시" />
+    <MESSAGE value="모임 채팅방 생성 작업중&#10;오류 수정 해야됨&#10;java.lang.IllegalStateException: 참여자를 찾을 수 없습니다.&#10;&#9;at com.team.chat.ChatRoomService.lambda$getChatRoomsForUser$9(ChatRoomService.java:195) ~[classes/:na]" />
+    <option name="LAST_COMMIT_MESSAGE" value="모임 채팅방 생성 작업중&#10;오류 수정 해야됨&#10;java.lang.IllegalStateException: 참여자를 찾을 수 없습니다.&#10;&#9;at com.team.chat.ChatRoomService.lambda$getChatRoomsForUser$9(ChatRoomService.java:195) ~[classes/:na]" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -610,16 +621,161 @@
         </breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
-          <line>92</line>
-          <option name="timeStamp" value="10" />
+          <line>200</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomRepository.java</url>
+          <line>12</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/security/SecurityHandshakeInterceptor.java</url>
+          <line>38</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>63</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>62</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>64</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
-          <line>129</line>
-          <option name="timeStamp" value="12" />
+          <line>120</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>131</line>
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>106</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>111</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>113</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>110</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>109</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>104</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>103</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>102</line>
+          <option name="timeStamp" value="34" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>117</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>116</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>122</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>124</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>127</line>
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>123</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>126</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>125</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>121</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>134</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>135</line>
+          <option name="timeStamp" value="46" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>136</line>
+          <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>137</line>
+          <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>73</line>
+          <option name="timeStamp" value="49" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="java.util.Optional" memberName="value" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

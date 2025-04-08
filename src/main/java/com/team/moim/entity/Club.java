@@ -1,5 +1,6 @@
 package com.team.moim.entity;
 
+import com.team.chat.ChatRoom;
 import com.team.moim.ClubDTO;
 import com.team.user.SiteUser;
 import jakarta.persistence.*;
@@ -63,6 +64,16 @@ public class Club extends BaseEntity {
     )
     private Set<SiteUser> members = new HashSet<>();
 
+    // ChatRoom과의 관계 추가
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ChatRoom> chatRooms = new ArrayList<>();
+
+    // ChatRoom 추가 헬퍼 메서드
+    public void addChatRoom(ChatRoom chatRoom) {
+        this.chatRooms.add(chatRoom);
+        chatRoom.setClub(this);
+    }
 
     // DTO -> Entity로 저장 (기본)
     public static Club toSaveEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
@@ -120,11 +131,6 @@ public class Club extends BaseEntity {
                 .clubFileEntityList(existingClub.getClubFileEntityList()) // 기존 파일 리스트 유지
                 .keywords(keywords)
                 .build();
-    }
-
-    @Override
-    public String toString() {
-        return "Club{id=" + id + ", title=" + title + ", memberCount=" + members.size() + "}";
     }
 
 }

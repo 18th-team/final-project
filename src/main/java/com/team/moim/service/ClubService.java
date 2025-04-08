@@ -27,10 +27,9 @@ public class ClubService {
     private final KeywordRepository keywordRepository; // 의존성 추가
     private final UserRepository userRepository;
 
-    // 1. 클럽 저장
+    // 1. 클럽 저장 (id값을 가져오려면 ClubDTO 타입으로 반환 받아야함)
     @Transactional
-    public void save(ClubDTO clubDTO, SiteUser host) throws IOException {
-
+    public Club save(ClubDTO clubDTO, SiteUser host) throws IOException {
         // theme을 Keyword로 변환
         Set<Keyword> keywords = new HashSet<>();
         if (clubDTO.getSelectedTheme() != null && !clubDTO.getSelectedTheme().isEmpty()) {
@@ -43,10 +42,11 @@ public class ClubService {
         if (clubDTO.getClubFile() == null || clubDTO.getClubFile().isEmpty()) {
             Club clubEntity = Club.toSaveEntity(clubDTO, host, keywords);
             clubRepository.save(clubEntity);
+            return clubEntity;
         } else {
             Club clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords);
-            Long saveId = clubRepository.save(clubEntity).getId();
-            Club club = clubRepository.findById(saveId).get();
+            clubRepository.save(clubEntity);
+            Club club = clubRepository.findById(clubEntity.getId()).get();
 
             // 파일 처리
             for (MultipartFile clubFile : clubDTO.getClubFile()) {
@@ -68,11 +68,10 @@ public class ClubService {
                     // 파일 엔티티 저장
                     ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
                     clubFileRepository.save(clubFileEntity);
-                    //모임 채팅방 생성
-
 
                 }
             }
+            return clubEntity;
         }
     }
 

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -29,5 +30,8 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
             "c.city LIKE %:query% OR " +
             "EXISTS (SELECT k FROM c.keywords k WHERE k.name LIKE %:query%)")
     List<Club> findBySearchQuery(String query);
+
+    Optional<Club> findById(Long id);
+
 
 }

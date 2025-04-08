@@ -1,5 +1,7 @@
 package com.team.moim;
 
+import com.team.chat.ChatRoom;
+import com.team.chat.ChatRoomService;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubRepository;
@@ -36,6 +38,7 @@ public class ClubController {
     private final UserService userService;
     private final ClubRepository clubRepository;
     private final KeywordRepository keywordRepository;
+    private final ChatRoomService chatRoomService;
 
     // ✅ 중복 코드 줄이기 ->
     @ModelAttribute("keywordList")
@@ -59,7 +62,16 @@ public class ClubController {
 
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
-        clubService.save(clubDTO, host);
+        Club getClub  = clubService.save(clubDTO, host);
+
+
+        //모임 생성 시 채팅방 자동 생성
+        ChatRoom chatRoom =  chatRoomService.CreateMoimChatRoom(
+                getClub.getId(),
+                getClub.getTitle(),
+                host.getUuid()
+        );
+        getClub.addChatRoom(chatRoom);
         return "redirect:/clubs";
     }
 

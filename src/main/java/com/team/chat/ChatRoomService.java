@@ -1,5 +1,7 @@
 package com.team.chat;
 
+import com.team.moim.entity.Club;
+import com.team.moim.repository.ClubRepository;
 import com.team.user.CustomSecurityUserDetails;
 import com.team.user.SiteUser;
 import com.team.user.UserRepository;
@@ -33,6 +35,7 @@ public class ChatRoomService {
     private final ApplicationEventPublisher eventPublisher;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ClubRepository clubRepository;
 
     @Transactional(readOnly = true)
     public ChatRoom findChatRoomById(Long chatRoomId) {
@@ -93,21 +96,89 @@ public class ChatRoomService {
         }
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(chatRoom.getRequester().getUuid(), chatRoom.getOwner().getUuid()));
     }
+    //채팅방 수동 생성, 자동 생성 고려
     @Transactional
-    public void CreateMoimChatRoom(String name, String ownerUuid) {
-        Optional<SiteUser> User = userRepository.findByUuid(ownerUuid);
-        if (!User.isPresent()) {
+    public ChatRoom CreateMoimChatRoom(Long clubId, String name, String ownerUuid) {
+        // 1. 모임장 확인
+        Optional<SiteUser> userOptional = userRepository.findByUuid(ownerUuid);
+        if (!userOptional.isPresent()) {
             throw new IllegalStateException("사용자를 찾을 수 없습니다");
         }
-        SiteUser ownerUser = User.get();
+        SiteUser ownerUser = userOptional.get();
+        // 2. 모임 확인
+        System.out.println(clubId);
+        Optional<Club> clubOptional = clubRepository.findById(clubId);
+        if (!clubOptional.isPresent()) {
+            throw new IllegalStateException("모임을 찾을 수 없습니다");
+        }
+        Club club = clubOptional.get();
+
+        // 3. 모임장이 맞는지 확인
+        if (!club.getHost().equals(ownerUser)) {
+            throw new IllegalStateException("모임장만 채팅방을 생성할 수 있습니다");
+        }
+        // 4. 채팅방 생성
         ChatRoom chatRoom = ChatRoom.builder()
                 .type("GROUP")
-                .name(name)
+                .name(name != null && !name.isEmpty() ? name : club.getTitle() + " 채팅방") // 이름이 없으면 모임 제목 사용
                 .owner(ownerUser)
                 .participants(List.of(ownerUser))
+                .club(club) // Club과 연결
+                .status("ACTIVE") // 상태 설정
                 .build();
+
+
+        // 5. 채팅방 저장
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+
+        // 6. 모임장 참여 설정
+        ChatRoomParticipant requesterParticipant = new ChatRoomParticipant(savedChatRoom, ownerUser, true);
+        savedChatRoom.addParticipantSetting(requesterParticipant);
+        chatRoomParticipantRepository.save(requesterParticipant);
+        return savedChatRoom;
     }
+    //나간 사람이 모임 채팅방을 다시 참가 할수 있게 ( 참여한 모임 확인 필요)
+    @Transactional
+    public void JoinMoimChatRoom(Long chatRoomId, String uuid) {
+        // 1. 사용자 확인
+        Optional<SiteUser> userOptional = userRepository.findByUuid(uuid);
+        if (userOptional.isEmpty()) {
+            throw new IllegalStateException("사용자를 찾을 수 없습니다");
+        }
+        SiteUser joinUser = userOptional.get();
+
+        // 2. 채팅방 확인
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findById(chatRoomId);
+        if (chatRoomOptional.isEmpty()) {
+            throw new IllegalStateException("채팅방이 존재하지 않습니다");
+        }
+        ChatRoom chatRoom = chatRoomOptional.get();
+
+        // 3. 그룹 채팅방인지 확인
+        if (!"GROUP".equals(chatRoom.getType())) {
+            throw new IllegalStateException("그룹 채팅방만 참여할 수 있습니다");
+        }
+
+        // 4. 모임 멤버인지 확인
+        Club club = chatRoom.getClub();
+        if (club == null || !club.getMembers().contains(joinUser)) {
+            throw new IllegalStateException("해당 모임의 멤버만 채팅방에 참여할 수 있습니다");
+        }
+
+        // 5. 이미 참여 중인지 확인
+        boolean isAlreadyParticipant = chatRoom.getParticipants().contains(joinUser);
+        if (isAlreadyParticipant) {
+            throw new IllegalStateException("이미 채팅방에 참여 중입니다");
+        }
+
+        // 6. 참여자 추가
+        ChatRoomParticipant participant = new ChatRoomParticipant(chatRoom, joinUser, true);
+        chatRoom.addParticipantSetting(participant);
+        chatRoom.getParticipants().add(joinUser);
+        chatRoomParticipantRepository.save(participant);
+        chatRoomRepository.save(chatRoom);
+    }
+
     @Transactional
     public ChatRoom requestPersonalChat(CustomSecurityUserDetails userDetails, String receiverUuid, String reason) {
         SiteUser requester = userRepository.findByUuidWithBlockedUsers(userDetails.getSiteUser().getUuid())
