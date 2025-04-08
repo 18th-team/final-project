@@ -143,10 +143,11 @@ public class PostController {
     }
 
     @GetMapping("/review/create")
-    public String reviewForm(Model model) {
+    public String reviewForm(Model model, Principal principal) {
+        SiteUser loginUser = userService.getUserByUuid(principal.getName());
         model.addAttribute("postForm", new PostForm());
         model.addAttribute("isReview", true);
-        model.addAttribute("clubList", clubService.findAll());
+        model.addAttribute("clubList", loginUser.getClubs());
         return "post_form";
     }
 

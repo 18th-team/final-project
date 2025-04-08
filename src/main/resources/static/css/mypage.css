@@ -32,7 +32,7 @@ body.bg-light {
 
 /* 활성화된 탭 */
 .main-tabs .nav-link.active {
-    color: #F15A24;
+    color: #E36D1D;
     font-weight: 600;
 }
 
@@ -44,12 +44,23 @@ body.bg-light {
     bottom: -1px;
     width: 100%;
     height: 2px;
-    background-color: #F15A24;
+    background-color: #E36D1D;
 }
 
 /* 호버 시 강조 */
 .main-tabs .nav-link:hover {
-    color: #F15A24;
+    color: #E36D1D;
+}
+
+.upload-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 800px;
+    left: 52%;
+    cursor: pointer;
+    z-index: 99999;
+
 }
 
 

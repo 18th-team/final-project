@@ -230,4 +230,8 @@ ClubService {
         clubRepository.save(club);
         return true;
     }
+
+    public List<Club> getClubsByUser(SiteUser user) {
+        return clubRepository.findByMembersContaining(user);
+    }
 }

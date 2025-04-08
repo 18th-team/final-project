@@ -2,6 +2,7 @@ package com.team.moim.repository;
 
 import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
+import com.team.user.SiteUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +31,5 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
             "EXISTS (SELECT k FROM c.keywords k WHERE k.name LIKE %:query%)")
     List<Club> findBySearchQuery(String query);
 
+    List<Club> findByMembersContaining(SiteUser user);
 }

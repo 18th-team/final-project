@@ -50,4 +50,8 @@ public class CommentService {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Comment not found"));
     }
+
+    public List<Comment> findByAuthor(SiteUser user) {
+        return commentRepository.findByAuthor(user);
+    }
 }

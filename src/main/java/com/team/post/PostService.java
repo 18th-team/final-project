@@ -142,4 +142,8 @@ public class PostService {
                 .stream().filter(p -> p.getClub() != null)
                 .count();
     }
+
+    public List<Post> findByAuthor(SiteUser user) {
+        return postRepository.findByAuthor(user);
+    }
 }
