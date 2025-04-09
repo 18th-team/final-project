@@ -4,20 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="모임 채팅 참여자 목록 작업중">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/chat2.js" afterDir="false" />
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="모임 채팅 참여자 목록 작업중2">
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/WebSocketConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/chat.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/chat.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -242,7 +239,7 @@
       <workItem from="1744072144886" duration="4775000" />
       <workItem from="1744076944504" duration="413000" />
       <workItem from="1744077378790" duration="24340000" />
-      <workItem from="1744156970817" duration="16047000" />
+      <workItem from="1744156970817" duration="21626000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -564,7 +561,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744102525389</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="모임 채팅 참여자 목록 작업중2">
+      <option name="closed" value="true" />
+      <created>1744182080889</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1744182080889</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -609,7 +614,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="개인 채팅 목록 수정" />
     <MESSAGE value="개인 채팅 메시지 작업중" />
     <MESSAGE value="개인 채팅 메시지 프론트 작업중" />
     <MESSAGE value="개인 채팅 메시지 90% 완료&#10;차단 기능, 채팅 나가기 기능 남았음" />
@@ -634,7 +638,8 @@
     <MESSAGE value="모임 등록 시 모임 채팅 생성 추가&#10;&#10;- ClubController에서 모임 생성 후 채팅방 자동 생성&#10;- ClubService에서 Club 엔티티 반환하도록 업데이트&#10;- Club와 ChatRoom 간 엔티티 관계 추가로 모임 채팅 지원" />
     <MESSAGE value="모임 채팅 참가 메소드 추가&#10;ChatRoom, Club 1:1 관계로 변경&#10;Chat.css, chat.js 수정" />
     <MESSAGE value="모임 채팅 참여자 목록 작업중" />
-    <option name="LAST_COMMIT_MESSAGE" value="모임 채팅 참여자 목록 작업중" />
+    <MESSAGE value="모임 채팅 참여자 목록 작업중2" />
+    <option name="LAST_COMMIT_MESSAGE" value="모임 채팅 참여자 목록 작업중2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

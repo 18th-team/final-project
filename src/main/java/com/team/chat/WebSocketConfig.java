@@ -104,8 +104,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(5); // 스레드 풀 크기 설정
-        scheduler.setThreadNamePrefix("wss-heartbeat-thread-"); // 스레드 이름 접두사
+        scheduler.setPoolSize(10); // 스레드 풀 크기 설정
+        scheduler.setThreadNamePrefix("wss-heartbeat-"); // 스레드 이름 접두사
         scheduler.initialize();
         return scheduler;
     }
