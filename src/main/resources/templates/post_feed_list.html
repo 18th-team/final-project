@@ -293,16 +293,20 @@
 
             const postID = $("#commentPostID").val();
             const content = $("#commentContent").val();
-            const csrfToken = $("input[name='_csrf']").val();
+
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
 
             $.ajax({
                 url: "/comment",
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                headers: {
+                    [csrfHeader]: csrfToken
+                },
                 data: {
                     postID: postID,
-                    content: content,
-                    _csrf: csrfToken
+                    content: content
                 },
                 success: function () {
                     const commentHtml = `
@@ -314,8 +318,10 @@
                     $(`#comment-list-${postID}`).append(commentHtml);
                     $("#commentContent").val(""); // 입력창 비우기
                 },
-                error: function () {
-                    alert("댓글 등록 실패");
+                error: function (xhr) {
+                    console.log("상태 코드:", xhr.status);
+                    console.log("응답 텍스트:", xhr.responseText);
+                    alert("댓글 등록 실패: " + xhr.status);
                 }
             });
         });
