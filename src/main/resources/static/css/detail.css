@@ -1,0 +1,94 @@
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* 카드 배경 흰색 */
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* 캐러셀 컨트롤 버튼 색상 */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #e36d1d;
+    border-radius: 50%;
+}
+
+/* 인디케이터 색상 */
+.carousel-indicators [data-bs-target] {
+    background-color: #e36d1d;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.carousel-indicators .active {
+    background-color: #e36d1d;
+    opacity: 1;
+}
+
+dt, .hostName {
+    font-family: 'Pretendard-SemiBold';
+    font-size: calc(1rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
+
+
+}
+
+dd, .content-box {
+    font-family: 'Pretendard-ExtraLight';
+    font-size: calc(0.9rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
+
+}
+
+/* 파스텔톤 버튼 스타일 */
+
+.btn-warning {
+    background-color: #ffe066; /* 파스텔 옐로우 */
+    color: white;
+    border-radius: 25px;
+    padding: 10px 20px;
+    transition: background-color 0.3s;
+}
+
+.btn-warning:hover {
+    background-color: #ffd700; /* 옐로우 */
+}
+
+.btn-danger {
+    background-color: #ff6363; /* 파스텔 레드 */
+    color: white;
+    border-radius: 25px;
+    padding: 10px 20px;
+    transition: background-color 0.3s;
+}
+
+.btn-danger:hover {
+    background-color: #ff1e1e; /* 레드 */
+    color: #333333;
+}
+
+/* "Back to List" 버튼 */
+.btn-secondary {
+    background-color: #b0e0e6; /* 파스텔 블루 */
+    color: white;
+    border-radius: 25px;
+    padding: 10px 20px;
+    transition: background-color 0.3s;
+}
+
+.btn-secondary:hover {
+    background-color: #98c9d1; /* 밝은 파스텔 블루 */
+    color: #333333;
+
+}
+
+.custom-badge {
+    font-size: calc(0.9rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
+}
+
+ul, li {
+    text-decoration: none;
+    list-style: none;
+
+}

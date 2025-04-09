@@ -4,52 +4,9 @@
 <head>
     <title>크루 만들기</title>
     <link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
-    <style>
-        h1 {
-            font-family: 'Pretendard-Medium';
-        }
+    <link th:href="@{/css/create.css}" rel="stylesheet"/>
 
-        .create-name {
-            font-family: 'Pretendard-SemiBold';
-            font-size: 1.3rem;
-        }
 
-        .form-control {
-            font-family: 'Pretendard-Light';
-        }
-
-        .btn-primary:hover {
-            background-color: #d55e0e;
-            border-color: #d55e0e;
-        }
-        #search-container {
-            width: 45%;
-            float: left;
-            margin: 10px;
-        }
-        #map {
-            width: 50%;
-            height: 400px;
-            float: right;
-            margin-top: 20px;
-        }
-        #search-results {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .result-item {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-        .result-item:hover {
-            background-color: #f0f0f0;
-        }
-        .selected {
-            background-color: #e0f7fa;
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -83,7 +40,7 @@
                 <div id="preview" class="mt-3 d-flex flex-wrap gap-3"></div>
             </div>
 
-<!--            주소-->
+            <!--            주소-->
             <div class="row g-3 mb-4">
                 <div class="col-md-6"><label>주소 검색:</label>
                     <input type="text" id="search-query" placeholder="주소 검색">
@@ -132,12 +89,7 @@
             </div>
         </form>
     </div>
-    <script>
 
-    </script>
-    <!-- create.js 로드 -->
-    <script th:src="@{/js/create.js}"></script>
 </div>
-
 </body>
 </html>

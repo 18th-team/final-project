@@ -35,8 +35,7 @@ function searchAddress() {
                 const marker = new naver.maps.Marker({
                     position: position,
                     map: map,
-                    title: place.title,
-                    address:place.address
+                    title: place.title
                 });
                 markers.push(marker);
 
@@ -69,70 +68,66 @@ function searchAddress() {
         .catch(error => console.error('Error:', error));
 }
 
-function selectAddress(place, index, itemElement) {
-    // 이전 선택 해제
-    if (selectedMarker) {
-        selectedMarker.setIcon(null); // 기본 마커로 복원
-    }
-    document.querySelectorAll('.result-item').forEach(item => item.classList.remove('selected'));
 
-    // 선택된 항목 표시
-    itemElement.classList.add('selected');
+function selectAddress(place, index, item) {
+    // 기존 정보 창 닫기
+    infoWindows.forEach(info => info.close());
+
+    // 선택된 마커 강조
+    if (selectedMarker) selectedMarker.setIcon(null);
     selectedMarker = markers[index];
     selectedMarker.setIcon({
-        url: 'http://static.naver.net/maps2/icons/pin_spot2.png', // 선택된 마커 아이콘
-        size: new naver.maps.Size(24, 37)
+        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' // 선택된 마커 색상 변경
     });
 
-    // 폼에 값 설정
+    // 정보 창 열기
+    infoWindows[index].open(map, markers[index]);
+
+    // 선택된 값을 폼에 저장
     const cleanTitle = place.title.replace(/<[^>]+>/g, '');
     document.getElementById('location').value = place.address;
     document.getElementById('locationTitle').value = cleanTitle
     document.getElementById('latitude').value = place.mapy / 1e7;
     document.getElementById('longitude').value = place.mapx / 1e7;
-
-    // 지도 중심 이동
-    map.panTo(markers[index].getPosition());
-    infoWindows[index].open(map, markers[index]);
 }
 
 
-    $(document).ready(function () {
+
+// * 나이검사 및 사진 미리보기
+$(document).ready(function () {
     // Age Restriction 실시간 검증
     $('#ageRestriction').on('input', function () {
         let age = parseInt($(this).val());
-
         if (age < 20) {
-            alert("나이를 다시 설정하세요"); // 경고창 추가
-            $(this).val(20); // 입력값을 20으로 자동 수정
-            $(this).addClass('is-invalid'); // Bootstrap 등의 클래스 활용 시 시각적 경고
+            $(this).val(20);
+            $(this).addClass('is-invalid');
         } else {
-            $(this).removeClass('is-invalid'); // 정상 입력일 경우 경고 제거
+            $(this).removeClass('is-invalid');
         }
     });
 
 
     // 파일 선택 시 미리보기
     $('#clubFile').on('change', function (event) {
-    let preview = $('#preview');
-    preview.empty(); // 기존 미리보기 초기화
+        let preview = $('#preview');
+        preview.empty(); // 기존 미리보기 초기화
 
-    let files = event.target.files;
-    if (files) {
-    $.each(files, function (index, file) {
-    if (file.type.match('image.*')) { // 이미지 파일만 처리
-    let reader = new FileReader();
-    reader.onload = function (e) {
-    let img = $('<img>').attr('src', e.target.result)
-    // .addClass('img-fluid')
-    .css({'max-width': '200px', 'max-height': '200px'});
-    preview.append(img);
-};
-    reader.readAsDataURL(file);
-}
-});
-}
-});
+        let files = event.target.files;
+        if (files) {
+            $.each(files, function (index, file) {
+                if (file.type.match('image.*')) { // 이미지 파일만 처리
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        let img = $('<img>').attr('src', e.target.result)
+                            // .addClass('img-fluid')
+                            .css({'max-width': '200px', 'max-height': '200px'});
+                        preview.append(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
     console.log(typeof jQuery); // "function"이면 로드 성공, "undefined"면 실패
 
 });

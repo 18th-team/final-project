@@ -1,0 +1,34 @@
+#search-container {
+    width: 45%;
+    float: left;
+    margin: 10px;
+}
+
+#map {
+    width: 50%;
+    height: 400px;
+    float: right;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+}
+
+/* 크기 강제 설정 */
+#search-results {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.result-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.result-item:hover {
+    background-color: #f0f0f0;
+}
+
+.selected {
+    background-color: #e0f7fa;
+    font-weight: bold;
+}
