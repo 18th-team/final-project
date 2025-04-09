@@ -137,9 +137,9 @@
     </div>
 </div>
 
-<!-- WebSocket 클라이언트 라이브러리 (프래그먼트 외부에서 로드 필요) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<!-- WebSocket 스크립트를 조건부로 로드 -->
+<script th:if="${#authorization.expression('isAuthenticated()')}" src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script th:if="${#authorization.expression('isAuthenticated()')}" src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script th:src="@{/js/chat.js(v=${#dates.createNow().getTime()})}"></script>
 </body>
 </html>

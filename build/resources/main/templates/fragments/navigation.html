@@ -14,7 +14,7 @@
             <ul class="navbar-nav align-items-center gap-3 mt-4">
                 <li class="nav-item"><a class="nav-link" th:href="@{/clubs}">모락크루</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/clubs/create}">크루생성</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">채팅</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/api/search}">지도</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/post/feed/list}">커뮤니티</a></li>
                 <!-- 로그인 상태에 따라 다르게 표시 -->
                 <div sec:authorize="isAuthenticated()">

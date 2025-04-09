@@ -36,6 +36,11 @@ public class HomeController {
     private final ClubRepository clubRepository;
     private final KeywordRepository keywordRepository;
 
+    @GetMapping("/map")
+    public String mapApi() {
+        return "mapApi";
+    }
+
     @GetMapping("/")
     public String home(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

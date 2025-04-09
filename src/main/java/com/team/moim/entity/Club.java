@@ -43,6 +43,20 @@ public class Club extends BaseEntity {
     @Column
     private int fileAttached;
 
+    // 주소와 좌표 필드 추가
+    @Column(nullable = false)
+    private String location; // 주소 (예: "서울특별시 강남구...")
+
+    @Column
+    private String locationTitle; // 타이틀: "북수원자이"
+
+    @Column
+    private Double latitude; // 위도
+
+    @Column
+    private Double longitude; // 경도
+
+
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ClubFileEntity> clubFileEntityList = new ArrayList<>();
 
@@ -75,22 +89,13 @@ public class Club extends BaseEntity {
                 .host(host)
                 .fileAttached(0)
                 .keywords(keywords)
+                .location(clubDTO.getLocation())
+                .locationTitle(clubDTO.getLocationTitle())
+                .latitude(clubDTO.getLatitude())
+                .longitude(clubDTO.getLongitude())
                 .build();
     }
 
-    // DTO -> Entity로 업데이트
-    public static Club toUpdateEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
-        return Club.builder()
-                .id(clubDTO.getId())
-                .title(clubDTO.getTitle())
-                .content(clubDTO.getContent())
-                .city(clubDTO.getCity())
-                .district(clubDTO.getDistrict())
-                .ageRestriction(clubDTO.getAgeRestriction())
-                .host(host)
-                .keywords(keywords)
-                .build();
-    }
 
     // 파일 포함 저장
     public static Club toSaveFileEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
@@ -103,11 +108,15 @@ public class Club extends BaseEntity {
                 .host(host)
                 .fileAttached(1)
                 .keywords(keywords)
+                .location(clubDTO.getLocation())
+                .locationTitle(clubDTO.getLocationTitle())
+                .latitude(clubDTO.getLatitude())
+                .longitude(clubDTO.getLongitude())
                 .build();
     }
 
     // 파일 포함 업데이트 (기존 clubFileEntityList 유지)
-    public static Club toUpdateFileEntity(ClubDTO clubDTO, SiteUser host, Club existingClub, Set<Keyword> keywords) {
+    public static Club toUpdateFileEntity(ClubDTO clubDTO,String location, String locationTitle,Double latitude, Double longitude, SiteUser host, Club existingClub, Set<Keyword> keywords) {
         return Club.builder()
                 .id(existingClub.getId())
                 .title(clubDTO.getTitle())
@@ -119,6 +128,10 @@ public class Club extends BaseEntity {
                 .fileAttached(clubDTO.getClubFile() != null && !clubDTO.getClubFile().stream().allMatch(MultipartFile::isEmpty) ? 1 : existingClub.getFileAttached())
                 .clubFileEntityList(existingClub.getClubFileEntityList()) // 기존 파일 리스트 유지
                 .keywords(keywords)
+                .location(location)
+                .locationTitle(locationTitle)
+                .latitude(latitude)
+                .longitude(longitude)
                 .build();
     }
 
@@ -126,5 +139,7 @@ public class Club extends BaseEntity {
     public String toString() {
         return "Club{id=" + id + ", title=" + title + ", memberCount=" + members.size() + "}";
     }
+
+
 
 }

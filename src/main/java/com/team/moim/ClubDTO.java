@@ -41,6 +41,11 @@ public class ClubDTO {
     private String hostIntro; // 작성자의 자기소개
     private List<String> hostSelectedKeywords; // 사용자가 선택한 다중 키워드
 
+    //지도API
+    private String location;
+    private String locationTitle;
+    private Double latitude;
+    private Double longitude;
 
     //note 단일 이미지 파일 받기 --> 다중파일 받기 List
     private List<MultipartFile> clubFile;
@@ -72,6 +77,10 @@ public class ClubDTO {
         clubDTO.setMemberCount(club.getMembers().size());
         clubDTO.setCreatedAt(club.getCreatedAt()); // BaseEntity에서 상속
         clubDTO.setUpdatedAt(club.getUpdatedAt()); // BaseEntity에서 상속
+        clubDTO.setLocation(club.getLocation());
+        clubDTO.setLocationTitle(club.getLocationTitle());
+        clubDTO.setLatitude(club.getLatitude());
+        clubDTO.setLongitude(club.getLongitude());
         //note 로그인한사용자 세팅하기
         if (club.getHost() != null) {
             clubDTO.setHostId(club.getHost().getId());
@@ -101,6 +110,7 @@ public class ClubDTO {
             clubDTO.setMemberCount(club.getMembers().size());
             clubDTO.setMemberImages(club.getMembers().stream().map(SiteUser::getProfileImage).map(img -> img != null ? img : "/img/default-profile.png").collect(Collectors.toList()));
             clubDTO.setMemberEmails(club.getMembers().stream().map(SiteUser::getEmail).collect(Collectors.toList()));
+
             return clubDTO;
         }
         return clubDTO;

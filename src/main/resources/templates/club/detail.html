@@ -95,7 +95,8 @@
         .custom-badge {
             font-size: calc(0.9rem + 0.5vw); /* 기본 16px + 뷰포트 너비의 0.05% */
         }
-        ul,li {
+
+        ul, li {
             text-decoration: none;
             list-style: none;
 
@@ -197,31 +198,24 @@
                     </div>
                 </dd>
                 <!-- 네이버 지도 -->
-                <p>지역: <span th:text="${clubDTO.city + ' ' + clubDTO.district}"></span></p>
-                <div id="map" style="width:100%;height:400px;"></div>
-                <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=nlpedkwvft"></script>
-                <script th:inline="javascript">
-                    var latitude = /*[[${latitude}]]*/ 37.5665; // 기본값
-                    var longitude = /*[[${longitude}]]*/ 126.9780;
-                    var mapOptions = {
-                        center: new naver.maps.LatLng(latitude, longitude),
-                        zoom: 15
-                    };
-                    var map = new naver.maps.Map('map', mapOptions);
-
-                    // 마커 추가
-                    var marker = new naver.maps.Marker({
-                        position: new naver.maps.LatLng(latitude, longitude),
-                        map: map,
-                        title: /*[[${clubDTO.district}]]*/ "장소"
-                    });
-                </script>
-
-                <!-- Location -->
-                <dt class="col-md-3 col-4 mt-5">활동지역🏙️</dt>
-                <dd class="col-md-9 col-8 mb-4 mt-5"
-                    th:text="${clubDTO.city + ' ' + (clubDTO.district != null ? clubDTO.district : '')}">City District
+                <dt class="col-md-3 mt-5">주소🛺</dt>
+                <dd class="col-md-9 mb-4 mt-5 shadow">
+                    <div class="content-box p-4" style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;"
+                         th:utext="${clubDTO.locationTitle}">
+                    </div>
                 </dd>
+                <dt class="col-md-3 mt-5">지도🛺</dt>
+                <dd class="col-md-9 mb-4 mt-5 shadow">
+                    <div class="content-box p-4" style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;"
+                         th:utext="${clubDTO.location}">
+                    </div>
+                    <div style="width: 100%; height: 100%;">
+                        <div id="map" style="width: 100%; height: 300px;"></div>
+                    </div>
+
+
+                </dd>
+
 
                 <!-- Theme -->
                 <dt class="col-md-3 col-4 mt-5">카테고리🎨</dt>
@@ -290,9 +284,10 @@
                             <img th:src="${clubDTO.memberImages[iterStat.index]}"
                                  style="width: 50px; height: 50px; border-radius: 50%;" class="mr-1"/>
                             <div th:text="${name}">
+                            </div>
                         </div>
-                        </div>
-                        <div class="col-md-9 col-12 text-left   d-flex align-items-center" th:text="${clubDTO.memberDescriptions[iterStat.index]}"></div>
+                        <div class="col-md-9 col-12 text-left   d-flex align-items-center"
+                             th:text="${clubDTO.memberDescriptions[iterStat.index]}"></div>
                     </div>
 
                 </div>
@@ -300,22 +295,48 @@
             </dl>
         </div>
     </div>
+    <script th:inline="javascript">
+        var latitude = /*[[${clubDTO.latitude}]]*/ 37.5665;
+        var longitude = /*[[${clubDTO.longitude}]]*/ 126.9780;
+        console.log("**Latitude: " + latitude + ", Longitude: " + longitude); // 디버깅
+
+
+        if (latitude && longitude) {
+            var mapOptions = {
+                center: new naver.maps.LatLng(latitude, longitude),
+                zoom: 15
+            };
+            var map = new naver.maps.Map('map', mapOptions);
+
+
+            //마커생성
+            const marker = new naver.maps.Marker({
+                position: new naver.maps.LatLng(latitude, longitude),
+                map: map,
+                title: /*[[${clubDTO.locationTitle}]]*/ "장소",
+
+            });
+
+            // 정보 창 생성
+            var infoWindow = new naver.maps.InfoWindow({
+                content: `<div style="padding:10px;">[[${clubDTO.locationTitle}]]<br>[[${clubDTO.location}]]</div>`
+            });
+
+
+// 마커 클릭 시 정보 창 열기
+            naver.maps.Event.addListener(marker, 'click', function () {
+                if (infoWindow.getMap()) {
+                    infoWindow.close();
+                } else {
+                    infoWindow.open(map, marker);
+                }
+            });
+         }else {
+            console.error("Invalid coordinates");
+        }
+    </script>
 
 </div>
-<!-- alert 팝업 처리 -->
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    // message가 있으면 alert 띄우기
-    const message = /*[[${message}]]*/ null;
-    if (message) {
-        alert(message);
-    }
-    // error가 있으면 alert 띄우기
-    const error = /*[[${error}]]*/ null;
-    if (error) {
-        alert(error);
-    }
-    /*]]>*/
-</script>
+
 </body>
 </html>

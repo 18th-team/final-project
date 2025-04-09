@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>네이버 지도 검색</title>
+    <!-- 네이버 지도 API 스크립트 -->
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=nlpedkwvft"></script>
+    <style>
+        #map {
+            width: 50%;
+            height: 500px;
+            float: right;
+        }
+        #search-container {
+            width: 45%;
+            float: left;
+            margin: 10px;
+        }
+        #result-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .result-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .result-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+<div id="search-container">
+    <form id="search-form">
+        <input type="text" id="query" name="query" placeholder="장소 검색" required>
+        <button type="submit">검색</button>
+    </form>
+    <div id="result-list"></div>
+</div>
+<div id="map"></div>
+<script>
+    let map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(37.5665, 126.9780),
+        zoom: 10
+    });
+    let markers = [];
+    let infoWindows = [];
+
+    document.getElementById('search-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = document.getElementById('query').value;
+
+        fetch(`/api/server/naver?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('API Response:', data);
+
+                markers.forEach(marker => marker.setMap(null));
+                infoWindows.forEach(info => info.close());
+                markers = [];
+                infoWindows = [];
+
+                const resultList = document.getElementById('result-list');
+                resultList.innerHTML = '';
+                data.forEach((place, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'result-item';
+                    item.innerHTML = `<strong>${place.title}</strong><br>${place.address}`;
+                    item.addEventListener('click', () => focusMarker(index));
+                    resultList.appendChild(item);
+
+                    // mapx, mapy를 WGS84로 변환 (단순 나누기 대신 직접 계산)
+                    const mapx = parseInt(place.mapx);
+                    const mapy = parseInt(place.mapy);
+                    const lat = mapy / 1e7; // 위도
+                    const lng = mapx / 1e7; // 경도
+                    console.log(`Place ${index}: lat=${lat}, lng=${lng}`);
+
+                    const position = new naver.maps.LatLng(lat, lng);
+                    const marker = new naver.maps.Marker({
+                        position: position,
+                        map: map,
+                        title: place.title
+                    });
+                    markers.push(marker);
+                    console.log(`Marker added at: ${lat}, ${lng}`);
+
+                    const infoWindow = new naver.maps.InfoWindow({
+                        content: `<div style="padding:10px;"><strong>${place.title}</strong><br>${place.address}</div>`
+                    });
+                    infoWindows.push(infoWindow);
+
+                    naver.maps.Event.addListener(marker, 'click', () => {
+                        infoWindow.open(map, marker);
+                    });
+                });
+
+                if (data.length > 0) {
+                    if (data.length === 1) {
+                        map.setCenter(new naver.maps.LatLng(data[0].mapy / 1e7, data[0].mapx / 1e7));
+                        map.setZoom(14);
+                    } else {
+                        const bounds = new naver.maps.LatLngBounds();
+                        data.forEach(place => {
+                            bounds.extend(new naver.maps.LatLng(place.mapy / 1e7, place.mapx / 1e7));
+                        });
+                        map.fitBounds(bounds);
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    function focusMarker(index) {
+        const marker = markers[index];
+        const infoWindow = infoWindows[index];
+        map.panTo(marker.getPosition());
+        infoWindow.open(map, marker);
+        map.setZoom(14);
+    }
+</script>
+</body>
+</html>

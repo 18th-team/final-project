@@ -4,30 +4,38 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="스크립트 부분 수정">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/md5-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/checksums/sha1-checksums.bin" afterDir="false" />
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="merge잘못된부분 .... 수정함">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/API/MainController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/map.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/create.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/map.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/map/search.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/API/ServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/API/ServerController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/update.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/update.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/chat.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/chat.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/signup.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,12 +67,12 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JavaScript File" />
-        <option value="CSS File" />
-        <option value="HTML File" />
         <option value="Interface" />
         <option value="Enum" />
         <option value="Class" />
+        <option value="HTML File" />
+        <option value="CSS File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -103,44 +111,44 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Gradle.Build final-project.executor": "Run",
-    "Gradle.Build final-project2.executor": "Run",
-    "JUnit.ApplicationTests.contextLoads.executor": "Run",
-    "JUnit.ApplicationTests.executor": "Run",
-    "Notification.DisplayName-DoNotAsk-Database detector": "Database detector",
-    "Notification.DoNotAsk-Database detector": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.Application.executor": "Run",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/GREEN/IdeaProjects/final-project/src/main/java/com/team/authentication",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "Errors",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Gradle.Build final-project.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build final-project2.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ApplicationTests.contextLoads.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ApplicationTests.executor&quot;: &quot;Run&quot;,
+    &quot;Notification.DisplayName-DoNotAsk-Database detector&quot;: &quot;Database detector&quot;,
+    &quot;Notification.DoNotAsk-Database detector&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/GREEN/IdeaProjects/final-project/src/main/java/com/team/authentication&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "h2"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;h2&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -255,7 +263,9 @@
       <workItem from="1743552863897" duration="29483000" />
       <workItem from="1743638889575" duration="14030000" />
       <workItem from="1744005194611" duration="107000" />
-      <workItem from="1744005314950" duration="9624000" />
+      <workItem from="1744005314950" duration="11116000" />
+      <workItem from="1744069303473" duration="31230000" />
+      <workItem from="1744167017967" duration="11401000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -521,7 +531,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743725592065</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="merge잘못된부분 .... 수정함">
+      <option name="closed" value="true" />
+      <created>1744015545312</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1744015545312</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -566,7 +584,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="커뮤니티 기능 작업 중" />
     <MESSAGE value="로그인, 회원가입 기능 완료" />
     <MESSAGE value="로그인 창 수정&#10;피드 작업 중" />
     <MESSAGE value="웹 소켓 연결 부분 추가&#10;개인 채팅 리스트 프론트, 백엔드 작업중" />
@@ -591,7 +608,8 @@
     <MESSAGE value="openPersonalChat 수정" />
     <MESSAGE value="스크립트 부분 수정" />
     <MESSAGE value="merge" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge" />
+    <MESSAGE value="merge잘못된부분 .... 수정함" />
+    <option name="LAST_COMMIT_MESSAGE" value="merge잘못된부분 .... 수정함" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -603,6 +621,10 @@
         <breakpoint type="java-exception">
           <properties class="java.net.SocketException" package="java.net" />
           <option name="timeStamp" value="8" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="org.thymeleaf.exceptions.TemplateProcessingException" package="org.thymeleaf.exceptions" />
+          <option name="timeStamp" value="11" />
         </breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>

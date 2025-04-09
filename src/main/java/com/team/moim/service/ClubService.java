@@ -30,7 +30,7 @@ ClubService {
 
     // 1. 클럽 저장
     @Transactional
-    public void save(ClubDTO clubDTO, SiteUser host) throws IOException {
+    public void save(ClubDTO clubDTO,String location,String locationTitle, Double latitude,Double longitude, SiteUser host) throws IOException {
         // theme을 Keyword로 변환
         Set<Keyword> keywords = new HashSet<>();
         if (clubDTO.getSelectedTheme() != null && !clubDTO.getSelectedTheme().isEmpty()) {
@@ -42,9 +42,18 @@ ClubService {
         // 첨부파일 여부에 따라 로직 분리
         if (clubDTO.getClubFile() == null || clubDTO.getClubFile().isEmpty()) {
             Club clubEntity = Club.toSaveEntity(clubDTO, host, keywords);
+            clubEntity.setLocation(location);
+            clubEntity.setLatitude(latitude);
+            clubEntity.setLongitude(longitude);
             clubRepository.save(clubEntity);
         } else {
             Club clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords);
+            clubEntity.setLocation(location);
+            clubEntity.setLocationTitle(locationTitle);
+            clubEntity.setLatitude(latitude);
+            clubEntity.setLongitude(longitude);
+            System.out.println("****Saved Club: " + clubEntity.getId() + ", *******Location: " + clubEntity.getLocation() +
+                    ", Lat: " + clubEntity.getLatitude() + ", Lng: " + clubEntity.getLongitude());
             Long saveId = clubRepository.save(clubEntity).getId();
             Club club = clubRepository.findById(saveId).get();
 
@@ -70,6 +79,7 @@ ClubService {
                     clubFileRepository.save(clubFileEntity);
                 }
             }
+
         }
     }
 
@@ -88,6 +98,10 @@ ClubService {
     @Transactional
     public ClubDTO findById(Long id) {
         Optional<Club> optionalClub = clubRepository.findById(id);
+        optionalClub.ifPresent(c -> System.out.println("Found Club: id=" + c.getId() +
+                ", location=" + c.getLocation() +
+                ", latitude=" + c.getLatitude() +
+                ", longitude=" + c.getLongitude()));
         if (optionalClub.isPresent()) {
             Club club = optionalClub.get();
             return ClubDTO.toDTO(club);
@@ -98,7 +112,7 @@ ClubService {
 
     // 3. 업데이트
     @Transactional
-    public ClubDTO update(ClubDTO clubDTO, SiteUser host) throws IOException {
+    public ClubDTO update(ClubDTO clubDTO,String location,String locationTitle, Double latitude, Double longitude, SiteUser host) throws IOException {
         Club clubEntity = clubRepository.findById(clubDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
 
@@ -141,7 +155,7 @@ ClubService {
         }
 
         // 엔티티 업데이트
-        Club updatedClub = Club.toUpdateFileEntity(clubDTO, host, clubEntity, keywords);
+        Club updatedClub = Club.toUpdateFileEntity(clubDTO, location,locationTitle,latitude,longitude,host,clubEntity, keywords);
         clubRepository.save(updatedClub);
 
         return findById(clubDTO.getId());
@@ -230,4 +244,6 @@ ClubService {
         clubRepository.save(club);
         return true;
     }
+
+
 }

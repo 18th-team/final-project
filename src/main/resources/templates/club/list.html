@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/main-layout}" layout:fragment="content"
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main-layout}" layout:fragment="content"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Club List</title>
@@ -69,7 +70,10 @@
                                 th:text="${club.title}"></h4>
 
                             <p class="card-text my-3"><i class="bi bi-geo-alt-fill"></i><span
-                                    th:text="${club.city + ' ' + club.district}">지역</span></p>
+                                    th:text="${club.locationTitle}">주소타이틀</span></p>
+                            <p class="card-text my-3"><i class="bi bi-geo-alt-fill"></i>  <span
+                                    th:text="${club.location}">주소</span></p>
+
                             <p class="card-text" style="
        font-family: 'Pretendard-Medium';
 ">가입 조건 : <span

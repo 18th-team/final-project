@@ -42,16 +42,6 @@ public class ClubController {
     private final ClubRepository clubRepository;
     private final KeywordRepository keywordRepository;
 
-    //지도API
-    @Autowired
-    private RestTemplate restTemplate; // HTTP 요청용
-
-    private static final String GEOCODING_API_URL = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=";
-    private static final String CLIENT_ID = "nlpedkwvft";
-    private static final String CLIENT_SECRET = "3cKYBuFWFl9j1tmZiJQzu5gzzZjgDTIX5XkoP60D";
-
-
-
 
     // ✅ 중복 코드 줄이기 ->
     @ModelAttribute("keywordList")
@@ -70,10 +60,18 @@ public class ClubController {
     }
 
     @PostMapping("/insert")
-    public String createClub(@ModelAttribute ClubDTO clubDTO, Authentication authentication) throws IOException {
+    public String createClub(@ModelAttribute ClubDTO clubDTO,
+                             @RequestParam("location") String location, @RequestParam("locationTitle") String locationTitle,
+                             @RequestParam("latitude") Double latitude,
+                             @RequestParam("longitude") Double longitude,Authentication authentication) throws IOException {
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
-        clubService.save(clubDTO, host);
+        System.out.println("save ClubDTO: id=" +clubDTO +
+                ", location=" +location +
+                ", **locationTitle=" + locationTitle +
+                ", latitude=" +latitude +
+                ", longitude=" +longitude);
+        clubService.save(clubDTO,location,locationTitle,latitude ,longitude,host);
         return "redirect:/clubs";
     }
 
@@ -116,41 +114,16 @@ public class ClubController {
     @GetMapping("/{id}")
     public String getClubDetail(@PathVariable("id") Long id, Model model) {
         ClubDTO clubDTO = clubService.getClubDetail(id);
-        model.addAttribute("clubDTO", clubDTO);
-
-        // Geocoding API 호출
-        try {
-            String fullAddress = clubDTO.getFullAddress(); // "수원시 장안구"
-            String url = GEOCODING_API_URL + URLEncoder.encode(fullAddress, StandardCharsets.UTF_8.name());
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-NCP-APIGW-API-KEY-ID", CLIENT_ID);
-            headers.set("X-NCP-APIGW-API-KEY", CLIENT_SECRET);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            String jsonResponse = response.getBody();
-            System.out.println("API Response: " + jsonResponse); // 디버깅
-
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(jsonResponse);
-            JsonNode addresses = root.path("addresses");
-            if (addresses.isEmpty()) {
-                System.out.println("No addresses found for: " + fullAddress);
-                model.addAttribute("latitude", 37.5665);
-                model.addAttribute("longitude", 126.9780);
-            } else {
-                JsonNode address = addresses.get(0);
-                double latitude = address.path("y").asDouble();
-                double longitude = address.path("x").asDouble();
-                model.addAttribute("latitude", latitude);
-                model.addAttribute("longitude", longitude);
-            }
-        } catch (Exception e) {
-            System.out.println("Geocoding API Error: " + e.getMessage());
-            model.addAttribute("latitude", 37.5665);
-            model.addAttribute("longitude", 126.9780);
+        if (clubDTO == null) {
+            throw new IllegalArgumentException("Club not found with id: " + id);
         }
+        System.out.println("Detail ClubDTO: id=" + clubDTO.getId() +
+                ", location=" + clubDTO.getLocation() +
+                ", **locationTitle=" + clubDTO.getLocationTitle() +
+                ", latitude=" + clubDTO.getLatitude() +
+                ", longitude=" + clubDTO.getLongitude());
+        System.out.println("clubDetail called with id: " + id);
+        model.addAttribute("clubDTO", clubDTO);
 
         return "club/detail";
     }
@@ -160,17 +133,31 @@ public class ClubController {
     @GetMapping("/update/{id}")
     public String updateform(@PathVariable Long id, Model model) {
         ClubDTO clubDTO = clubService.findById(id);
+        if (clubDTO == null) {
+            throw new IllegalArgumentException("Club not found with id: " + id);
+        }
+        System.out.println("ClubDTO for update: id=" + clubDTO.getId() +
+                ", location=" + clubDTO.getLocation() +
+                ", latitude=" + clubDTO.getLatitude() +
+                ", longitude=" + clubDTO.getLongitude());
         model.addAttribute("clubUpdate", clubDTO);
         return "club/update";
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute ClubDTO clubDTO, Model model, Authentication authentication) throws IOException {
+    public String update(@ModelAttribute ClubDTO clubDTO,@RequestParam("location") String location,@RequestParam("locationTitle") String locationTitle,
+                         @RequestParam("latitude") Double latitude,
+                         @RequestParam("longitude") Double longitude, Authentication authentication,RedirectAttributes redirectAttributes) throws IOException {
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
-        ClubDTO club = clubService.update(clubDTO, host);
-        model.addAttribute("clubUpdate", club);
-        return "redirect:/clubs/" + club.getId();
+        ClubDTO club = clubService.update(clubDTO, location, locationTitle,latitude, longitude,host);
+        System.out.println("Updated ClubDTO: id=" + club.getId() +
+                ", locationTitle=" + club.getLocationTitle() +
+                ", location=" + club.getLocation() +
+                ", latitude=" + club.getLatitude() +
+                ", longitude=" + club.getLongitude());
+        redirectAttributes.addAttribute("id", clubDTO.getId());
+        return "redirect:/clubs/{id}";
     }
 
     //삭제하기
