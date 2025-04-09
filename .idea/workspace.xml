@@ -4,27 +4,35 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="마이페이지 프로필 수정 기능 완료">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/create.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/detail.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/css/update.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/detail.js" afterDir="false" />
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="지도API찐찐찐막">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/data.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/sql/h2_backup.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/img/camera.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/userLocation.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/userLocation.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/mypage/MyPageController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/create.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/create.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/update.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/update.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/signup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/sql/schema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/sql/schema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/svg/1-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/1-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/svg/2-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/2-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/svg/3-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/3-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/svg/4-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/4-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/svg/5-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/5-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/svg/6-icon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/svg/6-icon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/create.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/mapApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/detail.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/navigation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/userLocation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/userLocation.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/signup.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/signup.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +132,7 @@
     "Spring Boot.Application.executor": "Run",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/GREEN/final-project/src/main/resources/static/css",
+    "last_opened_file_path": "C:/Users/GREEN/IdeaProjects/final-project2/src/main/resources/sql",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -139,6 +147,7 @@
   },
   "keyToStringList": {
     "DatabaseDriversLRU": [
+      "mysql_aurora",
       "h2"
     ]
   }
@@ -148,12 +157,15 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\GREEN\IdeaProjects\final-project2\src\main\resources\sql" />
+      <recent name="C:\Users\GREEN\IdeaProjects\final-project2\src\main\resources\static\img\svg" />
       <recent name="C:\Users\GREEN\final-project\src\main\resources\static\css" />
       <recent name="C:\Users\GREEN\final-project\src\main\java\com\team\mypage" />
       <recent name="C:\Users\GREEN\final-project\src\main\resources\templates" />
-      <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\java\com\team\authentication" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\GREEN\IdeaProjects\final-project2\src\main\resources\sql" />
+      <recent name="C:\Users\GREEN\IdeaProjects\final-project2\src\main\resources\static\img" />
       <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\resources\templates" />
       <recent name="C:\Users\GREEN\final-project\src\main\resources\templates\feed" />
     </key>
@@ -582,7 +594,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744094652794</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="지도API찐찐찐막">
+      <option name="closed" value="true" />
+      <created>1744186048045</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1744186048045</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -627,7 +647,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="개인 채팅 목록을 보여주는 부분만 완료" />
     <MESSAGE value="개인 채팅 목록 수정: 1대1 채팅 요청자와 수신자 구분 기능 추가" />
     <MESSAGE value="개인 채팅 목록 수정" />
     <MESSAGE value="개인 채팅 메시지 작업중" />
@@ -652,7 +671,8 @@
     <MESSAGE value="마이페이지 초기 작업 중" />
     <MESSAGE value="마이페이지 프로필 수정 기능 완료" />
     <MESSAGE value="merge" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge" />
+    <MESSAGE value="지도API찐찐찐막" />
+    <option name="LAST_COMMIT_MESSAGE" value="지도API찐찐찐막" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
