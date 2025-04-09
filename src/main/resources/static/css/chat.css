@@ -102,16 +102,6 @@
     background-color: #357abd;
 }
 
-.status-indicator {
-    width: 12px;
-    height: 12px;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
-    background-color: #4caf50;
-}
 
 .chat-info {
     display: flex;
@@ -174,7 +164,7 @@
 /* Messages Container */
 .messages-container{
     padding: 16px;
-    height: calc(100% - 155px);
+    height: calc(100% - 161.3px);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -206,6 +196,7 @@
     color: #e36d1d;
     font-size: 13px;
     background-color: #fff9f5;
+    margin-bottom: 0;
 }
 
 .approval-text,
@@ -411,6 +402,8 @@
     gap: 6px;
     overflow-y: auto;
     max-height: 271px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
 .chat-item {
@@ -764,6 +757,24 @@
     outline-offset: 2px;
     border-radius: 4px;
 }
+
+.notification-content {
+    cursor: pointer;
+    padding: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+
+.error-message {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #ff4444;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+}
 @media (max-width: 768px) {
     .notification-container {
         right: 16px;
@@ -815,39 +826,125 @@
 }
 
 
-.participant-name{
-    max-width: 200px;
-    word-break: break-all;
-}
-
-.participant.owner .avatar {
-    background-color: #fff3cd; /* 연한 금색 */
-    border: 2px solid #ffd700;
-}
-.participants-list {
+/*참가자 리스트*/
+.participants-sidebar {
     position: absolute;
-    top: 50px; /* options-menu 아래에 표시 */
-    right: 10px;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    max-height: 200px;
+    top: 74.4px;
+    right: 0;
+    width: 240px;
+    border-left: 1px solid #f0f0f0;
+    height: calc(100% - 161.3px);
+    padding: 16px;
     overflow-y: auto;
-    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+    z-index: 1;
+    background-color: #fff;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
-.participant {
+.participants-close-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
 }
 
-.participant .avatar {
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
+.participants-close-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.participants-close-button:focus {
+    outline: 2px solid #666;
+    outline-offset: 2px;
+}
+
+.sidebar-header {
+    margin-bottom: 16px;
+}
+
+.participant-count {
+    font-size: 14px;
+    color: #666;
+    font-weight: normal;
+}
+
+.participant-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.participant-avatar-container {
     position: relative;
+}
+
+.participant-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-leader {
+    background-color: #e36d1d;
+}
+
+.avatar-member {
+    background-color: #357abd;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background-color: #4caf50;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name-container {
+    font-size: 14px;
+    color: #111;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.role-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #fff;
+    background-color: #e36d1d;
 }
 /* High Contrast Mode */
 @media (forced-colors: active) {

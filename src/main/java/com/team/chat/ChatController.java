@@ -46,6 +46,13 @@ public class ChatController {
             String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
             userSessions.computeIfAbsent(uuid, k -> new HashSet<>()).add(sessionId);
             System.out.println("User connected: " + uuid + ", Session ID: " + sessionId);
+
+            // 현재 사용자 상태 전송
+            Map<String, Object> selfStatus = new HashMap<>();
+            selfStatus.put("uuid", uuid);
+            selfStatus.put("isOnline", true);
+            messagingTemplate.convertAndSend("/user/" + uuid + "/topic/onlineStatus", selfStatus);
+
             broadcastOnlineStatus(uuid, true);
             broadcastOfflineUsersToConnectedUser(uuid);
             userRepository.save(user);
@@ -105,32 +112,30 @@ public class ChatController {
             System.out.println("No chat rooms found for user: " + uuid + ", cannot broadcast status");
             return;
         }
-        Optional<SiteUser> GetUser =  userRepository.findByUuid(uuid);
-        if (GetUser.isPresent()) {
-            SiteUser User = GetUser.get();
-            String email = User.getEmail();
-            System.out.println("Broadcasting status for user: " + uuid + ", email: " + email  + ", isOnline: " + isOnline + ", to " + chatRooms.size() + " chat rooms");
+
+        Optional<SiteUser> getUser = userRepository.findByUuid(uuid);
+        if (getUser.isPresent()) {
+            SiteUser user = getUser.get();
+            System.out.println("Broadcasting status for user: " + uuid + ", email: " + user.getEmail() + ", isOnline: " + isOnline);
+        }
+
+        Map<String, Object> status = new HashMap<>();
+        status.put("uuid", uuid);
+        status.put("isOnline", isOnline);
+        if (!isOnline) {
+            SiteUser user = userRepository.findByUuid(uuid).orElse(null);
+            if (user != null && user.getLastOnline() != null) {
+                Long lastTime = user.getLastOnline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                status.put("lastOnline", lastTime);
+            }
         }
 
         for (ChatRoom chatRoom : chatRooms) {
-            chatRoom.getParticipants().stream()
-                    .filter(p -> !p.getUuid().equals(uuid)) // 자신 제외
-                    .forEach(targetUser -> {
-                        System.out.println("Chat room ID: " + chatRoom.getId() + ", Participants: " + targetUser.getEmail());
-                        Map<String, Object> status = new HashMap<>();
-                        status.put("uuid", uuid);
-                        status.put("isOnline", isOnline);
-                        if (!isOnline) {
-                            SiteUser user = userRepository.findByUuid(uuid).orElse(null);
-                            if (user != null && user.getLastOnline() != null) {
-                                Long lastTime = user.getLastOnline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-                                status.put("lastOnline", lastTime);
-                            }
-                        }
-                        String destination = "/user/" + targetUser.getUuid() + "/topic/onlineStatus";
-                        System.out.println("Sending to " + destination + ": " + status);
-                        messagingTemplate.convertAndSend(destination, status);
-                    });
+            chatRoom.getParticipants().forEach(targetUser -> { // 자신 포함
+                String destination = "/user/" + targetUser.getUuid() + "/topic/onlineStatus";
+                System.out.println("Sending to " + destination + ": " + status);
+                messagingTemplate.convertAndSend(destination, status);
+            });
         }
     }
     @MessageMapping("/refreshChatRooms")
@@ -151,7 +156,6 @@ public class ChatController {
             return;
         }
 
-
         ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
         if (chatRoom == null) {
             messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방을 찾을 수 없습니다.");
@@ -161,35 +165,21 @@ public class ChatController {
             messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "이 채팅방에 접근할 권한이 없습니다.");
             return;
         }
-        // 상대방 유저 찾기 (1:1 채팅이므로 현재 유저를 제외한 나머지 한 명)
-        SiteUser targetUser = chatRoom.getParticipants().stream()
-                .filter(p -> !p.getUuid().equals(currentUser.getUuid()))
-                .findFirst()
-                .orElse(null);
 
-        if (targetUser == null) {
-            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "대상 사용자를 찾을 수 없습니다.");
-            return;
-        }
-
-        // 상대방 유저의 온라인 상태 반환
-        String targetUuid = targetUser.getUuid();
-        boolean isOnline = userSessions.containsKey(targetUuid);
-        if (targetUuid == null) {
-            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "대상 사용자를 찾을 수 없습니다.");
-            return;
-        }
-        Map<String, Object> response = new HashMap<>();
-        response.put("uuid", targetUuid);
-        response.put("isOnline", isOnline);
-        if (!isOnline) {
-            Long lastTime = targetUser.getLastOnline() != null
-                    ? targetUser.getLastOnline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                    : null; // null일 경우 프론트에서 "접속 기록 없음" 처리
-            response.put("lastOnline", lastTime);
-        }
-        System.out.println("Sending online status to " + currentUser.getUuid() + ": " + response);
-        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/onlineStatus", response);
+        // 모든 참여자의 상태 반환
+        chatRoom.getParticipants().forEach(targetUser -> {
+            Map<String, Object> response = new HashMap<>();
+            String targetUuid = targetUser.getUuid();
+            boolean isOnline = userSessions.containsKey(targetUuid) && !userSessions.get(targetUuid).isEmpty();
+            response.put("uuid", targetUuid);
+            response.put("isOnline", isOnline);
+            if (!isOnline && targetUser.getLastOnline() != null) {
+                Long lastTime = targetUser.getLastOnline().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                response.put("lastOnline", lastTime);
+            }
+            System.out.println("Sending online status to " + currentUser.getUuid() + ": " + response);
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/onlineStatus", response);
+        });
     }
     // 초기 상태 요청 (로그인 시 모든 관련 사용자 상태 확인)
     @MessageMapping("/initialStatus")
@@ -215,7 +205,7 @@ public class ChatController {
                     });
         });
     }
-    @MessageMapping("/getMessageCount")
+    @MessageMapping("/getMessageCount" )
     @Transactional(readOnly = true)
     public void getMessageCount(Principal principal, @Payload ChatRoomDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
