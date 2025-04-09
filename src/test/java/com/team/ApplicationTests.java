@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 
 @SpringBootTest
-class ApplicationTests {
+public class ApplicationTests {
 
     @Autowired
     private UserRepository userRepository;
@@ -26,7 +26,7 @@ class ApplicationTests {
     private KeywordRepository keywordRepository;
 
 	@Test
-	void contextLoads() {
+	public void contextLoads() {
 		List<String> keywordNames = new ArrayList<>();
 		keywordNames.add("액티비티");
 		keywordNames.add("자기계발");

@@ -43,7 +43,11 @@
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 <!-- 로그인된 사용자만 채팅창 표시 -->
-<div th:replace="~{fragments/chat :: chat}" sec:authorize="isAuthenticated()"></div>
+<div th:if="${#request.requestURI.startsWith('/chat') or
+             #request.requestURI.startsWith('/message') or
+             #request.requestURI.startsWith('/myPage/chat')}"
+     th:replace="~{fragments/chat :: chat}" sec:authorize="isAuthenticated()">
+</div>
 
 
 

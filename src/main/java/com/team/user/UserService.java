@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -137,7 +139,20 @@ public class UserService {
     }
 
     public SiteUser getUser(String email) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("현재 사용자: " + auth);  // 여기서 auth 정보 확인
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
+
+    public SiteUser getUserByUuid(String uuid) {
+        return userRepository.findByUuid(uuid)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+    }
+
+    public void save(SiteUser user) {
+        userRepository.save(user);
+    }
+
+
 }

@@ -1,0 +1,132 @@
+/* 전체 페이지 스타일 */
+body.bg-light {
+    background-color: #f8f9fa;
+}
+
+/* 마이페이지 타이틀 */
+.mypage-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* 탭 전체 정렬 + 기본 테두리 제거 */
+.main-tabs {
+    border-bottom: 1px solid #eee;
+    justify-content: center;
+    gap: 3rem;
+}
+
+/* 공통 탭 스타일 */
+.main-tabs .nav-link {
+    border: none !important; /* Bootstrap 기본 테두리 제거 */
+    background: transparent !important; /* 배경 제거 */
+    font-size: 16px;
+    font-weight: 500;
+    color: #888;
+    border-radius: 0 !important; /* 상단 둥글기 제거 */
+    position: relative;
+}
+
+/* 활성화된 탭 */
+.main-tabs .nav-link.active {
+    color: #E36D1D;
+    font-weight: 600;
+}
+
+/* 활성화된 탭 밑줄 */
+.main-tabs .nav-link.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 2px;
+    background-color: #E36D1D;
+}
+
+/* 호버 시 강조 */
+.main-tabs .nav-link:hover {
+    color: #E36D1D;
+}
+
+.upload-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 800px;
+    left: 52%;
+    cursor: pointer;
+    z-index: 99999;
+
+}
+
+
+/* 탭 콘텐츠 패널 */
+.tab-pane {
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.update-container {
+    width: 100%;
+}
+
+/* 입력 폼 스타일 */
+form input[type="text"],
+form input[type="email"],
+form input[type="number"],
+form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #fff;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* 읽기 전용 필드 스타일 */
+form input[readonly] {
+    background-color: #f0f0f0;
+    color: #888;
+}
+
+/* 수정하기 버튼 */
+form button[type="submit"] {
+    background-color: #E36D1D;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 25px;
+    transition: all 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+    background-color: white;
+    color: #E36D1D;
+    border: 1px solid #E36D1D;
+}
+
+/* 반응형 정렬 */
+@media (max-width: 768px) {
+    .mypage-title {
+        font-size: 24px;
+    }
+
+    .nav.main-tabs .nav-link {
+        font-size: 16px;
+        padding: 8px 15px;
+    }
+
+    form input,
+    form textarea {
+        font-size: 14px;
+    }
+}

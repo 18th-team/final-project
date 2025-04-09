@@ -1,6 +1,7 @@
 package com.team.post;
 
 import com.team.moim.entity.Club;
+import com.team.user.SiteUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,5 +33,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     long countByBoardType(BoardType boardType);
 
-    List<Post> findByClub(Club club); // 특정 모임에 대한 후기 목록
+    List<Post> findByClub(Club club);
+
+    List<Post> findByAuthor(SiteUser user);// 특정 모임에 대한 후기 목록
 }

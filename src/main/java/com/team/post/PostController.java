@@ -53,7 +53,7 @@ public class PostController {
         model.addAttribute("keyword", keyword);
 
         if (principal != null) {
-            SiteUser loginUser = userService.getUser(principal.getName());
+            SiteUser loginUser = userService.getUserByUuid(principal.getName());
             model.addAttribute("loginUser", loginUser);
         }
 
@@ -106,8 +106,8 @@ public class PostController {
         model.addAttribute("clubList", clubService.findAll());
 
         if (principal != null) {
-            SiteUser loginUser = userService.getUser(principal.getName());
-            model.addAttribute("loginUser", loginUser);
+            SiteUser user = userService.getUserByUuid(principal.getName());
+            model.addAttribute("loginUser", user);
         }
 
         Map<Long, List<Comment>> commentMap = new HashMap<>();
@@ -143,10 +143,11 @@ public class PostController {
     }
 
     @GetMapping("/review/create")
-    public String reviewForm(Model model) {
+    public String reviewForm(Model model, Principal principal) {
+        SiteUser loginUser = userService.getUserByUuid(principal.getName());
         model.addAttribute("postForm", new PostForm());
         model.addAttribute("isReview", true);
-        model.addAttribute("clubList", clubService.findAll());
+        model.addAttribute("clubList", loginUser.getClubs());
         return "post_form";
     }
 
@@ -155,7 +156,7 @@ public class PostController {
     public String create(@ModelAttribute PostForm form,
                          @RequestParam("imageURL") MultipartFile imageFile,
                          Principal principal) {
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
         Club club = (form.getClubID() != null) ? clubService.getClub(form.getClubID()) : null;
 
         String imagePath = null;
@@ -174,7 +175,7 @@ public class PostController {
     @GetMapping("/modify/{id}")
     public String modifyForm(@PathVariable Integer id, Principal principal, Model model) {
         Post post = postService.getPost(id);
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
 
         if (!post.getAuthor().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -206,7 +207,7 @@ public class PostController {
                          @RequestParam(value = "existingImage", required = false) String existingImage,
                          Principal principal) {
         Post post = postService.getPost(id);
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
 
         if (!post.getAuthor().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -231,7 +232,7 @@ public class PostController {
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, Principal principal) {
         Post post = postService.getPost(id);
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
 
         if (!post.getAuthor().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -248,7 +249,7 @@ public class PostController {
     @GetMapping("/vote/{id}")
     public String vote(@PathVariable Integer id, Principal principal) {
         Post post = postService.getPost(id);
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
 
         if (post.getVoter().contains(user)) {
             postService.cancelVote(post, user);

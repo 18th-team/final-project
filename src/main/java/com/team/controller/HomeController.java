@@ -128,6 +128,9 @@ public class HomeController {
         return "redirect:/";
     }
 
+    @GetMapping("/community")
+    public String community() { return "post_feed_list"; }
+
     @GetMapping("/signup")
     public String signUp(Model model) {
         System.out.println("Accessed /signup");

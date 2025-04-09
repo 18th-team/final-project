@@ -64,7 +64,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(
                                 new AntPathRequestMatcher("/h2-console/**"),
-                                new AntPathRequestMatcher("/chat/**")
+                                new AntPathRequestMatcher("/chat/**"),
+                                new AntPathRequestMatcher("/mypage/update")
                         )
                 )
                 .headers(headers -> headers
