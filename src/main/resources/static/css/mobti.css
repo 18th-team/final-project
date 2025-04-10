@@ -35,7 +35,7 @@ body {
     display: none;
 }
 */
-.option, #start-button {
+.option, #start-button, #restart-button {
     display: block;
     margin: 10px auto;
     padding: 15px;
