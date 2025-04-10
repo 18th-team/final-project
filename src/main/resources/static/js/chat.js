@@ -903,4 +903,19 @@ document.addEventListener('DOMContentLoaded', () => {
     chatApp.setupEventListeners();
     chatApp.updateChatUI();
     chatApp.updateTabUI();
+    const noticeToggle = document.querySelector('.notice-toggle');
+    const noticeContent = document.getElementById('noticeContent');
+
+    if (noticeToggle && noticeContent) {
+        noticeToggle.addEventListener('click', () => {
+            const isExpanded = noticeToggle.getAttribute('aria-expanded') === 'true';
+            if (isExpanded) {
+                noticeContent.classList.remove('expanded');
+                noticeToggle.setAttribute('aria-expanded', 'false');
+            } else {
+                noticeContent.classList.add('expanded');
+                noticeToggle.setAttribute('aria-expanded', 'true');
+            }
+        });
+    }
 });

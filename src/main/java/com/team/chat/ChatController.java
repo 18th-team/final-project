@@ -130,13 +130,18 @@ public class ChatController {
             }
         }
 
+        // 중복 제거된 참여자 목록 생성
+        Set<String> uniqueParticipants = new HashSet<>();
         for (ChatRoom chatRoom : chatRooms) {
-            chatRoom.getParticipants().forEach(targetUser -> { // 자신 포함
-                String destination = "/user/" + targetUser.getUuid() + "/topic/onlineStatus";
-                System.out.println("Sending to " + destination + ": " + status);
-                messagingTemplate.convertAndSend(destination, status);
-            });
+            chatRoom.getParticipants().forEach(participant -> uniqueParticipants.add(participant.getUuid()));
         }
+
+        // 중복 제거된 사용자에게만 전송
+        uniqueParticipants.forEach(targetUuid -> {
+            String destination = "/user/" + targetUuid + "/topic/onlineStatus";
+            System.out.println("Sending to " + destination + ": " + status);
+            messagingTemplate.convertAndSend(destination, status);
+        });
     }
     @MessageMapping("/refreshChatRooms")
     @Transactional(readOnly = true)
