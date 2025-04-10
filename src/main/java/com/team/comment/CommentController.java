@@ -33,7 +33,7 @@ public class CommentController {
             return;
         }
 
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
         Post post = postService.getPost(postID.intValue());
 
         commentService.create(post, user, content, null);
@@ -48,7 +48,7 @@ public class CommentController {
             return;
         }
 
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
         Post post = postService.getPost(postId.intValue());
         Comment parent = commentService.getById(parentId);
 
@@ -59,7 +59,7 @@ public class CommentController {
     @PostMapping("/edit/{id}")
     public void editComment(@PathVariable("id") Long commentId, @RequestParam("content") String content,
                             Principal principal, HttpServletResponse response) {
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
         Comment comment = commentService.getById(commentId);
 
         if (!comment.getAuthor().getId().equals(user.getId())) {
@@ -80,7 +80,7 @@ public class CommentController {
         }
 
         Comment comment = commentService.getById(id);
-        SiteUser user = userService.getUser(principal.getName());
+        SiteUser user = userService.getUserByUuid(principal.getName());
 
         if (!comment.getAuthor().getId().equals(user.getId())) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);

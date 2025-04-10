@@ -56,6 +56,7 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/upload/**"),  // 이미지 허용 (필요 시)
                                         new AntPathRequestMatcher("/font/**"), // 폰트 허용
                                         new AntPathRequestMatcher("/randomList"), // 랜덤리스트
+                                        new AntPathRequestMatcher("/nearby"), // 랜덤리스트
                                         new AntPathRequestMatcher("/favicon.ico") // favicon 허용
                                 ).permitAll() // 위 경로들은 모두 공개
                                 .requestMatchers(new AntPathRequestMatcher("/api/check-auth")).authenticated()
@@ -65,7 +66,8 @@ public class SecurityConfig {
                         .ignoringRequestMatchers(
                                 new AntPathRequestMatcher("/h2-console/**"),
                                 new AntPathRequestMatcher("/chat/**"),
-                                new AntPathRequestMatcher("/mypage/update")
+                                new AntPathRequestMatcher("/mypage/update"),
+                                new AntPathRequestMatcher("/")
                         )
                 )
                 .headers(headers -> headers

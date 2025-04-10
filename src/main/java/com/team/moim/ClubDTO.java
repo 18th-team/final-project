@@ -46,6 +46,7 @@ public class ClubDTO {
     private String locationTitle;
     private Double latitude;
     private Double longitude;
+    private Double distance; //사용자 현재 거리
 
     //note 단일 이미지 파일 받기 --> 다중파일 받기 List
     private List<MultipartFile> clubFile;

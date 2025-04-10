@@ -1,5 +1,6 @@
 package com.team.moim.service;
 
+import com.team.API.DistanceUtil;
 import com.team.moim.ClubDTO;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.ClubFileEntity;
@@ -245,5 +246,21 @@ ClubService {
         return true;
     }
 
-
+    //5km 이내 클럽 필터링 및 정렬(사용자위치기반)
+    public List<ClubDTO> findNearByClubs(double userLat , double userLng) {
+        List<Club> allClubs = clubRepository.findAll();
+        return allClubs.stream().filter(club -> club.getLatitude() != null && club.getLongitude() != null) // null 필터링
+                .map(club->{
+            double distance = DistanceUtil.calculateDistance(
+                    userLat,userLng,club.getLatitude(),club.getLongitude()
+            );
+            ClubDTO dto = ClubDTO.toDTO(club);
+            dto
+                    .setDistance(distance);
+            return dto;
+        }).filter(dto ->dto.getDistance()<=5).sorted(Comparator.comparingDouble(ClubDTO::getDistance)).limit(5).collect(Collectors.toList());
+    }
+    public List<Club> getClubsByUser(SiteUser user) {
+        return clubRepository.findByMembersContaining(user);
+    }
 }
