@@ -54,7 +54,7 @@ class ApplicationTests {
 						.orElseGet(() -> keywordRepository.save(new Keyword(null, keywordName))))
 				.collect(Collectors.toSet())
 				: new HashSet<>();
-		/*SiteUser user1 = SiteUser.builder()
+		SiteUser user1 = SiteUser.builder()
 				.name("테스트용1")
 				.email("test1@t")
 				.password(passwordEncoder.encode("1"))
@@ -92,7 +92,7 @@ class ApplicationTests {
 				.lastOnline(null)
 				.build();
 		userRepository.save(user2);
-*/
+
 		SiteUser user3 = SiteUser.builder()
 				.name("테스트용3")
 				.email("test3@t")

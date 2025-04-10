@@ -903,19 +903,135 @@ document.addEventListener('DOMContentLoaded', () => {
     chatApp.setupEventListeners();
     chatApp.updateChatUI();
     chatApp.updateTabUI();
+    const noticeSection = document.getElementById('noticeSection');
+    const noticeView = document.getElementById('noticeView');
+    const noticeEmpty = document.getElementById('noticeEmpty');
     const noticeToggle = document.querySelector('.notice-toggle');
     const noticeContent = document.getElementById('noticeContent');
+    const noticePreview = document.getElementById('noticePreview');
+    const noticeAddBtn = document.querySelector('.notice-add');
+    const noticeEditBtn = document.querySelector('.notice-edit');
+    const noticeDeleteBtn = document.querySelector('.notice-delete');
+    const noticeModal = document.getElementById('noticeModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const noticeForm = document.getElementById('noticeForm');
+    const noticeTextInput = document.getElementById('noticeText');
+    const submitNoticeBtn = document.getElementById('submitNotice');
+    const cancelNoticeBtn = document.getElementById('cancelNotice');
 
+    // 공지사항 데이터 (localStorage에서 관리)
+    let notices = JSON.parse(localStorage.getItem('notices')) || [];
+
+    // 공지사항 렌더링
+    function renderNotices() {
+        if (notices.length > 0) {
+            // 공지사항이 있을 때
+            noticeView.style.display = 'block';
+            noticeEmpty.style.display = 'none';
+
+            // 첫 번째 공지사항만 표시 (다중 공지사항은 나중에 확장 가능)
+            const notice = notices[0];
+            noticePreview.textContent = notice.text.split('\n')[0];
+            noticeContent.innerHTML = notice.text
+                .split('\n')
+                .map(line => `<p class="notice-text">${line}</p>`)
+                .join('');
+        } else {
+            // 공지사항이 없을 때
+            noticeView.style.display = 'none';
+            noticeEmpty.style.display = 'block';
+        }
+    }
+
+    // 초기 렌더링
+    renderNotices();
+
+    // 토글 동작
     if (noticeToggle && noticeContent) {
         noticeToggle.addEventListener('click', () => {
             const isExpanded = noticeToggle.getAttribute('aria-expanded') === 'true';
             if (isExpanded) {
                 noticeContent.classList.remove('expanded');
                 noticeToggle.setAttribute('aria-expanded', 'false');
+                setTimeout(() => {
+                    noticePreview.classList.remove('hidden');
+                }, 300);
             } else {
-                noticeContent.classList.add('expanded');
-                noticeToggle.setAttribute('aria-expanded', 'true');
+                noticePreview.classList.add('hidden');
+                setTimeout(() => {
+                    noticeContent.classList.add('expanded');
+                    noticeToggle.setAttribute('aria-expanded', 'true');
+                }, 300);
             }
         });
+
+        // 미리보기 클릭 시 토글
+        noticePreview.addEventListener('click', () => {
+            noticeToggle.click();
+        });
     }
+
+    // 모달 열기
+    function openModal(mode, text = '') {
+        noticeModal.style.display = 'flex';
+        if (mode === 'add') {
+            modalTitle.textContent = '공지사항 등록';
+            noticeTextInput.value = '';
+        } else if (mode === 'edit') {
+            modalTitle.textContent = '공지사항 수정';
+            noticeTextInput.value = text;
+        }
+    }
+
+    // 모달 닫기
+    function closeModal() {
+        noticeModal.style.display = 'none';
+        noticeTextInput.value = '';
+    }
+
+    // 공지사항 등록 버튼 클릭
+    noticeAddBtn.addEventListener('click', () => {
+        openModal('add');
+    });
+
+    // 공지사항 수정 버튼 클릭
+    noticeEditBtn.addEventListener('click', () => {
+        if (notices.length > 0) {
+            openModal('edit', notices[0].text);
+        }
+    });
+
+    // 공지사항 삭제 버튼 클릭
+    noticeDeleteBtn.addEventListener('click', () => {
+        if (confirm('공지사항을 삭제하시겠습니까?')) {
+            notices = [];
+            localStorage.setItem('notices', JSON.stringify(notices));
+            renderNotices();
+        }
+    });
+
+    // 모달 취소 버튼 클릭
+    cancelNoticeBtn.addEventListener('click', closeModal);
+
+    // 공지사항 저장 (등록/수정)
+    noticeForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = noticeTextInput.value.trim();
+        if (!text) {
+            alert('공지사항 내용을 입력해주세요.');
+            return;
+        }
+
+        if (modalTitle.textContent === '공지사항 등록') {
+            // 등록
+            notices = [{ text, id: Date.now() }];
+        } else {
+            // 수정
+            notices[0].text = text;
+        }
+
+        localStorage.setItem('notices', JSON.stringify(notices));
+        renderNotices();
+        closeModal();
+    });
 });
