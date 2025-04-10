@@ -35,45 +35,41 @@
                     const userLat = position.coords.latitude;
                     const userLng = position.coords.longitude;
                     console.log("User Location: ", userLat, userLng);
-
-                    // 서버로 위치 전송
-                    fetch('/', {
+                    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+                    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+                    fetch('/nearby', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json'
-                        ,'X-CSRF-TOKEN': /*[[${_csrf.token}]]*/ '' // CSRF 토큰
+                        headers: { 'Content-Type': 'application/json' ,
+                            [csrfHeader]: csrfToken // CSRF 토큰 추가
                         },
                         body: JSON.stringify({ latitude: userLat, longitude: userLng })
                     })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.json();
+                        })
                         .then(clubs => renderClubs(userLat, userLng, clubs))
                         .catch(error => console.error('Error:', error));
                 },
                 error => {
                     console.error('Geolocation Error:', error);
-                    alert('위치를 가져올 수 없습니다. 기본 위치로 설정합니다.');
-                    // 기본 위치 (서울)
-                    fetchNearbyClubs(37.5665, 126.9780);
+                    renderDefaultMap(37.5665, 126.9780); // 기본 위치 (서울)
                 }
             );
         } else {
-            alert('브라우저가 위치 정보를 지원하지 않습니다.');
-            fetchNearbyClubs(37.5665, 126.9780);
+            renderDefaultMap(37.5665, 126.9780);
         }
     });
 
-    function fetchNearbyClubs(lat, lng) {
-        fetch('/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ latitude: lat, longitude: lng })
-        })
-            .then(response => response.json())
-            .then(clubs => renderClubs(lat, lng, clubs))
-            .catch(error => console.error('Error:', error));
+    function renderDefaultMap(lat, lng) {
+        const map = new naver.maps.Map('map', {
+            center: new naver.maps.LatLng(lat, lng),
+            zoom: 13
+        });
+        document.getElementById('nearby-clubs').innerHTML = '<p>위치를 가져올 수 없습니다.</p>';
     }
 
     function renderClubs(userLat, userLng, clubs) {
-        //renderClubs에서 clubs가 배열인지 확인.
         if (!Array.isArray(clubs)) {
             console.error('clubs is not an array:', clubs);
             return;
@@ -84,14 +80,18 @@
             zoom: 13
         });
 
-        // 사용자 위치 마커
-        new naver.maps.Marker({
+        const userMarker = new naver.maps.Marker({
             position: new naver.maps.LatLng(userLat, userLng),
             map: map,
             icon: { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' }
         });
+        const userInfoWindow = new naver.maps.InfoWindow({
+            content: `<div style="padding:10px;"><strong>현재위치</strong></div>`
+        });
+        naver.maps.Event.addListener(userMarker, 'click', () => {
+            userInfoWindow.getMap() ? userInfoWindow.close() : userInfoWindow.open(map, userMarker);
+        });
 
-        // 클럽 마커
         clubs.forEach(club => {
             const marker = new naver.maps.Marker({
                 position: new naver.maps.LatLng(club.latitude, club.longitude),
@@ -107,13 +107,12 @@
             });
         });
 
-        // 리스트 렌더링
         const clubList = document.getElementById('nearby-clubs');
-        clubList.innerHTML = clubs.map(club => `
-                <a href="/clubs/${club.id}" class="list-group-item list-group-item-action">
-                    <strong>${club.locationTitle}</strong><br>${club.location}
-                </a>
-            `).join('');
+        clubList.innerHTML = clubs.length > 0 ? clubs.map(club => `
+            <a href="/clubs/${club.id}" class="list-group-item list-group-item-action">
+                <strong>${club.locationTitle}</strong><br>${club.location}
+            </a>
+        `).join('') : '<p>근처에 클럽이 없습니다.</p>';
     }
 </script>
 </body>
