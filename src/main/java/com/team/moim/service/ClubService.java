@@ -260,4 +260,7 @@ ClubService {
             return dto;
         }).filter(dto ->dto.getDistance()<=5).sorted(Comparator.comparingDouble(ClubDTO::getDistance)).limit(5).collect(Collectors.toList());
     }
+    public List<Club> getClubsByUser(SiteUser user) {
+        return clubRepository.findByMembersContaining(user);
+    }
 }

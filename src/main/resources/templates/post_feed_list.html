@@ -345,7 +345,9 @@
     $(document).on("click", ".submit-edit", function () {
         const commentId = $(this).data("comment-id");
         const newContent = $(this).siblings(".edit-content").val();
-        const csrfToken = $("input[name='_csrf']").val();
+
+        const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        const csrfToken = $("meta[name='_csrf']").attr("content");
 
         $.ajax({
             url: `/comment/edit/${commentId}`,
