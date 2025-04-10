@@ -5,10 +5,12 @@ import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubRepository;
 import com.team.moim.repository.KeywordRepository;
+import com.team.moim.service.ClubService;
 import com.team.user.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,13 +20,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -35,12 +35,19 @@ public class HomeController {
     private final PasswordEncoder passwordEncoder;
     private final ClubRepository clubRepository;
     private final KeywordRepository keywordRepository;
+    private final ClubService clubService;
 
-    @GetMapping("/map")
-    public String mapApi() {
-        return "mapApi";
-    }
-
+   @PostMapping("/")
+   public ResponseEntity<List<ClubDTO>> getNearByClubs(@RequestBody Map<String,Double>location)
+   {
+       //디버깅추가
+       System.out.println("Request received: " + location);
+       double userLat = location.get("latitude");
+       double userLng = location.get("longitude");
+       List<ClubDTO> nearbyClubs = clubService.findNearByClubs(userLat, userLng);
+       System.out.println("Nearby clubs: " + nearbyClubs);
+       return ResponseEntity.ok(nearbyClubs);
+   }
     @GetMapping("/")
     public String home(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
