@@ -261,6 +261,13 @@ public class ChatController {
     public void blockUser(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
         ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
+
+        // 그룹 채팅에서는 차단 불가
+        if ("GROUP".equals(chatRoom.getType())) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "그룹 채팅에서는 차단 기능을 사용하실 수 없습니다.");
+            return;
+        }
+
         String blockedUuid = chatRoom.getParticipants().stream()
                 .filter(p -> !p.getUuid().equals(currentUser.getUuid()))
                 .findFirst()
@@ -284,6 +291,12 @@ public class ChatController {
     @Transactional
     public void leaveChatRoom(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
+        // 모임장인 경우 나가기 불가
+        if ("GROUP".equals(chatRoom.getType()) && chatRoom.getOwner().getUuid().equals(currentUser.getUuid())) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "모임장은 채팅방을 나갈 수 없습니다.");
+            return;
+        }
         chatRoomService.leaveChatRoom(request.getChatRoomId(), currentUser.getUuid());
     }
 
@@ -361,8 +374,15 @@ public class ChatController {
                 chatRoom.getId(),
                 sender.getName(),
                 message.getContent(),
-                message.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                message.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                message.getId() // 메시지 ID 추가
         );
+        // 디버깅 로그 추가
+        System.out.println("Sending notification: chatRoomId=" + notification.getChatRoomId() +
+                ", senderName=" + notification.getSenderName() +
+                ", content=" + notification.getContent() +
+                ", timestamp=" + notification.getTimestamp() +
+                ", messageId=" + notification.getMessageId());
         chatRoom.getParticipantSettings().stream()
                 .filter(p -> !p.getUser().getUuid().equals(sender.getUuid()))
                 .filter(ChatRoomParticipant::isNotificationEnabled)

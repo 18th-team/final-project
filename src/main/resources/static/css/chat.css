@@ -841,6 +841,7 @@
     background-color: #fff;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    transform: translateX(240px);
 }
 
 .participants-close-button {
@@ -902,7 +903,6 @@
     border-radius: 50%;
     color: #fff;
     font-size: 14px;
-    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;

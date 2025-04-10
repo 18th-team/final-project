@@ -217,8 +217,10 @@ const chatApp = (function() {
         });
 
         stompClient.subscribe(`/user/${currentUser}/topic/notifications`, message => {
-            const update = JSON.parse(message.body);
-            handleNotification(update);
+            console.log('Raw message body:', message.body); // 원시 데이터
+            const notification = JSON.parse(message.body);
+            console.log('Parsed notification:', notification); // 파싱된 데이터 확인
+            handleNotification(notification);
         });
 
         stompClient.subscribe(`/user/${currentUser}/topic/notificationUpdate`, message => {
@@ -330,13 +332,15 @@ const chatApp = (function() {
                 senderName: item.senderName || "시스템 알림",
                 content: item.content || "",
                 timestamp: item.timestamp,
-                chatRoomId: item.chatRoomId
+                chatRoomId: item.chatRoomId,
+                messageId: item.messageId // messageId 추가
             });
         }
     }
 
     // 푸시 알림 표시
     function showPushNotification(notification) {
+        console.log('Processed notification:', notification); // 디버깅
         const container = document.getElementById('notificationContainer');
         if (!container) return;
 
@@ -359,10 +363,37 @@ const chatApp = (function() {
         container.style.display = 'block';
         container.style.opacity = '1';
         container.style.transform = 'translateX(0)';
-        setTimeout(() => {
+        container.style.cursor = 'pointer';
+
+        const handleClick = () => {
+            if (!notification.messageId) {
+                console.warn('Message ID missing in notification:', notification);
+                return;
+            }
+            const chat = chatRoomsCache.find(c => c.id === notification.chatRoomId);
+            if (chat) {
+                openPersonalChat(chat).then(() => {
+                    const messageElement = document.getElementById(`message-${notification.messageId}`);
+                    if (messageElement) {
+                        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        messageElement.style.backgroundColor = '#f0f0f0';
+                        setTimeout(() => messageElement.style.backgroundColor = '', 2000);
+                    }
+                });
+            }
             container.style.opacity = '0';
             container.style.transform = 'translateX(400px)';
             setTimeout(() => container.style.display = 'none', 300);
+        };
+
+        container.onclick = handleClick;
+
+        setTimeout(() => {
+            if (container.style.display === 'block') {
+                container.style.opacity = '0';
+                container.style.transform = 'translateX(400px)';
+                setTimeout(() => container.style.display = 'none', 300);
+            }
         }, 5000);
     }
 
@@ -470,7 +501,7 @@ const chatApp = (function() {
             participantList.innerHTML += `
                 <li class="participant-item">
                     <div class="participant-avatar-container">
-                        <div class="participant-avatar ${isOwner ? 'avatar-leader' : ''}">
+                        <div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''}">
                             ${participant.name.slice(0, 2)}
                         </div>
                         <div class="status-indicator" data-uuid="${participant.uuid}" style="background-color: #666"></div>
@@ -492,7 +523,7 @@ const chatApp = (function() {
 
         const userListButton = document.createElement('button');
         userListButton.classList.add('user-list');
-        userListButton.textContent = '유저 목록';
+        userListButton.textContent = '참여자 목록';
         optionsMenu.appendChild(userListButton);
 
         let isOpen = false;
@@ -554,11 +585,29 @@ const chatApp = (function() {
         chatWindow.querySelector('.chat-name').textContent = chatName;
         const avatar = chatWindow.querySelector('.avatar');
         avatar.textContent = chatName.slice(0, 2);
+        const optionsMenu = document.querySelector('.options-menu');
+        // 기존 옵션 버튼 초기화
+        optionsMenu.innerHTML = '';
 
+        // "차단하기" 버튼 (개인 채팅에만 표시)
+        if (chat.type === 'PRIVATE') {
+            const blockButton = document.createElement('button');
+            blockButton.className = 'block-option';
+            blockButton.textContent = '차단하기';
+            optionsMenu.appendChild(blockButton);
+        }
+
+        // "나가기" 버튼 (개인 채팅 또는 그룹 채팅에서 모임장이 아닌 경우 표시)
+        if (chat.type === 'PRIVATE' || (chat.type === 'GROUP' && chat.owner?.uuid !== currentUser)) {
+            const leaveButton = document.createElement('button');
+            leaveButton.className = 'leave-option';
+            leaveButton.textContent = '나가기';
+            optionsMenu.appendChild(leaveButton);
+        }
         if (chat.type === 'GROUP') {
             renderParticipantsList(chat);
         } else {
-            const optionsMenu = document.querySelector('.options-menu');
+
             const existingButton = optionsMenu.querySelector('.user-list');
             if (existingButton) existingButton.remove();
             const participantsSidebar = chatWindow.querySelector('.participants-sidebar');
@@ -669,8 +718,10 @@ const chatApp = (function() {
             messagesContainer.dataset.listenerAdded = 'true';
         }
 
+        const chatOptions = document.querySelector('.chat-options');
         const optionsMenu = document.querySelector('.options-menu');
         const optionsButton = document.querySelector('.options-button');
+
         if (optionsButton) {
             optionsButton.addEventListener('click', () => {
                 optionsMenu.style.display = optionsMenu.style.display === 'block' ? 'none' : 'block';
@@ -683,6 +734,48 @@ const chatApp = (function() {
             }
         });
 
+        if (chatOptions) {
+            chatOptions.addEventListener('click', (event) => {
+                const target = event.target;
+
+                if (target.classList.contains('notification-toggle') || target.closest('.notification-toggle')) {
+                    console.log('Notification toggle clicked'); // 디버깅
+                    if (!currentChatRoomId || !stompClient?.connected) {
+                        console.warn('Cannot toggle notification: No chat room ID or connection'); // 디버깅
+                        return;
+                    }
+                    const chat = chatRoomsCache.find(c => c.id === currentChatRoomId);
+                    if (!chat) {
+                        console.warn('Chat not found in cache'); // 디버깅
+                        return;
+                    }
+                    const action = (chat?.notificationEnabled !== false) ? 'OFF' : 'ON';
+                    console.log(`Sending toggle request: ${action}`); // 디버깅
+                    stompClient.send("/app/toggleNotification", {}, JSON.stringify({ chatRoomId: currentChatRoomId, action }));
+                }
+            });
+        }
+
+        if (optionsMenu) {
+            optionsMenu.addEventListener('click', (event) => {
+                const target = event.target;
+
+                if (target.classList.contains('block-option')) {
+                    if (confirm("정말로 이 사용자를 차단하시겠습니까?") && currentChatRoomId && stompClient?.connected) {
+                        stompClient.send("/app/blockUser", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
+                        resetChatWindow();
+                    }
+                }
+
+                if (target.classList.contains('leave-option')) {
+                    if (confirm("정말로 이 채팅방을 나가시겠습니까?") && currentChatRoomId && stompClient?.connected) {
+                        stompClient.send("/app/leaveChatRoom", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
+                        resetChatWindow();
+                    }
+                }
+            });
+        }
+
         const sendButton = document.querySelector('.send-button');
         const messageInput = document.querySelector('.message-input');
         if (sendButton) sendButton.addEventListener('click', sendMessage);
@@ -690,16 +783,6 @@ const chatApp = (function() {
 
         const backButton = document.querySelector('.back-button');
         if (backButton) backButton.addEventListener('click', resetChatWindow);
-
-        const notificationToggle = document.querySelector('.notification-toggle');
-        if (notificationToggle) {
-            notificationToggle.addEventListener('click', () => {
-                if (!currentChatRoomId || !stompClient?.connected) return;
-                const chat = chatRoomsCache.find(c => c.id === currentChatRoomId);
-                const action = (chat?.notificationEnabled !== false) ? 'OFF' : 'ON';
-                stompClient.send("/app/toggleNotification", {}, JSON.stringify({ chatRoomId: currentChatRoomId, action }));
-            });
-        }
 
         const groupTab = document.querySelector('.tab-group');
         const personalTab = document.querySelector('.tab-personal');
