@@ -476,6 +476,7 @@ const chatApp = (function() {
 
     // 메시지 처리
     function handleMessage(item) {
+        console.log('Received message item:', item);
         const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
         if (!chat) return;
 
@@ -488,9 +489,10 @@ const chatApp = (function() {
                 renderMessage(item, 'append');
             }
         }
-
+        // 최근 메시지와 보낸 사람 정보 저장
         chat.lastMessage = item.content;
         chat.lastMessageTime = item.timestamp;
+        chat.lastMessageSender = item.sender; // sender 정보 저장
 
         if (state.isChatOpen && !state.isChatRoomOpen) {
             setTimeout(() => renderChatList(chatRoomsCache), 0);
@@ -622,30 +624,69 @@ const chatApp = (function() {
             const lastMessageTime = chat.lastMessageTime ?
                 new Date(chat.lastMessageTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '';
 
-            item.innerHTML = `
+            // 아바타 이미지 및 텍스트 설정
+            let avatarHtml = '';
+            if (chat.type === 'GROUP' && chat.clubImage) {
+                avatarHtml = `
                 <div class="chat-avatar">
-                    <div class="avatar">${chatName.slice(0, 2)}</div>
-                </div>
-                <div class="chat-content">
-                    <div class="chat-header">
-                        <div class="chat-title-group">
-                            <h3 class="chat-name">${chatName}</h3>
-                            ${chat.unreadCount > 0 ? `<span class="unread-count">${chat.unreadCount}</span>` : ''}
-                        </div>
-                        <div class="chat-meta"><span class="chat-time">${lastMessageTime}</span></div>
+                    <div class="avatar group has-image">
+                        <img class="avatar-image" src="/upload/${chat.clubImage}" alt="${chatName} avatar" style="display: block;" />
+                        <span class="avatar-text" style="display: none;">${chatName.slice(0, 2)}</span>
                     </div>
-                    <p class="chat-preview">${isRequest ? (isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`) : (chat.lastMessage || '대화가 없습니다.')}</p>
-                    ${isRequest && isOwner && !isRequester ? `
-                        <div class="request-actions">
-                            <button class="action-button approve">승인</button>
-                            <button class="action-button reject">거부</button>
-                            <button class="action-button block">차단</button>
-                        </div>` : ''}
+                </div>`;
+            } else if (chat.type === 'PRIVATE' && (isRequester ? chat.owner?.profileImage : chat.requester?.profileImage)) {
+                const profileImage = isRequester ? chat.owner?.profileImage : chat.requester?.profileImage;
+                avatarHtml = `
+                <div class="chat-avatar">
+                    <div class="avatar has-image">
+                        <img class="avatar-image" src="${profileImage}" alt="${chatName.slice(0, 2)}" style="display: block;" />
+                        <span class="avatar-text" style="display: none;">${chatName.slice(0, 2)}</span>
+                    </div>
+                </div>`;
+            } else {
+                avatarHtml = `
+                <div class="chat-avatar">
+                    <div class="avatar has-text">
+                        <img class="avatar-image" style="display: none;" alt="${chatName} avatar" />
+                        <span class="avatar-text" style="display: block;">${chatName.slice(0, 2)}</span>
+                    </div>
+                </div>`;
+            }
+
+            // chat-preview 설정
+            let chatPreview = '';
+            if (isRequest) {
+                chatPreview = isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`;
+            } else if (chat.lastMessage) {
+                // 최근 메시지와 보낸 사람 이름 표시
+                const senderName = chat.lastMessageSender?.name || 'Unknown';
+                chatPreview = `${senderName}: ${chat.lastMessage}`;
+            } else {
+                chatPreview = '대화가 없습니다.';
+            }
+
+            item.innerHTML = `
+            ${avatarHtml}
+            <div class="chat-content">
+                <div class="chat-header">
+                    <div class="chat-title-group">
+                        <h3 class="chat-name">${chatName}</h3>
+                        ${chat.unreadCount > 0 ? `<span class="unread-count">${chat.unreadCount}</span>` : ''}
+                    </div>
+                    <div class="chat-meta"><span class="chat-time">${lastMessageTime}</span></div>
                 </div>
-            `;
+                <p class="chat-preview">${chatPreview}</p>
+                ${isRequest && isOwner && !isRequester ? `
+                    <div class="request-actions">
+                        <button class="action-button approve">승인</button>
+                        <button class="action-button reject">거부</button>
+                        <button class="action-button block">차단</button>
+                    </div>` : ''}
+            </div>
+        `;
 
             if (isRequest && isOwner && !isRequester) {
-                item.querySelector('.reject').addEventListener('click', () => handleRequest(chat.id, 'APPROVE'));
+                item.querySelector('.approve').addEventListener('click', () => handleRequest(chat.id, 'APPROVE'));
                 item.querySelector('.reject').addEventListener('click', () => handleRequest(chat.id, 'REJECT'));
                 item.querySelector('.block').addEventListener('click', () => handleRequest(chat.id, 'BLOCK'));
             }
@@ -653,6 +694,18 @@ const chatApp = (function() {
             chatList.appendChild(item);
             if (chat.type === 'GROUP') groupUnread += chat.unreadCount || 0;
             else personalUnread += chat.unreadCount || 0;
+
+            const avatarImage = item.querySelector('.chat-avatar').querySelector('.avatar-image');
+            if (avatarImage) {
+                avatarImage.onerror = () => {
+                    const avatar = avatarImage.closest('.avatar');
+                    avatar.classList.remove('has-image');
+                    avatar.classList.add('has-text');
+                    avatarImage.style.display = 'none';
+                    const avatarText = avatar.querySelector('.avatar-text');
+                    avatarText.style.display = 'block';
+                };
+            }
         });
 
         updateUnreadCounts(groupUnread, personalUnread);
@@ -689,22 +742,46 @@ const chatApp = (function() {
         const participantList = participantsSidebar.querySelector('.participant-list');
         chat.participants.forEach(participant => {
             const isOwner = participant.uuid === chat.owner?.uuid;
-            participantList.innerHTML += `
-                <li class="participant-item">
-                    <div class="participant-avatar-container">
-                        <div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''}">
-                            ${participant.name.slice(0, 2)}
-                        </div>
-                        <div class="status-indicator" data-uuid="${participant.uuid}" style="background-color: #666"></div>
+            // 아바타 HTML 구성
+            const avatarHtml = participant.profileImage ?
+                `<div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-image">
+                    <img class="avatar-image" src="${participant.profileImage}" alt="${participant.name.slice(0, 2)}" style="display: block;" loading="lazy" />
+                    <span class="avatar-text" style="display: none;">${participant.name.slice(0, 2)}</span>
+                </div>` :
+                    `
+                <div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-text">
+                    <img class="avatar-image" style="display: none;" alt="${participant.name.slice(0, 2)}" />
+                    <span class="avatar-text" style="display: block;">${participant.name.slice(0, 2)}</span>
+                </div>`;
+            const participantItem = document.createElement('li');
+                participantItem.className = 'participant-item';
+                participantItem.innerHTML = `
+                <div class="participant-avatar-container">
+                    ${avatarHtml}
+                    <div class="status-indicator" data-uuid="${participant.uuid}" style="background-color: #666"></div>
+                </div>
+                <div class="user-info">
+                    <div class="user-name-container">
+                        <span class="user-name">${participant.name}</span>
+                        ${isOwner ? '<span class="role-badge">모임장</span>' : ''}
                     </div>
-                    <div class="user-info">
-                        <div class="user-name-container">
-                            <span class="user-name">${participant.name}</span>
-                            ${isOwner ? '<span class="role-badge">모임장</span>' : ''}
-                        </div>
-                    </div>
-                </li>
+                </div>
             `;
+            // 이미지 로드 실패 처리
+            const avatarImage = participantItem.querySelector('.avatar-image');
+            if (avatarImage) {
+                avatarImage.onerror = () => {
+                    const avatar = avatarImage.closest('.avatar');
+                    avatar.classList.remove('has-image');
+                    avatar.classList.add('has-text');
+                    avatarImage.style.display = 'none';
+                    const avatarText = avatar.querySelector('.avatar-text');
+                    if (avatarText) {
+                        avatarText.style.display = 'block';
+                    }
+                };
+            }
+            participantList.appendChild(participantItem);
         });
 
         chatWindow.appendChild(participantsSidebar);
@@ -774,8 +851,49 @@ const chatApp = (function() {
         const chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group') :
             (chat.requester?.uuid === currentUser ? chat.owner?.name : chat.requester?.name) || 'Unknown';
         chatWindow.querySelector('.chat-name').textContent = chatName;
-        const avatar = chatWindow.querySelector('.avatar');
-        avatar.textContent = chatName.slice(0, 2);
+        const avatar = chatWindow.querySelector('.avatar.personal');
+        const avatarImage = avatar.querySelector('.avatar-image');
+        const avatarText = avatar.querySelector('.avatar-text');
+        const statusIndicator = avatar.querySelector('.status-indicator');
+        const chatstatus = chatWindow.querySelector('.profile-info').querySelector('.chat-status');
+        chatWindow.querySelector('.chat-name').textContent = chatName;
+
+        avatar.classList.remove('has-image', 'has-text', 'group');
+
+        if (chat.type === 'GROUP' && chat.clubImage) {
+            avatar.classList.add('group', 'has-image');
+            avatarImage.src = `/upload/${chat.clubImage}`;
+            avatarImage.style.display = 'block';
+            avatarText.style.display = 'none';
+            if (statusIndicator) statusIndicator.style.display = 'none'; // 상태 표시기 숨김
+            chatstatus.textContent = '';
+            avatarImage.onerror = () => {
+                avatar.classList.remove('has-image');
+                avatar.classList.add('has-text');
+                avatarImage.style.display = 'none';
+                avatarText.textContent = chatName.slice(0, 2);
+                avatarText.style.display = 'block';
+            };
+        } else if (chat.type === 'PRIVATE' && (chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage)) {
+            const profileImage = chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage;
+            avatar.classList.add('has-image');
+            avatarImage.src = `${profileImage}`;
+            avatarImage.style.display = 'block';
+            avatarText.style.display = 'none';
+            if (statusIndicator) statusIndicator.style.display = 'block'; // 상태 표시기 표시
+            avatarImage.onerror = () => {
+                avatar.classList.remove('has-image');
+                avatar.classList.add('has-text');
+                avatarImage.style.display = 'none';
+                avatarText.textContent = chatName.slice(0, 2);
+                avatarText.style.display = 'block';
+            };
+        } else {
+            avatar.classList.add('has-text');
+            avatarImage.style.display = 'none';
+            avatarText.textContent = chatName.slice(0, 2);
+            avatarText.style.display = 'block';
+        }
 
         const optionsMenu = document.querySelector('.options-menu');
         optionsMenu.innerHTML = '';
@@ -844,13 +962,60 @@ const chatApp = (function() {
             const isOwnMessage = item.sender?.uuid === currentUser;
             element.className = isOwnMessage ? 'message-sent' : 'message-received';
             const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) : '';
-            element.innerHTML = isOwnMessage ?
-                `<header class="message-header"><time class="timestamp">${timeStr}</time></header><p class="message-text">${item.content}</p>` :
-                `<div class="avatar">${item.sender.name.slice(0, 2)}</div>
-                 <div class="message-content">
-                     <header class="message-header"><h2 class="user-name">${item.sender.name}</h2><time class="timestamp">${timeStr}</time></header>
-                     <p class="message-text">${item.content}</p>
-                 </div>`;
+
+            if (isOwnMessage) {
+                element.innerHTML = `
+                <header class="message-header"><time class="timestamp">${timeStr}</time></header>
+                <p class="message-text">${item.content}</p>`;
+            } else {
+                // chatRoomsCache에서 해당 사용자의 프로필 이미지 찾기
+                const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
+                let profileImage = null;
+                if (chat) {
+                    if (chat.type === 'PRIVATE') {
+                        const isRequester = chat.requester?.uuid === currentUser;
+                        profileImage = isRequester ? chat.owner?.profileImage : chat.requester?.profileImage;
+                    } else if (chat.type === 'GROUP') {
+                        const participant = chat.participants?.find(p => p.uuid === item.sender?.uuid);
+                        profileImage = participant?.profileImage;
+                    }
+                }
+
+                const avatarHtml = profileImage ?
+                    `
+                <div class="avatar has-image">
+                    <img class="avatar-image" src="${profileImage}" alt="${item.sender.name.slice(0, 2)}" style="display: block;" />
+                    <span class="avatar-text" style="display: none;">${item.sender.name.slice(0, 2)}</span>
+                </div>` :
+                    `
+                <div class="avatar has-text">
+                    <img class="avatar-image" style="display: none;" alt="${item.sender.name.slice(0, 2)}" />
+                    <span class="avatar-text" style="display: block;">${item.sender.name.slice(0, 2)}</span>
+                </div>`;
+
+                element.innerHTML = `
+                ${avatarHtml}
+                <div class="message-content">
+                    <header class="message-header">
+                        <h2 class="user-name">${item.sender.name}</h2>
+                        <time class="timestamp">${timeStr}</time>
+                    </header>
+                    <p class="message-text">${item.content}</p>
+                </div>`;
+
+                // 이미지 로드 실패 처리
+                const avatarImage = element.querySelector('.avatar-image');
+                if (avatarImage) {
+                    avatarImage.onerror = () => {
+                        const avatar = avatarImage.closest('.avatar');
+                        avatar.classList.remove('has-image');
+                        avatar.classList.add('has-text');
+                        avatarImage.style.display = 'none';
+                        const avatarText = avatar.querySelector('.avatar-text');
+                        avatarText.style.display = 'block';
+                    };
+                }
+            }
         }
         element.dataset.date = currentDate;
 

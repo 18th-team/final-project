@@ -61,6 +61,7 @@ public class ChatController {
             userRepository.save(user);
         }
     }
+
     // 연결된 사용자에게 오프라인 사용자 상태 전송
     private void broadcastOfflineUsersToConnectedUser(String connectedUuid) {
         List<ChatRoom> chatRooms = chatRoomRepository.findRoomsAndFetchParticipantsByUserUuid(connectedUuid);
@@ -86,6 +87,7 @@ public class ChatController {
                     });
         }
     }
+
     @EventListener
     public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
         Principal principal = event.getUser();
@@ -108,6 +110,7 @@ public class ChatController {
             }
         }
     }
+
     // 상태 브로드캐스트 (실시간 전송)
     private void broadcastOnlineStatus(String uuid, boolean isOnline) {
         List<ChatRoom> chatRooms = chatRoomRepository.findRoomsAndFetchParticipantsByUserUuid(uuid);
@@ -146,6 +149,7 @@ public class ChatController {
             messagingTemplate.convertAndSend(destination, status);
         });
     }
+
     @MessageMapping("/refreshChatRooms")
     @Transactional(readOnly = true)
     public void refreshChatRooms(Principal principal, @Payload ChatRequestDTO request) {
@@ -153,6 +157,7 @@ public class ChatController {
         List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(currentUser);
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms", chatRooms);
     }
+
     // onlineStatus (수동 요청 시 사용)
     // 온라인 여부 확인, 오프라인일 경우 마지막 접속 시간 반환
     @MessageMapping("/onlineStatus")
@@ -189,6 +194,7 @@ public class ChatController {
             messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/onlineStatus", response);
         });
     }
+
     // 초기 상태 요청 (로그인 시 모든 관련 사용자 상태 확인)
     @MessageMapping("/initialStatus")
     @Transactional(readOnly = true)
@@ -213,7 +219,8 @@ public class ChatController {
                     });
         });
     }
-    @MessageMapping("/getMessageCount" )
+
+    @MessageMapping("/getMessageCount")
     @Transactional(readOnly = true)
     public void getMessageCount(Principal principal, @Payload ChatRoomDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
@@ -233,6 +240,7 @@ public class ChatController {
         long messageCount = chatMessageRepository.countByChatRoom(chatRoom);
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/messageCount", messageCount);
     }
+
     @MessageMapping("/getMessages")
     @Transactional(readOnly = true)
     public void getMessages(Principal principal, @Payload ChatRoomDTO request) {
@@ -446,6 +454,7 @@ public class ChatController {
             messagingTemplate.convertAndSend("/user/" + user.getUuid() + "/topic/errors", e.getMessage());
         }
     }
+
     @MessageMapping("/toggleNoticeState")
     @Transactional
     public void toggleNoticeState(Principal principal, @Payload NoticeStateRequestDTO request, Message<byte[]> message) {

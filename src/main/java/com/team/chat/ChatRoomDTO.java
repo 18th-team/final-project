@@ -26,6 +26,8 @@ public class ChatRoomDTO {
     private Integer page; // 페이징: 페이지 번호
     private Integer size; // 페이징: 페이지 크기
 
+    private String clubImage; // 그룹 채팅방의 모임 이미지
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

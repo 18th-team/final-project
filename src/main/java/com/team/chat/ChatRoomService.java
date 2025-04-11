@@ -1,6 +1,8 @@
 package com.team.chat;
 
 import com.team.moim.entity.Club;
+import com.team.moim.entity.ClubFileEntity;
+import com.team.moim.repository.ClubFileRepository;
 import com.team.moim.repository.ClubRepository;
 import com.team.user.CustomSecurityUserDetails;
 import com.team.user.SiteUser;
@@ -33,6 +35,7 @@ public class ChatRoomService {
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final ClubRepository clubRepository;
+    private final ClubFileRepository clubFileRepository;
 
     @Transactional(readOnly = true)
     public ChatRoom findChatRoomById(Long chatRoomId) {
@@ -183,16 +186,16 @@ public class ChatRoomService {
                 .name(receiver.getName())
                 .requester(requester)
                 .owner(receiver)
-                .participants(List.of(requester))
+                .participants(new ArrayList<>()) // 변경 가능한 리스트
+                .participantSettings(new ArrayList<>())
                 .requestReason(reason)
                 .status("PENDING")
                 .lastMessageTime(LocalDateTime.now())
                 .build();
-
+        chatRoom.addParticipant(requester);
+        chatRoom.addParticipant(receiver);
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
-        savedChatRoom.addParticipant(requester); // addParticipant 사용
-        savedChatRoom.addParticipant(receiver);  // addParticipant 사용
-        chatRoomRepository.save(savedChatRoom);
+        // 이벤트 발행
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(requester.getUuid(), receiver.getUuid()));
         return savedChatRoom;
     }
@@ -285,6 +288,13 @@ public class ChatRoomService {
                 new ChatRoomDTO.SiteUserDTO(chat.getRequester().getUuid(), chat.getRequester().getName(), chat.getRequester().getProfileImage()) : null); // profileImage 추가
         dto.setRequestReason(chat.getRequestReason());
         dto.setStatus(chat.getStatus());
+
+        // 그룹 채팅방의 경우 Club 이미지 추가
+        if ("GROUP".equals(chat.getType()) && chat.getClub() != null && chat.getClub().getFileAttached() == 1) {
+            Optional<ClubFileEntity> clubFile = clubFileRepository.findByClubId(chat.getClub().getId());
+            clubFile.ifPresent(file -> dto.setClubImage(file.getStoredFileName()));
+        }
+
         chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
             dto.setLastMessage(msg.getContent());
             dto.setLastMessageTime(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());

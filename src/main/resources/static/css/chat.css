@@ -88,14 +88,27 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    overflow: hidden; /* 이미지 잘림 방지 */
+    background-color: #357abd; /* 기본 배경색 */
 }
 
+/* 개인 채팅 아바타 */
 .avatar.personal {
     background: #357abd;
 }
-
-.avatar-group {
-    background: linear-gradient(90deg, #ff8f50 100%, #e36d1d 0%);
+/* 모임 채팅 아바타 */
+.avatar.group { /* .avatar-group 대신 .avatar.group으로 클래스명 통일 */
+    background: linear-gradient(90deg, #ff8f50 100%, #e36d1d 0%); /* 모임 채팅 기본 배경색 */
+}
+/* 아바타 이미지 */
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지가 잘리지 않도록 */
+    display: none; /* 초기 상태 숨김 */
+}
+.avatar-text {
+    display: none; /* 초기 상태 숨김 */
 }
 
 .avatar-design {
@@ -106,7 +119,14 @@
     background-color: #357abd;
 }
 
+/* 이미지 또는 텍스트 표시 시 */
+.avatar.has-image .avatar-image {
+    display: block;
+}
 
+.avatar.has-text .avatar-text {
+    display: block;
+}
 .chat-info {
     display: flex;
     flex-direction: column;
@@ -885,14 +905,14 @@
 }
 
 .status-indicator {
-    width: 12px;
-    height: 12px;
-    border: 2px solid #fff;
-    border-radius: 50%;
     position: absolute;
-    bottom: -2px;
-    right: -2px;
-    background-color: #4caf50;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #666; /* 오프라인 상태 */
+    border: 2px solid #fff; /* 테두리 추가로 깔끔하게 */
 }
 
 .user-info {
