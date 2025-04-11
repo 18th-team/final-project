@@ -29,8 +29,8 @@ public class SiteUser {
     @Column(nullable = false)
     private String name;
 
-    // 새로 추가할 자기소개 컬럼
-    @Column(length = 50, nullable = false) // 50자 제한
+    // 새로 추가할 자기소개 컬럼 (null 허용)
+    @Column(length = 50) // 50자 제한
     private String introduction;
 
     @Column(nullable = false, unique = true)
@@ -40,7 +40,7 @@ public class SiteUser {
     private String password;
 
     @Column(nullable = false)
-    private Integer age;
+    private LocalDate birthdate; //age <- LocalDate birthdate로 변경 나이 제한의 경우 birthdate 기준으로 계산해서 확인 하게
 
     @Column(nullable = false)
     private String gender;
