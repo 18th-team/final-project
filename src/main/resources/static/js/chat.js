@@ -202,8 +202,17 @@ const chatApp = (function() {
         const noticeAddBtn = document.querySelector('.notice-add');
         const noticeToggle = document.querySelector('.notice-toggle');
 
+        // 개인 채팅이면 공지사항 섹션 숨기기
         if (chat.type !== 'GROUP') {
             noticeSection.style.display = 'none';
+            noticeView.style.display = 'none';
+            noticeEmpty.style.display = 'none';
+            noticePreview.textContent = '';
+            noticeContent.innerHTML = '';
+            noticeEditBtn.style.display = 'none';
+            noticeDeleteBtn.style.display = 'none';
+            noticeAddBtn.style.display = 'none';
+            noticeToggle.style.display = 'none';
             return;
         }
 
@@ -630,7 +639,7 @@ const chatApp = (function() {
                 avatarHtml = `
                 <div class="chat-avatar">
                     <div class="avatar group has-image">
-                        <img class="avatar-image" src="/upload/${chat.clubImage}" alt="${chatName} avatar" style="display: block;" />
+                        <img class="avatar-image" src="/upload/${chat.clubImage}" style="display: block;" />
                         <span class="avatar-text" style="display: none;">${chatName.slice(0, 2)}</span>
                     </div>
                 </div>`;
@@ -639,7 +648,7 @@ const chatApp = (function() {
                 avatarHtml = `
                 <div class="chat-avatar">
                     <div class="avatar has-image">
-                        <img class="avatar-image" src="${profileImage}" alt="${chatName.slice(0, 2)}" style="display: block;" />
+                        <img class="avatar-image" src="${profileImage}"  style="display: block;" />
                         <span class="avatar-text" style="display: none;">${chatName.slice(0, 2)}</span>
                     </div>
                 </div>`;
@@ -647,7 +656,7 @@ const chatApp = (function() {
                 avatarHtml = `
                 <div class="chat-avatar">
                     <div class="avatar has-text">
-                        <img class="avatar-image" style="display: none;" alt="${chatName} avatar" />
+                        <img class="avatar-image" style="display: none;" />
                         <span class="avatar-text" style="display: block;">${chatName.slice(0, 2)}</span>
                     </div>
                 </div>`;
@@ -745,12 +754,12 @@ const chatApp = (function() {
             // 아바타 HTML 구성
             const avatarHtml = participant.profileImage ?
                 `<div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-image">
-                    <img class="avatar-image" src="${participant.profileImage}" alt="${participant.name.slice(0, 2)}" style="display: block;" loading="lazy" />
+                    <img class="avatar-image" src="${participant.profileImage}"  style="display: block;" loading="lazy" />
                     <span class="avatar-text" style="display: none;">${participant.name.slice(0, 2)}</span>
                 </div>` :
                     `
                 <div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-text">
-                    <img class="avatar-image" style="display: none;" alt="${participant.name.slice(0, 2)}" />
+                    <img class="avatar-image" style="display: none;"  />
                     <span class="avatar-text" style="display: block;">${participant.name.slice(0, 2)}</span>
                 </div>`;
             const participantItem = document.createElement('li');
@@ -807,7 +816,7 @@ const chatApp = (function() {
         checkOnlineStatus(chat.id);
     }
 
-    // 개인 채팅 열기 (기존 방식 복원)
+    // 개인 채팅 열기
     async function openPersonalChat(chat) {
         if (!chat || !chat.id || isChatOpening) return;
 
@@ -856,45 +865,40 @@ const chatApp = (function() {
         const avatarText = avatar.querySelector('.avatar-text');
         const statusIndicator = avatar.querySelector('.status-indicator');
         const chatstatus = chatWindow.querySelector('.profile-info').querySelector('.chat-status');
-        chatWindow.querySelector('.chat-name').textContent = chatName;
 
         avatar.classList.remove('has-image', 'has-text', 'group');
-
         if (chat.type === 'GROUP' && chat.clubImage) {
             avatar.classList.add('group', 'has-image');
             avatarImage.src = `/upload/${chat.clubImage}`;
             avatarImage.style.display = 'block';
             avatarText.style.display = 'none';
-            if (statusIndicator) statusIndicator.style.display = 'none'; // 상태 표시기 숨김
+            if (statusIndicator) statusIndicator.style.display = 'none';
             chatstatus.textContent = '';
-            avatarImage.onerror = () => {
-                avatar.classList.remove('has-image');
-                avatar.classList.add('has-text');
-                avatarImage.style.display = 'none';
-                avatarText.textContent = chatName.slice(0, 2);
-                avatarText.style.display = 'block';
-            };
         } else if (chat.type === 'PRIVATE' && (chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage)) {
             const profileImage = chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage;
             avatar.classList.add('has-image');
             avatarImage.src = `${profileImage}`;
             avatarImage.style.display = 'block';
             avatarText.style.display = 'none';
-            if (statusIndicator) statusIndicator.style.display = 'block'; // 상태 표시기 표시
-            avatarImage.onerror = () => {
-                avatar.classList.remove('has-image');
-                avatar.classList.add('has-text');
-                avatarImage.style.display = 'none';
-                avatarText.textContent = chatName.slice(0, 2);
-                avatarText.style.display = 'block';
-            };
+            if (statusIndicator) statusIndicator.style.display = 'block';
         } else {
             avatar.classList.add('has-text');
             avatarImage.style.display = 'none';
-            avatarText.textContent = chatName.slice(0, 2);
+            avatarText.textContent = chatName.slice(0, 2); // 여기서 2글자 설정
             avatarText.style.display = 'block';
         }
-
+        // 이미지 로드 실패 처리
+        if (avatarImage) {
+            avatarImage.onerror = () => {
+                const avatar = avatarImage.closest('.avatar');
+                avatar.classList.remove('has-image');
+                avatar.classList.add('has-text');
+                avatarImage.style.display = 'none';
+                const avatarText = avatar.querySelector('.avatar-text');
+                avatarText.textContent = chatName.slice(0, 2);
+                avatarText.style.display = 'block';
+            };
+        }
         const optionsMenu = document.querySelector('.options-menu');
         optionsMenu.innerHTML = '';
 
@@ -903,25 +907,26 @@ const chatApp = (function() {
             blockButton.className = 'block-option';
             blockButton.textContent = '차단하기';
             optionsMenu.appendChild(blockButton);
-        }
 
-        if (chat.type === 'PRIVATE' || (chat.type === 'GROUP' && chat.owner?.uuid !== currentUser)) {
             const leaveButton = document.createElement('button');
             leaveButton.className = 'leave-option';
             leaveButton.textContent = '나가기';
             optionsMenu.appendChild(leaveButton);
-        }
 
-        if (chat.type === 'GROUP') {
-            renderParticipantsList(chat);
-            fetchNotice(chat.id); // 공지사항 로드
-            renderNotice(chat);
-        } else {
-            const existingButton = optionsMenu.querySelector('.user-list');
-            if (existingButton) existingButton.remove();
-            const participantsSidebar = chatWindow.querySelector('.participants-sidebar');
-            if (participantsSidebar) participantsSidebar.remove();
+            // 개인 채팅에서는 공지사항 숨기기
+            const noticeSection = document.getElementById('noticeSection');
+            if (noticeSection) noticeSection.style.display = 'none';
             checkOnlineStatus(chat.id);
+        } else if (chat.type === 'GROUP') {
+            if (chat.owner?.uuid !== currentUser) {
+                const leaveButton = document.createElement('button');
+                leaveButton.className = 'leave-option';
+                leaveButton.textContent = '나가기';
+                optionsMenu.appendChild(leaveButton);
+            }
+            renderParticipantsList(chat);
+            fetchNotice(chat.id); // 그룹 채팅에서만 공지사항 로드
+            renderNotice(chat);
         }
 
         markMessagesAsRead();
@@ -984,12 +989,12 @@ const chatApp = (function() {
                 const avatarHtml = profileImage ?
                     `
                 <div class="avatar has-image">
-                    <img class="avatar-image" src="${profileImage}" alt="${item.sender.name.slice(0, 2)}" style="display: block;" />
+                    <img class="avatar-image" src="${profileImage}" style="display: block;" />
                     <span class="avatar-text" style="display: none;">${item.sender.name.slice(0, 2)}</span>
                 </div>` :
                     `
                 <div class="avatar has-text">
-                    <img class="avatar-image" style="display: none;" alt="${item.sender.name.slice(0, 2)}" />
+                    <img class="avatar-image" style="display: none;" />
                     <span class="avatar-text" style="display: block;">${item.sender.name.slice(0, 2)}</span>
                 </div>`;
 
