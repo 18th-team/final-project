@@ -11,13 +11,13 @@ import java.util.Optional;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
- // 개인 채팅 중복 체크: requester와 owner 기준
  boolean existsByRequesterAndOwnerAndType(SiteUser requester, SiteUser owner, String type);
 
- // 사용자가 참여 중이거나 PENDING 상태인 채팅방 조회
  @Query("SELECT c FROM ChatRoom c WHERE :user MEMBER OF c.participants OR (c.status = 'PENDING' AND (c.requester = :user OR c.owner = :user))")
  List<ChatRoom> findByParticipantsContainingOrPendingForUser(@Param("user") SiteUser user);
+
  boolean existsByRequesterAndOwnerAndTypeAndStatusNot(SiteUser requester, SiteUser owner, String type, String status);
+
  @Query("SELECT cr FROM ChatRoom cr " +
          "JOIN FETCH cr.participants p " +
          "LEFT JOIN FETCH p.blockedUsers " +
@@ -26,4 +26,10 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
  @Query("SELECT DISTINCT cr FROM ChatRoom cr JOIN FETCH cr.participants WHERE cr IN (SELECT c FROM ChatRoom c JOIN c.participants p WHERE p.uuid = :uuid)")
  List<ChatRoom> findRoomsAndFetchParticipantsByUserUuid(@Param("uuid") String uuid);
+
+ @Query("SELECT cr FROM ChatRoom cr " +
+         "LEFT JOIN FETCH cr.participantSettings ps " +
+         "LEFT JOIN FETCH ps.user " +
+         "WHERE cr.id = :id")
+ Optional<ChatRoom> findByIdWithParticipantSettings(@Param("id") Long id);
 }

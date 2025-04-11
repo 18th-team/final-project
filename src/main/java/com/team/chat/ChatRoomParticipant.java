@@ -24,11 +24,13 @@ public class ChatRoomParticipant {
     private SiteUser user;
 
     private boolean notificationEnabled = true; // 사용자별 알림 설정
+    private boolean isNoticeExpanded = false;  // 사용자별 공지사항 펼침/접힘 상태 (기본값: 접힘)
 
     // 매개변수 생성자 추가
     public ChatRoomParticipant(ChatRoom chatRoom, SiteUser user, boolean notificationEnabled) {
         this.chatRoom = chatRoom;
         this.user = user;
         this.notificationEnabled = notificationEnabled;
+        this.isNoticeExpanded = false; // 초기값 설정
     }
 }

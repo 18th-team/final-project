@@ -6,6 +6,7 @@ import com.team.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -33,6 +35,7 @@ public class ChatController {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMessageService chatMessageService;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
+    private final NoticeService noticeService;
 
     // UUID와 세션 ID를 매핑하여 온라인 상태 관리
     private final Map<String, Set<String>> userSessions = new ConcurrentHashMap<>();
@@ -393,6 +396,69 @@ public class ChatController {
                 .filter(ChatRoomParticipant::isNotificationEnabled)
                 .filter(p -> !message.getReadBy().contains(p.getUser()))
                 .forEach(p -> messagingTemplate.convertAndSend("/user/" + p.getUser().getUuid() + "/topic/notifications", notification));
+    }
+
+    @MessageMapping("/createNotice")
+    @Transactional
+    public void createNotice(Principal principal, NoticeRequestDTO request) {
+        SiteUser user = getCurrentUser(principal);
+        try {
+            noticeService.createNotice(request.getChatRoomId(), request.getContent(), user);
+        } catch (IllegalArgumentException | IllegalStateException | SecurityException e) {
+            messagingTemplate.convertAndSend("/user/" + user.getUuid() + "/topic/errors", e.getMessage());
+        }
+    }
+
+    @MessageMapping("/updateNotice")
+    @Transactional
+    public void updateNotice(Principal principal, NoticeRequestDTO request) {
+        SiteUser user = getCurrentUser(principal);
+        try {
+            noticeService.updateNotice(request.getChatRoomId(), request.getContent(), user);
+        } catch (IllegalArgumentException | IllegalStateException | SecurityException e) {
+            messagingTemplate.convertAndSend("/user/" + user.getUuid() + "/topic/errors", e.getMessage());
+        }
+    }
+
+    @MessageMapping("/deleteNotice")
+    @Transactional
+    public void deleteNotice(Principal principal, NoticeRequestDTO request) {
+        SiteUser user = getCurrentUser(principal);
+        try {
+            noticeService.deleteNotice(request.getChatRoomId(), user);
+        } catch (IllegalArgumentException | IllegalStateException | SecurityException e) {
+            messagingTemplate.convertAndSend("/user/" + user.getUuid() + "/topic/errors", e.getMessage());
+        }
+    }
+
+    @MessageMapping("/getNotice")
+    @Transactional(readOnly = true)
+    public void getNotice(Principal principal, @Payload NoticeRequestDTO request) {
+        SiteUser user = getCurrentUser(principal);
+        try {
+            if (request == null || request.getChatRoomId() == null) {
+                messagingTemplate.convertAndSend("/user/" + user.getUuid() + "/topic/errors", "채팅방 ID가 제공되지 않았습니다.");
+                return;
+            }
+            NoticeDTO notice = noticeService.getNotice(request.getChatRoomId(), user);
+            messagingTemplate.convertAndSend("/user/" + user.getUuid() + "/topic/notice", notice);
+        } catch (IllegalArgumentException | SecurityException e) {
+            messagingTemplate.convertAndSend("/user/" + user.getUuid() + "/topic/errors", e.getMessage());
+        }
+    }
+    @MessageMapping("/toggleNoticeState")
+    @Transactional
+    public void toggleNoticeState(Principal principal, @Payload NoticeStateRequestDTO request, Message<byte[]> message) {
+        SiteUser user = getCurrentUser(principal);
+        String rawPayload = new String(message.getPayload(), StandardCharsets.UTF_8);
+        System.out.println("Raw STOMP payload: " + rawPayload);
+        System.out.println("Parsed DTO: " + request);
+        System.out.println("Received: chatRoomId=" + request.getChatRoomId() + ", isExpanded=" + request.isExpanded());
+        try {
+            noticeService.toggleNoticeState(request.getChatRoomId(), request.isExpanded(), user);
+        } catch (IllegalArgumentException | SecurityException e) {
+            messagingTemplate.convertAndSend("/user/" + user.getUuid() + "/topic/errors", e.getMessage());
+        }
     }
 
     @MessageExceptionHandler(IllegalArgumentException.class)

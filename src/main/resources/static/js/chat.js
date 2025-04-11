@@ -23,6 +23,7 @@ const chatApp = (function() {
     let state = { isChatOpen: false, isChatRoomOpen: false, isLoading: false };
     let isChatRoomsLoaded = false;
     let offlineTimers = new Map();
+    let notices = new Map();
 
     // 상태 저장
     function saveChatState() {
@@ -116,7 +117,7 @@ const chatApp = (function() {
     // 온라인 상태 확인 요청
     function checkOnlineStatus(chatRoomId) {
         if (stompClient?.connected && chatRoomId) {
-            stompClient.send("/app/onlineStatus", {}, JSON.stringify({ chatRoomId: chatRoomId }));
+            stompClient.send("/app/onlineStatus", {}, JSON.stringify({ chatRoomId }));
         }
     }
 
@@ -181,11 +182,182 @@ const chatApp = (function() {
         });
     }
 
+    // 공지사항 가져오기
+    function fetchNotice(chatRoomId) {
+        if (stompClient?.connected && chatRoomId) {
+            stompClient.send("/app/getNotice", {}, JSON.stringify({ chatRoomId }));
+        }
+    }
+    // 공지사항 렌더링
+    function renderNotice(chat) {
+        const noticeSection = document.getElementById('noticeSection');
+        if (!noticeSection) return;
+
+        const noticeView = document.getElementById('noticeView');
+        const noticeEmpty = document.getElementById('noticeEmpty');
+        const noticePreview = document.getElementById('noticePreview');
+        const noticeContent = document.getElementById('noticeContent');
+        const noticeEditBtn = document.querySelector('.notice-edit');
+        const noticeDeleteBtn = document.querySelector('.notice-delete');
+        const noticeAddBtn = document.querySelector('.notice-add');
+        const noticeToggle = document.querySelector('.notice-toggle');
+
+        if (chat.type !== 'GROUP') {
+            noticeSection.style.display = 'none';
+            return;
+        }
+
+        let notice = notices.get(chat.id);
+        if (!notice) {
+            notice = { content: null, expanded: false }; // 초기값 설정
+            notices.set(chat.id, notice);
+        }
+        const isOwner = chat.owner?.uuid === currentUser;
+
+        noticeToggle.removeEventListener('click', toggleNoticeHandler);
+        noticePreview.removeEventListener('click', previewClickHandler);
+
+        if (!notice.content) {
+            if (isOwner) {
+                noticeSection.style.display = 'block';
+                noticeView.style.display = 'none';
+                noticeEmpty.style.display = 'block';
+                noticeAddBtn.style.display = 'inline-block';
+            } else {
+                noticeSection.style.display = 'none';
+            }
+            return;
+        }
+
+        noticeSection.style.display = 'block';
+        noticeView.style.display = 'block';
+        noticeEmpty.style.display = 'none';
+
+        noticePreview.textContent = notice.content.split('\n')[0];
+        noticeContent.innerHTML = notice.content
+            .split('\n')
+            .map(line => `<p class="notice-text">${line}</p>`)
+            .join('');
+
+        noticeEditBtn.style.display = isOwner ? 'inline-block' : 'none';
+        noticeDeleteBtn.style.display = isOwner ? 'inline-block' : 'none';
+        noticeToggle.style.display = 'inline-block';
+
+        const isExpanded = notice.expanded !== undefined ? notice.expanded : false; // 필드 이름 변경
+        console.log('Rendering with expanded:', isExpanded);
+        noticeToggle.setAttribute('aria-expanded', isExpanded);
+        noticeContent.classList.toggle('expanded', isExpanded);
+        noticePreview.classList.toggle('hidden', isExpanded);
+
+        noticeToggle.addEventListener('click', toggleNoticeHandler);
+        noticePreview.addEventListener('click', previewClickHandler);
+    }
+    function toggleNoticeHandler() {
+        const noticeContent = document.getElementById('noticeContent');
+        const noticePreview = document.getElementById('noticePreview');
+        const noticeToggle = document.querySelector('.notice-toggle');
+        const notice = notices.get(currentChatRoomId);
+
+        if (!noticeContent || !noticePreview || !noticeToggle || !notice) {
+            console.error('Missing elements:', { noticeContent, noticePreview, noticeToggle, notice });
+            return;
+        }
+
+        const currentExpanded = notice.expanded !== undefined ? notice.expanded : false; // 수정
+        const newExpanded = !currentExpanded;
+        console.log('Toggling to:', newExpanded);
+
+        notice.expanded = newExpanded;
+        notices.set(currentChatRoomId, notice);
+
+        if (stompClient?.connected && currentChatRoomId) {
+            const payload = JSON.stringify({ chatRoomId: currentChatRoomId, expanded: newExpanded });
+            console.log('Sending at:', new Date().toISOString(), payload);
+            stompClient.send("/app/toggleNoticeState", {}, payload);
+        } else {
+            console.error('WebSocket not connected or chatRoomId missing');
+        }
+
+        // 즉시 UI 업데이트 (서버 응답 대기 없이)
+        noticeToggle.setAttribute('aria-expanded', newExpanded);
+        noticeContent.classList.toggle('expanded', newExpanded);
+        noticePreview.classList.toggle('hidden', newExpanded);
+    }
+
+    function previewClickHandler() {
+        const noticeToggle = document.querySelector('.notice-toggle');
+        if (noticeToggle) noticeToggle.click();
+    }
+
+    // 공지사항 모달 설정
+    function setupNoticeModal() {
+        const noticeModal = document.getElementById('noticeModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const noticeForm = document.getElementById('noticeForm');
+        const noticeTextInput = document.getElementById('noticeText');
+        const submitNoticeBtn = document.getElementById('submitNotice');
+        const cancelNoticeBtn = document.getElementById('cancelNotice');
+        const noticeAddBtn = document.querySelector('.notice-add');
+        const noticeEditBtn = document.querySelector('.notice-edit');
+        const noticeDeleteBtn = document.querySelector('.notice-delete');
+
+        function openModal(mode, text = '') {
+            noticeModal.style.display = 'flex';
+            modalTitle.textContent = mode === 'add' ? '공지사항 등록' : '공지사항 수정';
+            noticeTextInput.value = text;
+        }
+
+        function closeModal() {
+            noticeModal.style.display = 'none';
+            noticeTextInput.value = '';
+        }
+
+        noticeAddBtn?.addEventListener('click', () => openModal('add'));
+        noticeEditBtn?.addEventListener('click', () => {
+            const notice = notices.get(currentChatRoomId);
+            if (notice) openModal('edit', notice.content);
+        });
+
+        noticeDeleteBtn?.addEventListener('click', () => {
+            if (confirm('공지사항을 삭제하시겠습니까?') && stompClient?.connected) {
+                stompClient.send("/app/deleteNotice", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
+            }
+        });
+
+        cancelNoticeBtn?.addEventListener('click', closeModal);
+
+        noticeForm?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const content = noticeTextInput.value.trim();
+            if (!content) {
+                alert('공지사항 내용을 입력해주세요.');
+                return;
+            }
+            if (!stompClient?.connected) {
+                alert('서버에 연결되지 않았습니다.');
+                return;
+            }
+
+            const payload = { chatRoomId: currentChatRoomId, content };
+            if (modalTitle.textContent === '공지사항 등록') {
+                stompClient.send("/app/createNotice", {}, JSON.stringify(payload));
+            } else {
+                stompClient.send("/app/updateNotice", {}, JSON.stringify(payload));
+            }
+            closeModal();
+        });
+    }
+
     // 토픽 구독
     function subscribeToTopics() {
         stompClient.subscribe(`/user/${currentUser}/topic/chatrooms`, message => {
             chatRoomsCache = JSON.parse(message.body);
             isChatRoomsLoaded = true;
+            chatRoomsCache.forEach(chat => {
+                if (chat.type === 'GROUP' && !notices.has(chat.id)) {
+                    fetchNotice(chat.id); // 공지사항 미리 가져오기
+                }
+            });
             renderChatList(chatRoomsCache);
             if (state.isChatRoomOpen && currentChatRoomId) {
                 const chat = chatRoomsCache.find(c => c.id === currentChatRoomId);
@@ -217,9 +389,7 @@ const chatApp = (function() {
         });
 
         stompClient.subscribe(`/user/${currentUser}/topic/notifications`, message => {
-            console.log('Raw message body:', message.body); // 원시 데이터
             const notification = JSON.parse(message.body);
-            console.log('Parsed notification:', notification); // 파싱된 데이터 확인
             handleNotification(notification);
         });
 
@@ -235,6 +405,34 @@ const chatApp = (function() {
         stompClient.subscribe(`/user/${currentUser}/topic/onlineStatus`, message => {
             const status = JSON.parse(message.body);
             updateOnlineStatus(status.uuid, status.lastOnline, status.isOnline);
+        });
+
+        stompClient.subscribe(`/user/${currentUser}/topic/notice`, message => {
+            const notice = JSON.parse(message.body);
+            const chat = chatRoomsCache.find(c => c.id === notice.chatRoomId);
+            if (chat) {
+                if (notice.content) {
+                    notices.set(notice.chatRoomId, notice); // Expanded 포함
+                } else {
+                    notices.delete(notice.chatRoomId);
+                }
+                if (currentChatRoomId === notice.chatRoomId) {
+                    renderNotice(chat);
+                }
+            }
+        });
+
+        stompClient.subscribe(`/user/${currentUser}/topic/noticeState`, message => {
+            const update = JSON.parse(message.body);
+            const notice = notices.get(update.chatRoomId);
+            if (notice) {
+                notice.expanded = update.expanded;
+                notices.set(update.chatRoomId, notice);
+                if (update.chatRoomId === currentChatRoomId) {
+                    const chat = chatRoomsCache.find(c => c.id === update.chatRoomId);
+                    renderNotice(chat);
+                }
+            }
         });
     }
 
@@ -333,14 +531,13 @@ const chatApp = (function() {
                 content: item.content || "",
                 timestamp: item.timestamp,
                 chatRoomId: item.chatRoomId,
-                messageId: item.messageId // messageId 추가
+                messageId: item.messageId
             });
         }
     }
 
     // 푸시 알림 표시
     function showPushNotification(notification) {
-        console.log('Processed notification:', notification); // 디버깅
         const container = document.getElementById('notificationContainer');
         if (!container) return;
 
@@ -365,11 +562,7 @@ const chatApp = (function() {
         container.style.transform = 'translateX(0)';
         container.style.cursor = 'pointer';
 
-        const handleClick = () => {
-            if (!notification.messageId) {
-                console.warn('Message ID missing in notification:', notification);
-                return;
-            }
+        container.onclick = () => {
             const chat = chatRoomsCache.find(c => c.id === notification.chatRoomId);
             if (chat) {
                 openPersonalChat(chat).then(() => {
@@ -385,8 +578,6 @@ const chatApp = (function() {
             container.style.transform = 'translateX(400px)';
             setTimeout(() => container.style.display = 'none', 300);
         };
-
-        container.onclick = handleClick;
 
         setTimeout(() => {
             if (container.style.display === 'block') {
@@ -454,7 +645,7 @@ const chatApp = (function() {
             `;
 
             if (isRequest && isOwner && !isRequester) {
-                item.querySelector('.approve').addEventListener('click', () => handleRequest(chat.id, 'APPROVE'));
+                item.querySelector('.reject').addEventListener('click', () => handleRequest(chat.id, 'APPROVE'));
                 item.querySelector('.reject').addEventListener('click', () => handleRequest(chat.id, 'REJECT'));
                 item.querySelector('.block').addEventListener('click', () => handleRequest(chat.id, 'BLOCK'));
             }
@@ -539,7 +730,7 @@ const chatApp = (function() {
         checkOnlineStatus(chat.id);
     }
 
-    // 개인 채팅 열기
+    // 개인 채팅 열기 (기존 방식 복원)
     async function openPersonalChat(chat) {
         if (!chat || !chat.id || isChatOpening) return;
 
@@ -585,11 +776,10 @@ const chatApp = (function() {
         chatWindow.querySelector('.chat-name').textContent = chatName;
         const avatar = chatWindow.querySelector('.avatar');
         avatar.textContent = chatName.slice(0, 2);
+
         const optionsMenu = document.querySelector('.options-menu');
-        // 기존 옵션 버튼 초기화
         optionsMenu.innerHTML = '';
 
-        // "차단하기" 버튼 (개인 채팅에만 표시)
         if (chat.type === 'PRIVATE') {
             const blockButton = document.createElement('button');
             blockButton.className = 'block-option';
@@ -597,17 +787,18 @@ const chatApp = (function() {
             optionsMenu.appendChild(blockButton);
         }
 
-        // "나가기" 버튼 (개인 채팅 또는 그룹 채팅에서 모임장이 아닌 경우 표시)
         if (chat.type === 'PRIVATE' || (chat.type === 'GROUP' && chat.owner?.uuid !== currentUser)) {
             const leaveButton = document.createElement('button');
             leaveButton.className = 'leave-option';
             leaveButton.textContent = '나가기';
             optionsMenu.appendChild(leaveButton);
         }
+
         if (chat.type === 'GROUP') {
             renderParticipantsList(chat);
+            fetchNotice(chat.id); // 공지사항 로드
+            renderNotice(chat);
         } else {
-
             const existingButton = optionsMenu.querySelector('.user-list');
             if (existingButton) existingButton.remove();
             const participantsSidebar = chatWindow.querySelector('.participants-sidebar');
@@ -737,20 +928,11 @@ const chatApp = (function() {
         if (chatOptions) {
             chatOptions.addEventListener('click', (event) => {
                 const target = event.target;
-
                 if (target.classList.contains('notification-toggle') || target.closest('.notification-toggle')) {
-                    console.log('Notification toggle clicked'); // 디버깅
-                    if (!currentChatRoomId || !stompClient?.connected) {
-                        console.warn('Cannot toggle notification: No chat room ID or connection'); // 디버깅
-                        return;
-                    }
+                    if (!currentChatRoomId || !stompClient?.connected) return;
                     const chat = chatRoomsCache.find(c => c.id === currentChatRoomId);
-                    if (!chat) {
-                        console.warn('Chat not found in cache'); // 디버깅
-                        return;
-                    }
-                    const action = (chat?.notificationEnabled !== false) ? 'OFF' : 'ON';
-                    console.log(`Sending toggle request: ${action}`); // 디버깅
+                    if (!chat) return;
+                    const action = chat.notificationEnabled ? 'OFF' : 'ON';
                     stompClient.send("/app/toggleNotification", {}, JSON.stringify({ chatRoomId: currentChatRoomId, action }));
                 }
             });
@@ -810,6 +992,8 @@ const chatApp = (function() {
                 saveChatState();
             });
         }
+
+        setupNoticeModal();
     }
 
     // 메시지 전송
@@ -903,135 +1087,4 @@ document.addEventListener('DOMContentLoaded', () => {
     chatApp.setupEventListeners();
     chatApp.updateChatUI();
     chatApp.updateTabUI();
-    const noticeSection = document.getElementById('noticeSection');
-    const noticeView = document.getElementById('noticeView');
-    const noticeEmpty = document.getElementById('noticeEmpty');
-    const noticeToggle = document.querySelector('.notice-toggle');
-    const noticeContent = document.getElementById('noticeContent');
-    const noticePreview = document.getElementById('noticePreview');
-    const noticeAddBtn = document.querySelector('.notice-add');
-    const noticeEditBtn = document.querySelector('.notice-edit');
-    const noticeDeleteBtn = document.querySelector('.notice-delete');
-    const noticeModal = document.getElementById('noticeModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const noticeForm = document.getElementById('noticeForm');
-    const noticeTextInput = document.getElementById('noticeText');
-    const submitNoticeBtn = document.getElementById('submitNotice');
-    const cancelNoticeBtn = document.getElementById('cancelNotice');
-
-    // 공지사항 데이터 (localStorage에서 관리)
-    let notices = JSON.parse(localStorage.getItem('notices')) || [];
-
-    // 공지사항 렌더링
-    function renderNotices() {
-        if (notices.length > 0) {
-            // 공지사항이 있을 때
-            noticeView.style.display = 'block';
-            noticeEmpty.style.display = 'none';
-
-            // 첫 번째 공지사항만 표시 (다중 공지사항은 나중에 확장 가능)
-            const notice = notices[0];
-            noticePreview.textContent = notice.text.split('\n')[0];
-            noticeContent.innerHTML = notice.text
-                .split('\n')
-                .map(line => `<p class="notice-text">${line}</p>`)
-                .join('');
-        } else {
-            // 공지사항이 없을 때
-            noticeView.style.display = 'none';
-            noticeEmpty.style.display = 'block';
-        }
-    }
-
-    // 초기 렌더링
-    renderNotices();
-
-    // 토글 동작
-    if (noticeToggle && noticeContent) {
-        noticeToggle.addEventListener('click', () => {
-            const isExpanded = noticeToggle.getAttribute('aria-expanded') === 'true';
-            if (isExpanded) {
-                noticeContent.classList.remove('expanded');
-                noticeToggle.setAttribute('aria-expanded', 'false');
-                setTimeout(() => {
-                    noticePreview.classList.remove('hidden');
-                }, 300);
-            } else {
-                noticePreview.classList.add('hidden');
-                setTimeout(() => {
-                    noticeContent.classList.add('expanded');
-                    noticeToggle.setAttribute('aria-expanded', 'true');
-                }, 300);
-            }
-        });
-
-        // 미리보기 클릭 시 토글
-        noticePreview.addEventListener('click', () => {
-            noticeToggle.click();
-        });
-    }
-
-    // 모달 열기
-    function openModal(mode, text = '') {
-        noticeModal.style.display = 'flex';
-        if (mode === 'add') {
-            modalTitle.textContent = '공지사항 등록';
-            noticeTextInput.value = '';
-        } else if (mode === 'edit') {
-            modalTitle.textContent = '공지사항 수정';
-            noticeTextInput.value = text;
-        }
-    }
-
-    // 모달 닫기
-    function closeModal() {
-        noticeModal.style.display = 'none';
-        noticeTextInput.value = '';
-    }
-
-    // 공지사항 등록 버튼 클릭
-    noticeAddBtn.addEventListener('click', () => {
-        openModal('add');
-    });
-
-    // 공지사항 수정 버튼 클릭
-    noticeEditBtn.addEventListener('click', () => {
-        if (notices.length > 0) {
-            openModal('edit', notices[0].text);
-        }
-    });
-
-    // 공지사항 삭제 버튼 클릭
-    noticeDeleteBtn.addEventListener('click', () => {
-        if (confirm('공지사항을 삭제하시겠습니까?')) {
-            notices = [];
-            localStorage.setItem('notices', JSON.stringify(notices));
-            renderNotices();
-        }
-    });
-
-    // 모달 취소 버튼 클릭
-    cancelNoticeBtn.addEventListener('click', closeModal);
-
-    // 공지사항 저장 (등록/수정)
-    noticeForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const text = noticeTextInput.value.trim();
-        if (!text) {
-            alert('공지사항 내용을 입력해주세요.');
-            return;
-        }
-
-        if (modalTitle.textContent === '공지사항 등록') {
-            // 등록
-            notices = [{ text, id: Date.now() }];
-        } else {
-            // 수정
-            notices[0].text = text;
-        }
-
-        localStorage.setItem('notices', JSON.stringify(notices));
-        renderNotices();
-        closeModal();
-    });
 });

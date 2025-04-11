@@ -18,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,43 +96,34 @@ public class ChatRoomService {
     //채팅방 수동 생성, 자동 생성 고려
     @Transactional
     public ChatRoom CreateMoimChatRoom(Long clubId, String name, String ownerUuid) {
-        // 1. 모임장 확인
         Optional<SiteUser> userOptional = userRepository.findByUuid(ownerUuid);
         if (!userOptional.isPresent()) {
             throw new IllegalStateException("사용자를 찾을 수 없습니다");
         }
         SiteUser ownerUser = userOptional.get();
-        // 2. 모임 확인
-        System.out.println(clubId);
+
         Optional<Club> clubOptional = clubRepository.findById(clubId);
         if (!clubOptional.isPresent()) {
             throw new IllegalStateException("모임을 찾을 수 없습니다");
         }
         Club club = clubOptional.get();
 
-        // 3. 모임장이 맞는지 확인
         if (!club.getHost().equals(ownerUser)) {
             throw new IllegalStateException("모임장만 채팅방을 생성할 수 있습니다");
         }
-        // 4. 채팅방 생성
+
         ChatRoom chatRoom = ChatRoom.builder()
                 .type("GROUP")
-                .name(name != null && !name.isEmpty() ? name : club.getTitle() + " 채팅방") // 이름이 없으면 모임 제목 사용
+                .name(name != null && !name.isEmpty() ? name : club.getTitle() + " 채팅방")
                 .owner(ownerUser)
-                .participants(List.of(ownerUser))
-                .club(club) // Club과 연결
-                .status("ACTIVE") // 상태 설정
+                .participants(new ArrayList<>()) // 수정 가능 리스트
+                .participantSettings(new ArrayList<>()) // 명시적 초기화
+                .club(club)
+                .status("ACTIVE")
                 .build();
 
-
-        // 5. 채팅방 저장
-        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
-
-        // 6. 모임장 참여 설정
-        ChatRoomParticipant requesterParticipant = new ChatRoomParticipant(savedChatRoom, ownerUser, true);
-        savedChatRoom.addParticipantSetting(requesterParticipant);
-        chatRoomParticipantRepository.save(requesterParticipant);
-        return savedChatRoom;
+        chatRoom.addParticipant(ownerUser); // participants와 participantSettings 동기화
+        return chatRoomRepository.save(chatRoom);
     }
     //나간 사람이 모임 채팅방을 다시 참가 할수 있게 ( 참여한 모임 확인 필요)
     @Transactional
@@ -172,10 +160,7 @@ public class ChatRoomService {
         }
 
         // 6. 참여자 추가
-        ChatRoomParticipant participant = new ChatRoomParticipant(chatRoom, joinUser, true);
-        chatRoom.addParticipantSetting(participant);
-        chatRoom.getParticipants().add(joinUser);
-        chatRoomParticipantRepository.save(participant);
+        chatRoom.addParticipant(joinUser);
         chatRoomRepository.save(chatRoom);
     }
 
@@ -205,13 +190,9 @@ public class ChatRoomService {
                 .build();
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
-        ChatRoomParticipant requesterParticipant = new ChatRoomParticipant(savedChatRoom, requester, true);
-        ChatRoomParticipant ownerParticipant = new ChatRoomParticipant(savedChatRoom, receiver, true);
-        savedChatRoom.addParticipantSetting(requesterParticipant);
-        savedChatRoom.addParticipantSetting(ownerParticipant);
-        chatRoomParticipantRepository.save(requesterParticipant);
-        chatRoomParticipantRepository.save(ownerParticipant);
-
+        savedChatRoom.addParticipant(requester); // addParticipant 사용
+        savedChatRoom.addParticipant(receiver);  // addParticipant 사용
+        chatRoomRepository.save(savedChatRoom);
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(requester.getUuid(), receiver.getUuid()));
         return savedChatRoom;
     }
@@ -265,10 +246,10 @@ public class ChatRoomService {
             ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chat, user)
                     .orElseThrow(() -> new IllegalStateException("참여자를 찾을 수 없습니다."));
             dto.setNotificationEnabled(participant.isNotificationEnabled());
+            dto.setNoticeExpanded(participant.isNoticeExpanded()); // 추가
             return dto;
         }).collect(Collectors.toList());
     }
-
     @Transactional(readOnly = true)
     public List<ChatRoomDTO.ChatMessageDTO> getMessages(ChatRoom chatRoom, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").ascending());

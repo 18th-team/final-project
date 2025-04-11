@@ -54,9 +54,15 @@ public class ChatRoom {
     private Club club; // 그룹 채팅일 경우 연결된 모임
 
     // 관계 설정 헬퍼 메서드 (선택적)
-    public void addParticipantSetting(ChatRoomParticipant participant) {
-        this.participantSettings.add(participant);
-        participant.setChatRoom(this);
+    public void addParticipant(SiteUser user) {
+        if (!participants.contains(user)) {
+            participants.add(user);
+            if (participantSettings.stream().noneMatch(ps -> ps.getUser().equals(user))) {
+                ChatRoomParticipant participant = new ChatRoomParticipant(this, user, true);
+                participantSettings.add(participant);
+                participant.setChatRoom(this);
+            }
+        }
     }
 
 }
