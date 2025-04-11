@@ -4,9 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Club List</title>
-    <link th:href="@{/font/font.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/css/custom_category_badge.css}" rel="stylesheet" type="text/css"/>
-    <link th:href="@{/css/category_menu.css}" rel="stylesheet"/>
 
 
     <style>
@@ -30,6 +28,10 @@
 
 </head>
 <body>
+
+<!-- /clubs, /clubs/category/**, / 일 때만 카테고리 표시 -->
+<div th:replace="~{fragments/category_menu :: category}"
+></div>
 <div class="container my-5 shadow-lg p-4 rounded-3 w-80">
     <h1 class="my-5 text-center fw-bold">모락 크루 리스트 🍳</h1>
     <!-- 클럽 목록 -->
@@ -69,14 +71,14 @@
                             <h4 class="card-title create-name mb-2 text-truncate" style="max-width: 100%;"
                                 th:text="${club.title}"></h4>
 
-                            <p class="card-text my-3"><i class="bi bi-geo-alt-fill"></i><span
-                                    th:text="${club.locationTitle}">주소타이틀</span></p>
-                            <p class="card-text my-3"><i class="bi bi-geo-alt-fill"></i>  <span
-                                    th:text="${club.location}">주소</span></p>
+                            <p class="card-text my-3 text-truncate"><i class="bi bi-people-fill"></i> 참여자 수 : <span
+                                    th:text="${club.memberCount}">참여자수</span></p>
+                            <p class="card-text my-3 text-truncate"><i class="bi bi-geo-alt-fill"></i>  <span
+                                    th:text="${club.location}"> 주소</span></p>
 
                             <p class="card-text" style="
        font-family: 'Pretendard-Medium';
-">가입 조건 : <span
+"><i class="bi bi-patch-check"></i> 가입조건 : <span
                                     th:text="${club.ageRestriction != null ? club.ageRestriction + '세 이상' : '제한 없음'}">나이</span>
                             </p>
 

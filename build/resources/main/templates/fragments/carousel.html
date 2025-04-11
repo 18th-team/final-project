@@ -1,27 +1,30 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="carousel">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carousel Test</title>
+
+</head>
 <body>
-<div  id="carouselExample" class="carousel slide container my-5" data-bs-ride="carousel" data-bs-wrap="true">
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="2" aria-label="Slide 3"></button>
-        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="3" aria-label="Slide 4"></button>
-    </div>
+<div th:fragment="carousel" id="carouselExample" class= "carousel slide container-fluid h-100 " data-bs-ride="carousel" data-bs-wrap="true" style="height: 400px">
+
+    <!-- Carousel Items -->
     <div class="carousel-inner">
-        <div class="carousel-item active" data-bs-interval="2000">
-            <img th:src="@{/img/carousel01.jpg}" class="d-block w-100" alt="Slide 1" />
-        </div>
-        <div class="carousel-item" data-bs-interval="2000">
-            <img th:src="@{/img/carousel02.jpg}" class="d-block w-100" alt="Slide 2" />
-        </div>
-        <div class="carousel-item" data-bs-interval="2000">
-            <img th:src="@{/img/carousel03.jpg}" class="d-block w-100" alt="Slide 3" />
-        </div>
-        <div class="carousel-item" data-bs-interval="2000">
-            <img th:src="@{/img/carousel04.jpg}" class="d-block w-100" alt="Slide 4" />
+        <div th:each="keyword, iterStat : ${keywordList}"
+             th:class="${iterStat.index == 0} ? 'carousel-item active' : 'carousel-item'"
+             data-bs-interval="3000">
+            <a th:href="@{/clubs/category/{id}(id=${keyword.id})}">
+                <img th:src="@{/img/club/carousel{index}.png(index=${keyword.id < 10 ? '0' + keyword.id : keyword.id})}"
+                     class="d-block h-100 w-100 mx-auto"
+                     style="width: auto;min-width: 600px; object-fit: cover
+"
+                     th:alt="'클럽 이미지 ' + ${keyword.id}">
+            </a>
         </div>
     </div>
+
+    <!-- Carousel Controls -->
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
@@ -31,5 +34,6 @@
         <span class="visually-hidden">Next</span>
     </button>
 </div>
+
 </body>
 </html>

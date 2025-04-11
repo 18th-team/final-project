@@ -1,11 +1,10 @@
+/*메인화면 - 모임내용들*/
 .card-text{
-    font-size: 1.3em;
+    font-size: clamp(16px, 2vw, 20px)
 }
+
+/*메인화면- 모임명*/
 #recommend .card-title ,#random .card-title{
     color: #667085;
-}
-
-
-.container{
-    margin-top: 130px;
+    font-size: clamp(14px, 2vw, 18px)
 }

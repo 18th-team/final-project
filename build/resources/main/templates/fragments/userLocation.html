@@ -1,119 +1,154 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="userLocation">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
-    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=nlpedkwvft"></script>
+
+
 </head>
 <body>
-<div class="container ">
+<div class="container my-3" th:fragment="userLocation">
     <section class="nearby-meetings container" aria-labelledby="nearby-meetings-title">
-        <h2 id="nearby-meetings-title" class="section-title text-center text-md-start my-4">경기도/수원시에서 가장 가까운 모임</h2>
-        <div class="row content-wrapper">
-            <div class="col-lg-6 meetings-grid">
-                <div class="row g-3 meetings-row">
-                    <div class="col-6 col-sm-6">
-                        <div id="nearby-clubs" class="list-group"></div>
-                    </div>
-
+        <h2 id="nearby-meetings-title" class="section-title text-center text-md-start my-4">현재위치에서 가장 가까운 모임</h2>
+        <div class="row h-100 ">
+            <div class="col-md-6 d-flex flex-column justify-content-center">
+                <div id="meetings-grid" class="row gx-3 my-2">
                 </div>
             </div>
-            <div class="col-lg-6 d-none d-lg-block border border-2 h-50 d-flex align-items-center">
-                <div id="map" style="width:100%;height:400px;" class="mb-4"></div>
+            <div class="col-md-6 d-flex align-items-center">
+                <div id="map" style="width: 100%" class="mb-4"></div>
             </div>
         </div>
     </section>
-</div>
-<script th:inline="javascript">
-    window.onload = function() {
-        alert("페이지가 완전히 로딩되었습니다!");
-    };
-    document.addEventListener('DOMContentLoaded', function() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    const userLat = position.coords.latitude;
-                    const userLng = position.coords.longitude;
-                    console.log("User Location: ", userLat, userLng);
-                    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-                    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
-                    fetch('/nearby', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' ,
-                            [csrfHeader]: csrfToken // CSRF 토큰 추가
-                        },
-                        body: JSON.stringify({ latitude: userLat, longitude: userLng })
-                    })
-                        .then(response => {
-                            if (!response.ok) throw new Error('Network response was not ok');
-                            return response.json();
+
+    <script th:inline="javascript">
+        // window.onload = function () {
+        //     alert("페이지가 완전히 로딩되었습니다!");
+        // };
+        document.addEventListener('DOMContentLoaded', function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        console.log("User Location: ", userLat, userLng);
+                        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+                        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+                        fetch('/nearby', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                [csrfHeader]: csrfToken // CSRF 토큰 추가
+                            },
+                            body: JSON.stringify({latitude: userLat, longitude: userLng})
                         })
-                        .then(clubs => renderClubs(userLat, userLng, clubs))
-                        .catch(error => console.error('Error:', error));
-                },
-                error => {
-                    console.error('Geolocation Error:', error);
-                    renderDefaultMap(37.5665, 126.9780); // 기본 위치 (서울)
-                }
-            );
-        } else {
-            renderDefaultMap(37.5665, 126.9780);
-        }
-    });
-
-    function renderDefaultMap(lat, lng) {
-        const map = new naver.maps.Map('map', {
-            center: new naver.maps.LatLng(lat, lng),
-            zoom: 13
+                            .then(response => {
+                                if (!response.ok) throw new Error('Network response was not ok');
+                                return response.json();
+                            })
+                            .then(clubs => renderClubs(userLat, userLng, clubs))
+                            .catch(error => console.error('Error:', error));
+                    },
+                    error => {
+                        console.error('Geolocation Error:', error);
+                        renderDefaultMap(37.5665, 126.9780); // 기본 위치 (서울)
+                    }
+                );
+            } else {
+                renderDefaultMap(37.5665, 126.9780);
+            }
         });
-        document.getElementById('nearby-clubs').innerHTML = '<p>위치를 가져올 수 없습니다.</p>';
-    }
 
-    function renderClubs(userLat, userLng, clubs) {
-        if (!Array.isArray(clubs)) {
-            console.error('clubs is not an array:', clubs);
-            return;
+        function renderDefaultMap(lat, lng) {
+            const map = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(lat, lng),
+                zoom: 15
+            });
+            document.getElementById('meetings-grid').innerHTML = '<p>위치를 가져올 수 없습니다.</p>';
         }
 
-        const map = new naver.maps.Map('map', {
-            center: new naver.maps.LatLng(userLat, userLng),
-            zoom: 13
-        });
+        //map크기설정
+        function setMapHeight() {
+            const map = document.getElementById("map");
+            if (window.innerWidth < 1024 ){
+                map.style.height = "400px"; // md 이하일 때
+            } else {
+                map.style.height = "800px"; // md 이상일 때
+            }
+        }
 
-        const userMarker = new naver.maps.Marker({
-            position: new naver.maps.LatLng(userLat, userLng),
-            map: map,
-            icon: { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' }
-        });
-        const userInfoWindow = new naver.maps.InfoWindow({
-            content: `<div style="padding:10px;"><strong>현재위치</strong></div>`
-        });
-        naver.maps.Event.addListener(userMarker, 'click', () => {
-            userInfoWindow.getMap() ? userInfoWindow.close() : userInfoWindow.open(map, userMarker);
-        });
+        // 최초 로드 시 높이 설정
+        window.addEventListener("DOMContentLoaded", setMapHeight);
 
-        clubs.forEach(club => {
-            const marker = new naver.maps.Marker({
-                position: new naver.maps.LatLng(club.latitude, club.longitude),
+        // 창 크기 변경될 때도 반응하도록 설정
+        window.addEventListener("resize", setMapHeight);
+
+
+        function renderClubs(userLat, userLng, clubs) {
+            if (!Array.isArray(clubs)) {
+                console.error('clubs is not an array:', clubs);
+                return;
+            }
+
+            const map = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(userLat, userLng),
+                zoom: 13
+            });
+
+            const userMarker = new naver.maps.Marker({
+                position: new naver.maps.LatLng(userLat, userLng),
                 map: map,
-                title: club.locationTitle,
-                icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' }
+                icon: {url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'}
             });
-            const infoWindow = new naver.maps.InfoWindow({
-                content: `<div style="padding:10px;"><strong>${club.locationTitle}</strong><br>${club.location}</div>`
+            const userInfoWindow = new naver.maps.InfoWindow({
+                content: `<div style="padding:10px;"><strong>현재위치</strong></div>`
             });
-            naver.maps.Event.addListener(marker, 'click', () => {
-                infoWindow.open(map, marker);
+            naver.maps.Event.addListener(userMarker, 'click', () => {
+                userInfoWindow.getMap() ? userInfoWindow.close() : userInfoWindow.open(map, userMarker);
             });
-        });
 
-        const clubList = document.getElementById('nearby-clubs');
-        clubList.innerHTML = clubs.length > 0 ? clubs.map(club => `
-            <a href="/clubs/${club.id}" class="list-group-item list-group-item-action">
-                <strong>${club.locationTitle}</strong><br>${club.location}
-            </a>
-        `).join('') : '<p>근처에 클럽이 없습니다.</p>';
-    }
-</script>
+            clubs.forEach(club => {
+                const marker = new naver.maps.Marker({
+                    position: new naver.maps.LatLng(club.latitude, club.longitude),
+                    map: map,
+                    title: club.locationTitle,
+                    icon: {url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'}
+                });
+                const infoWindow = new naver.maps.InfoWindow({
+                    content: `<div style="font-family: 'Pretendard-Regular', sans-serif;color: #333;padding: 10px">
+<div style="font-size: 18px">
+${club.title}
+</div><div style="font-size: 14px;color: #cc5f17">장소:${club.locationTitle}</div></div>`
+                });
+                naver.maps.Event.addListener(marker, 'click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+
+            const grid = document.getElementById('meetings-grid');
+            grid.innerHTML = clubs.length > 0
+                ? clubs.map(club => `
+    <div class="col-md-6 my-2">
+      <a href="/clubs/${club.id}" class="card flex-fill">
+        <img
+          src="/upload/${club.storedFileName?.[0] || 'default.jpg'}"
+          alt="클럽 이미지"
+          class="img-fluid h-100"
+          onerror="this.style.display='none';"
+        >
+        <div class="card-body meeting-details">
+          <p class="card-title meeting-location text-truncate" style="color: #667085">${club.title}</p>
+          <p class="card-text meeting-description text-truncate" style="font-size: 1.3em">${club.content}</p>
+        </div>
+      </a>
+    </div>
+  `).join('')
+                : '<p>근처에 클럽이 없습니다.</p>';
+
+
+        }
+    </script>
+</div>
+
 </body>
 </html>

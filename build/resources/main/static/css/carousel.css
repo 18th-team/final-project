@@ -1,6 +1,4 @@
-.carousel { position: relative; margin: 50px auto}
 .carousel-inner { border-radius: 8px; overflow: hidden; }
-.carousel-item img { object-fit: contain;}
 .carousel-indicators {
     background-color: #e36d1d;
     width: 20%;

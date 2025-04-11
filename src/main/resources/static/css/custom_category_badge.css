@@ -11,32 +11,62 @@
 }
 
 /* 각 색상에 맞는 파스텔 배경색 */
-.custom-badge-success {
+.custom-badge-success , .custom-button-success  {
     background-color: #a3d8a3; /* 파스텔 초록색 */
     color: white;
 }
 
-.custom-badge-info {
+.custom-badge-info , .custom-button-info   {
     background-color: #a3c6e2; /* 파스텔 파란색 */
     color: white;
 }
 
-.custom-badge-warning {
+.custom-badge-warning , .custom-button-warning {
     background-color: #f7c6a0; /* 파스텔 주황색 */
     color: white;
 }
 
-.custom-badge-danger {
+.custom-badge-danger , .custom-button-danger  {
     background-color: #f7a3c6; /* 파스텔 핑크색 */
     color: white;
 }
 
-.custom-badge-primary {
+.custom-badge-primary ,.custom-button-primary {
     background-color: #d0a3e0; /* 파스텔 보라색 */
     color: white;
 }
 
-.custom-badge-secondary {
+.custom-badge-secondary , .custom-button-secondary{
     background-color: #d0e2e0; /* 파스텔 민트색 */
+    color: white;
+}
+.custom-button-secondary:hover {
+    background-color: #a8ccc9;  /* hover 시 배경색 (더 짙은 민트색 등) */
+    color: white;
+}
+
+/*버튼만 호버 !! */
+.custom-button-success:hover {
+    background-color: #88c788;  /* 더 짙은 초록색 */
+    color: white;
+}
+
+.custom-button-info:hover {
+    background-color: #7db5dc;  /* 더 짙은 파란색 */
+    color: white;
+}
+
+.custom-button-warning:hover {
+    background-color: #f4a96d;  /* 더 짙은 주황색 */
+    color: white;
+}
+
+.custom-button-danger:hover {
+    background-color: #ef7fa8;  /* 더 짙은 핑크색 */
+    color: white;
+}
+
+.custom-button-primary:hover {
+    background-color: #bb89d4;  /* 더 짙은 보라색 */
     color: white;
 }

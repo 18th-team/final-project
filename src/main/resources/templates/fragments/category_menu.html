@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="category">
+<!-- d-block d-lg-none-->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" >
 <body>
-<div class="container my-5" id="category">
+<div th:fragment="category" class="container my-5" id="category"
+>
+
     <nav class="category-container row g-4">
         <div class="category-item col-lg-2 col-4" th:each="keyword : ${keywordList}">
             <a th:href="@{/clubs/category/{id}(id=${keyword.id})}" class="category-link card">

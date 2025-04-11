@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="userRecommend"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <body>
-<div class="container">
+<div th:fragment="userRecommend" class="container">
     <h2 id="recommended-title" class="recommended-title"
         th:text="${userList != null ? userList.hostName + '님이 좋아하실 만한 모임이에요 👀' : '추천 모임이 없습니다.'}">
     </h2>
@@ -10,16 +10,22 @@
     <section class="recommended-meetings" aria-labelledby="recommended-title" id="recommend">
         <!-- 한 줄에 3개의 카드가 보이도록 row로 묶고, 카드들은 col-12 col-sm-6 col-md-4로 처리 -->
         <div class="row g-4 mt-4">
-            <div th:each="club : ${recommendedClubs}" class="col-12 col-sm-6 col-md-4">
-                <a class="card meeting-card h-100" th:href="@{/clubs/{id}(id=${club.id})}">
-                    <img th:if="${club.storedFileName != null and #lists.size(club.storedFileName) > 0}"
-                         th:src="@{/upload/{filename}(filename=${club.storedFileName[0]})}"
-                         alt="클럽 이미지" class="rounded img-fluid">
-                    <div class="card-body meeting-details">
-                        <p class="card-title meeting-location" th:text="${club.title}"></p>
-                        <p class="card-text meeting-description text-truncate" th:text="${club.content}"></p>
-                    </div>
-                </a>
+            <div th:if="${not #lists.isEmpty(recommendedClubs)}">
+                <div th:each="club : ${recommendedClubs}" class="col-6 col-md-4">
+                    <a class="card meeting-card h-100" th:href="@{/clubs/{id}(id=${club.id})}">
+                        <img th:if="${club.storedFileName != null and #lists.size(club.storedFileName) > 0}"
+                             th:src="@{/upload/{filename}(filename=${club.storedFileName[0]})}"
+                             alt="클럽 이미지" class="rounded img-fluid">
+                        <div class="card-body meeting-details">
+                            <p class="card-title meeting-location" th:text="${club.title}"></p>
+                            <p class="card-text meeting-description text-truncate" th:text="${club.content}"></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!-- 클럽 리스트 없을 경우 -->
+            <div th:if="${#lists.isEmpty(recommendedClubs)}" class="text-center w-100 mt-4">
+                <h4 class="text-muted">키워드 선택을 다시 해주세요 🙏</h4>
             </div>
         </div>
     </section>

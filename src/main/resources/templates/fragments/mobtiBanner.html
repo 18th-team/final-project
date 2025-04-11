@@ -1,19 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="mobtiBanner">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="mobtiBanner" >
 <head>
 <style>
 .mobti-container {
     background-color: #e36d1d;
-    border-radius: 70px;
+    border-radius: 10px;
     height: 145px;
-      padding:20px;
 }
-.mobti-title {
-    font-size: 36px;
-    font-weight: 700;
-    color: #000;
-}
-
 .mobti-button {
     white-space: nowrap;
 }
@@ -37,19 +30,20 @@
 }
 </style>
 </head>
-<body>
-<div class="container my-5">
-   <section class="mobti-container" aria-labelledby="mobti-title">
+<body >
+<div  class="container my-5">
+   <section class="mobti-container p-3" aria-labelledby="mobti-title">
            <div class="mobti-wrapper row align-items-center h-100">
                <div class="col-12 col-md-8">
-                   <h4 id="mobti-title" class="mobti-title fs-1 fs-md-2 fs-sm-3">
-                       <a th:href="@{/mobti}" class="text-decoration-none text-dark">나의 MOBTI 찾기📝</a>
+                   <h4 id="mobti-title" class="mobti-title" style="font-size: clamp(18px, 2vw, 30px);">
+                       <a th:href="@{/mobti}" style="font-size: clamp(23px, 2vw, 30px);font-weight: bold"   class="text-decoration-none text-dark" >나의 MOBTI 찾기📝</a>
                    </h4>
                </div>
                <div class="mobti-buttons col-12 col-md-4 d-flex justify-content-end gap-2 my-3">
-                   <a th:href="@{/mobti}" class="mobti-button btn btn01 text-decoration-none ">MOBTI검사하기</a>
-                   <button class="mobti-button btn btn02" type="button">친구에게 공유하기</button>
+                   <a th:href="@{/mobti}" class="mobti-button btn btn01 text-decoration-none " style="font-size: clamp(14px, 2vw, 20px);">MOBTI검사하기</a>
+                   <button class="mobti-button btn btn02"  type="button" style="font-size: clamp(14px, 2vw, 20px)">친구에게 공유하기</button>
                </div>
+
            </div>
        </section>
 </div>

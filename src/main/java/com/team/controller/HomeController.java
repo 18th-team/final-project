@@ -44,7 +44,14 @@ public class HomeController {
        System.out.println("Request received: " + location);
        double userLat = location.get("latitude");
        double userLng = location.get("longitude");
-       List<ClubDTO> nearbyClubs = clubService.findNearByClubs(userLat, userLng);
+
+
+       List<ClubDTO> fullList = clubService.findNearByClubs(userLat, userLng);
+       // 리스트를 랜덤하게 섞기
+       Collections.shuffle(fullList);
+       List<ClubDTO> nearbyClubs = fullList.size() > 4 ? fullList.subList(0, 4) : fullList;
+
+
        System.out.println("Nearby clubs: " + nearbyClubs);
        return ResponseEntity.ok(nearbyClubs);
    }
@@ -62,9 +69,9 @@ public class HomeController {
             if (!clubList.isEmpty()) {
                 // 랜덤으로 섞기
                 Collections.shuffle(clubList);
-                // 최대 8개로 제한
-                if (clubList.size() > 8) {
-                    clubList = clubList.subList(0, 8); // 8개만 남기기
+                // 최대 6개로 제한
+                if (clubList.size() > 6) {
+                    clubList = clubList.subList(0, 6); // 8개만 남기기
                 }
             }
             // 키워드 목록 조회
@@ -111,9 +118,9 @@ public class HomeController {
         if (!clubList.isEmpty()) {
             // 랜덤으로 섞기
             Collections.shuffle(clubList);
-            // 최대 8개로 제한
-            if (clubList.size() > 8) {
-                clubList = clubList.subList(0, 8); // 8개만 남기기
+            // 최대 6개로 제한
+            if (clubList.size() > 6) {
+                clubList = clubList.subList(0, 6); // 8개만 남기기
             }
         }
 

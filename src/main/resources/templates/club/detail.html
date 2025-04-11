@@ -4,8 +4,6 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>크루상세보기</title>
-    <link th:href="@{/css/detail.css}" rel="stylesheet"/>
-    <link th:href="@{/font/font.css}" rel="stylesheet"/>
 </head>
 <body>
 <div class="container my-5" layout:fragment="content">
@@ -14,11 +12,11 @@
             <!--                            모임 참여 버튼추가 !! -->
             <!-- 참여하기 -->
             <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-secondary">모임 참여하기</button>
+                <button type="submit" class="btn custom-button-success">모임 참여하기</button>
             </form>
             <!-- 취소하기 -->
             <form th:action="@{/clubs/leave/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-danger">참여 취소하기</button>
+                <button type="submit" class="btn custom-button-info">참여 취소하기</button>
             </form>
         </div>
     </div>
@@ -79,12 +77,12 @@
                     <div th:if="${#authentication.authenticated and #authentication.principal.siteUser.id == clubDTO.hostId}"
                          class="">
                         <a th:href="@{/clubs/update/{id}(id=${clubDTO.id})}"
-                           class="btn btn-warning btn-sm">수정하기</a>
+                           class="btn custom-button-warning btn-sm">수정하기</a>
                         <form th:action="@{/clubs/delete/{id}(id=${clubDTO.id})}" method="post"
                               style="display: inline;">
-                            <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                            <button type="submit" class="btn custom-button-danger btn-sm">삭제</button>
                         </form>
-                        <a th:href="@{/clubs}" class="btn btn-secondary btn-sm">목록으로</a>
+                        <a th:href="@{/clubs}" class="btn custom-button-secondary btn-sm">목록으로</a>
 
                     </div>
                 </div>
