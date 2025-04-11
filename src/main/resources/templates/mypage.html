@@ -82,7 +82,7 @@
             <h5>참여한 모임</h5>
             <ul class="list-group">
                 <li class="list-group-item" th:each="club : ${joinedClubs}">
-                    <span th:text="${club.title}">모임 이름</span>
+                    <a th:href="@{'/clubs/' + ${club.id}}" th:text="${club.title}">모임 이름</a>
                 </li>
             </ul>
         </div>
