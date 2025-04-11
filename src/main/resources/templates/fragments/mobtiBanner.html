@@ -41,11 +41,29 @@
                </div>
                <div class="mobti-buttons col-12 col-md-4 d-flex justify-content-end gap-2 my-3">
                    <a th:href="@{/mobti}" class="mobti-button btn btn01 text-decoration-none " style="font-size: clamp(14px, 2vw, 20px);">MOBTI검사하기</a>
-                   <button class="mobti-button btn btn02"  type="button" style="font-size: clamp(14px, 2vw, 20px)">친구에게 공유하기</button>
+
+
+                   <button class="mobti-button btn btn02" type="button" id="share-button">친구에게 공유하기</button>
                </div>
 
            </div>
        </section>
 </div>
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script layout:fragment="script">
+    Kakao.init('1646f0eb4165d0595511a1aad8f7f1b4');
+    Kakao.Share.createDefaultButton({
+        container: '#share-button',
+        objectType: "feed",
+        content: {
+            title: "MoBTI 테스트", // 공유될 제목
+            description: "나의 소모임 성향은 뭘까?", // 공유될 설명
+            imageUrl: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOs_7UThcuy11QGnvM6vC4b1k9dUuob1zBRIBIuu45AHxR-95WEK9nhTYqKMaHFMkP9vHpUeeSQ_WvL1rX5idEr8NB8pV4s0a7qSlJwzZ2OH7iUen4G7nBVCaJXN6Z4Uw9CrCswRbWLe0/s550/group_young_people.png", // 공유될 이미지 url
+            link: {// 공유될 모바일 URL
+                webUrl: "http://localhost:8080/mobti" // 공유될 웹 URL
+            },
+        },
+    });
+</script>
 </body>
 </html>
