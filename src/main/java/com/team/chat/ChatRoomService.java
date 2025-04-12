@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +43,10 @@ public class ChatRoomService {
         return chatRoomRepository.findByIdWithParticipantsAndBlockedUsers(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
     }
-
+    @Transactional
+    public void updateChatRoom(ChatRoom chatRoom) {
+        chatRoomRepository.save(chatRoom);
+    }
     @Transactional
     public void leaveChatRoom(Long chatRoomId, String userUuid) {
         ChatRoom chatRoom = findChatRoomById(chatRoomId);
@@ -230,7 +234,9 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomDTO> getChatRoomsForUser(SiteUser user) {
+    public List<ChatRoomDTO> getChatRoomsForUser(String userUuid) {
+        SiteUser user = userRepository.findByUuidWithBlockedUsers(userUuid)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userUuid));
         List<ChatRoom> chatRooms = chatRoomRepository.findByParticipantsContainingOrPendingForUser(user);
         return chatRooms.stream().map(chat -> {
             ChatRoomDTO dto = convertToChatRoomDTO(chat);
@@ -241,15 +247,22 @@ public class ChatRoomService {
                     .count();
             dto.setUnreadCount((int) unreadCount);
 
-            chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
-                dto.setLastMessage(msg.getContent());
-                dto.setLastMessageTime(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-            });
+            // ChatRoom의 lastMessage와 lastMessageTime을 사용
+            if (chat.getLastMessage() != null && chat.getLastMessageTime() != null) {
+                ChatRoomDTO.SenderDTO senderDTO = new ChatRoomDTO.SenderDTO();
+                chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
+                    senderDTO.setUuid(msg.getSender().getUuid());
+                    senderDTO.setName(msg.getSender().getName());
+                });
+                senderDTO.setLastMessage(chat.getLastMessage());
+                senderDTO.setLastMessageTime(chat.getLastMessageTime());
+                dto.setLastMessageSender(senderDTO);
+            }
 
             ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chat, user)
                     .orElseThrow(() -> new IllegalStateException("참여자를 찾을 수 없습니다."));
             dto.setNotificationEnabled(participant.isNotificationEnabled());
-            dto.setNoticeExpanded(participant.isNoticeExpanded()); // 추가
+            dto.setExpanded(participant.isExpanded());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -276,9 +289,6 @@ public class ChatRoomService {
         dto.setId(chat.getId());
         dto.setName(chat.getName());
         dto.setType(chat.getType());
-        dto.setLastMessage(chat.getLastMessage());
-        dto.setLastMessageTime(chat.getLastMessageTime() != null ?
-                chat.getLastMessageTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() : null);
         dto.setParticipants(chat.getParticipants().stream()
                 .map(p -> new ChatRoomDTO.SiteUserDTO(p.getUuid(), p.getName(), p.getProfileImage())) // profileImage 추가
                 .collect(Collectors.toList()));
@@ -295,10 +305,6 @@ public class ChatRoomService {
             clubFile.ifPresent(file -> dto.setClubImage(file.getStoredFileName()));
         }
 
-        chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
-            dto.setLastMessage(msg.getContent());
-            dto.setLastMessageTime(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-        });
         return dto;
     }
 
@@ -309,18 +315,17 @@ public class ChatRoomService {
         dto.setSender(msg.getSender() != null ?
             new ChatRoomDTO.SiteUserDTO(msg.getSender().getUuid(), msg.getSender().getName(), msg.getSender().getProfileImage()) : null); // profileImage 추가
         dto.setContent(msg.getContent());
-        dto.setTimestamp(msg.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        dto.setTimestamp(msg.getTimestamp());
         dto.setType(msg.getType().name());
         return dto;
     }
 
     @EventListener(ChatRoomUpdateEvent.class)
+    @Async
     public void handleChatRoomUpdate(ChatRoomUpdateEvent event) {
         for (String uuid : event.getAffectedUuids()) {
-            userRepository.findByUuid(uuid).ifPresent(user -> {
-                List<ChatRoomDTO> chatRooms = getChatRoomsForUser(user);
-                messagingTemplate.convertAndSend("/user/" + uuid + "/topic/chatrooms", chatRooms);
-            });
+            List<ChatRoomDTO> chatRooms = getChatRoomsForUser(uuid);
+            messagingTemplate.convertAndSend("/user/" + uuid + "/topic/chatrooms", chatRooms);
         }
     }
 }

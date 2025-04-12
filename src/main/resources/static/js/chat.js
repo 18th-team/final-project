@@ -218,7 +218,7 @@ const chatApp = (function() {
 
         let notice = notices.get(chat.id);
         if (!notice) {
-            notice = { content: null, expanded: false }; // 초기값 설정
+            notice = { content: null, expanded: chat.expanded || false }; // chat.expanded 사용
             notices.set(chat.id, notice);
         }
         const isOwner = chat.owner?.uuid === currentUser;
@@ -252,7 +252,7 @@ const chatApp = (function() {
         noticeDeleteBtn.style.display = isOwner ? 'inline-block' : 'none';
         noticeToggle.style.display = 'inline-block';
 
-        const isExpanded = notice.expanded !== undefined ? notice.expanded : false; // 필드 이름 변경
+        const isExpanded = notice.expanded !== undefined ? notice.expanded : chat.expanded || false;
         console.log('Rendering with expanded:', isExpanded);
         noticeToggle.setAttribute('aria-expanded', isExpanded);
         noticeContent.classList.toggle('expanded', isExpanded);
@@ -272,7 +272,7 @@ const chatApp = (function() {
             return;
         }
 
-        const currentExpanded = notice.expanded !== undefined ? notice.expanded : false; // 수정
+        const currentExpanded = notice.expanded !== undefined ? notice.expanded : false;
         const newExpanded = !currentExpanded;
         console.log('Toggling to:', newExpanded);
 
@@ -280,7 +280,7 @@ const chatApp = (function() {
         notices.set(currentChatRoomId, notice);
 
         if (stompClient?.connected && currentChatRoomId) {
-            const payload = JSON.stringify({ chatRoomId: currentChatRoomId, expanded: newExpanded });
+            const payload = JSON.stringify({ chatRoomId: currentChatRoomId, expanded: newExpanded }); // 키를 Expanded로 변경
             console.log('Sending at:', new Date().toISOString(), payload);
             stompClient.send("/app/toggleNoticeState", {}, payload);
         } else {
@@ -421,7 +421,7 @@ const chatApp = (function() {
             const chat = chatRoomsCache.find(c => c.id === notice.chatRoomId);
             if (chat) {
                 if (notice.content) {
-                    notices.set(notice.chatRoomId, notice); // Expanded 포함
+                    notices.set(notice.chatRoomId, { content: notice.content, expanded: notice.expanded || chat.expanded || false });
                 } else {
                     notices.delete(notice.chatRoomId);
                 }
@@ -435,11 +435,14 @@ const chatApp = (function() {
             const update = JSON.parse(message.body);
             const notice = notices.get(update.chatRoomId);
             if (notice) {
-                notice.expanded = update.expanded;
+                notice.expanded = update.expanded; // Expanded로 변경
                 notices.set(update.chatRoomId, notice);
-                if (update.chatRoomId === currentChatRoomId) {
-                    const chat = chatRoomsCache.find(c => c.id === update.chatRoomId);
-                    renderNotice(chat);
+                const chat = chatRoomsCache.find(c => c.id === update.chatRoomId);
+                if (chat) {
+                    chat.expanded = update.expanded; // ChatRoomDTO와 동기화
+                    if (update.chatRoomId === currentChatRoomId) {
+                        renderNotice(chat);
+                    }
                 }
             }
         });
@@ -630,9 +633,12 @@ const chatApp = (function() {
 
             const chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group') :
                 (isRequester ? chat.owner?.name : chat.requester?.name) || 'Unknown';
-            const lastMessageTime = chat.lastMessageTime ?
-                new Date(chat.lastMessageTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '';
-
+            const lastMessageDate = new Date(chat.lastMessageSender.lastMessageTime);
+            const today = new Date();
+            const isToday = lastMessageDate.toDateString() === today.toDateString();
+            const lastMessageTime = isToday ?
+                lastMessageDate.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) :
+                lastMessageDate.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
             // 아바타 이미지 및 텍스트 설정
             let avatarHtml = '';
             if (chat.type === 'GROUP' && chat.clubImage) {
@@ -666,10 +672,9 @@ const chatApp = (function() {
             let chatPreview = '';
             if (isRequest) {
                 chatPreview = isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`;
-            } else if (chat.lastMessage) {
-                // 최근 메시지와 보낸 사람 이름 표시
-                const senderName = chat.lastMessageSender?.name || 'Unknown';
-                chatPreview = `${senderName}: ${chat.lastMessage}`;
+            } else if (chat.lastMessageSender?.lastMessage) {
+                const senderName = chat.lastMessageSender.name || 'Unknown';
+                chatPreview = `${senderName}: ${chat.lastMessageSender.lastMessage}`;
             } else {
                 chatPreview = '대화가 없습니다.';
             }

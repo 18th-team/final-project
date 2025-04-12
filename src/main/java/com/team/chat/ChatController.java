@@ -5,6 +5,7 @@ import com.team.user.SiteUser;
 import com.team.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatRoomParticipantRepository chatRoomParticipantRepository;
     private final NoticeService noticeService;
+    private final ApplicationEventPublisher eventPublisher; // 추가
 
     // UUID와 세션 ID를 매핑하여 온라인 상태 관리
     private final Map<String, Set<String>> userSessions = new ConcurrentHashMap<>();
@@ -154,7 +157,7 @@ public class ChatController {
     @Transactional(readOnly = true)
     public void refreshChatRooms(Principal principal, @Payload ChatRequestDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
-        List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(currentUser);
+        List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(currentUser.getUuid());
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms", chatRooms);
     }
 
@@ -333,14 +336,20 @@ public class ChatController {
         }
 
         ChatMessage message = chatMessageService.createMessage(chatRoom, sender, content, MessageType.NORMAL);
+
         chatRoom.setLastMessage(message.getContent());
         chatRoom.setLastMessageTime(message.getTimestamp());
-        chatRoomRepository.save(chatRoom);
+        chatRoomService.updateChatRoom(chatRoom); // chatRoomRepository 대신 ChatRoomService 사용
 
         ChatRoomDTO.ChatMessageDTO messageDto = chatRoomService.convertToChatMessageDTO(message);
         messageDto.getSender().setProfileImage(sender.getProfileImage());
         chatRoom.getParticipants().forEach(p ->
                 messagingTemplate.convertAndSend("/user/" + p.getUuid() + "/topic/messages", messageDto));
+
+        Set<String> affectedUuids = chatRoom.getParticipants().stream()
+                .map(SiteUser::getUuid)
+                .collect(Collectors.toSet());
+        eventPublisher.publishEvent(new ChatRoomUpdateEvent(affectedUuids));
 
         sendPushNotification(chatRoom, message, sender);
     }

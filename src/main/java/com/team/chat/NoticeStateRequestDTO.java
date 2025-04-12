@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class NoticeStateRequestDTO {
     private Long chatRoomId;
-    private boolean Expanded;
+    private boolean expanded;
 }

@@ -11,7 +11,7 @@ public class NoticeDTO {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean Expanded;
+    private boolean expanded;
     private boolean isOwner; // 추가
 
     public NoticeDTO(Long id, Long chatRoomId, String content, LocalDateTime createdAt, LocalDateTime updatedAt, boolean Expanded) {
@@ -20,7 +20,7 @@ public class NoticeDTO {
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.Expanded = Expanded;
+        this.expanded = expanded;
         this.isOwner = false; // 기본값
     }
 }

@@ -79,7 +79,7 @@ public class NoticeService {
         boolean isExpanded = chatRoom.getParticipantSettings().stream()
                 .filter(ps -> ps.getUser().getUuid().equals(user.getUuid()))
                 .findFirst()
-                .map(ChatRoomParticipant::isNoticeExpanded)
+                .map(ChatRoomParticipant::isExpanded)
                 .orElse(false);
 
         NoticeDTO noticeDTO = notice != null
@@ -91,23 +91,23 @@ public class NoticeService {
 
     // 펼침/접힘 상태 토글
     @Transactional
-    public void toggleNoticeState(Long chatRoomId, boolean isExpanded, SiteUser user) {
+    public void toggleNoticeState(Long chatRoomId, boolean expanded, SiteUser user) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
         ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chatRoom, user)
                 .orElseThrow(() -> new IllegalStateException("참여자 정보가 존재하지 않습니다."));
 
-        System.out.println("Before update: isNoticeExpanded=" + participant.isNoticeExpanded());
-        participant.setNoticeExpanded(isExpanded);
-        System.out.println("After set: isNoticeExpanded=" + participant.isNoticeExpanded());
+        System.out.println("Before update: isNoticeExpanded=" + participant.isExpanded());
+        participant.setExpanded(expanded);
+        System.out.println("After set: isNoticeExpanded=" + participant.isExpanded());
 
         ChatRoomParticipant saved = chatRoomParticipantRepository.saveAndFlush(participant);
-        System.out.println("Saved entity: isNoticeExpanded=" + saved.isNoticeExpanded());
+        System.out.println("Saved entity: isNoticeExpanded=" + saved.isExpanded());
 
         // 데이터베이스 직접 확인
         ChatRoomParticipant updated = chatRoomParticipantRepository.findByChatRoomAndUser(chatRoom, user)
                 .orElseThrow(() -> new IllegalStateException("업데이트 후 조회 실패"));
-        boolean savedState = updated.isNoticeExpanded();
+        boolean savedState = updated.isExpanded();
         System.out.println("Saved notice state for user " + user.getUuid() + " in chatRoom " + chatRoomId + ": " + savedState);
 
         Map<String, Object> payload = new HashMap<>();
@@ -129,7 +129,7 @@ public class NoticeService {
         chatRoom.getParticipants().forEach(participant -> {
             ChatRoomParticipant chatRoomParticipant = chatRoomParticipantRepository.findByChatRoomAndUser(chatRoom, participant)
                     .orElseThrow(() -> new IllegalStateException("참여자 정보가 존재하지 않습니다."));
-            boolean isExpanded = chatRoomParticipant.isNoticeExpanded();
+            boolean isExpanded = chatRoomParticipant.isExpanded();
             NoticeDTO noticeDTO = (notice != null)
                     ? new NoticeDTO(notice.getId(), notice.getChatRoom().getId(), notice.getContent(), notice.getCreatedAt(), notice.getUpdatedAt(), isExpanded)
                     : new NoticeDTO(null, chatRoom.getId(), null, null, null, isExpanded);
