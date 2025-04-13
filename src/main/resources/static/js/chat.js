@@ -490,7 +490,10 @@ const chatApp = (function() {
     function handleMessage(item) {
         console.log('Received message item:', item);
         const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
-        if (!chat) return;
+        if (!chat) {
+            console.warn(`Chat not found for chatRoomId: ${item.chatRoomId}`);
+            return;
+        }
 
         const messageIds = renderedMessageIds.get(chat.id) || new Set();
         renderedMessageIds.set(chat.id, messageIds);
@@ -499,12 +502,22 @@ const chatApp = (function() {
             messageIds.add(item.id);
             if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
                 renderMessage(item, 'append');
+                const messagesContainer = document.querySelector('.messages-container');
+                if (isScrollable) messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
         }
-        // 최근 메시지와 보낸 사람 정보 저장
-        chat.lastMessage = item.content;
+
+        // 최근 메시지 정보 업데이트
+        chat.lastMessageSender = {
+            uuid: item.sender?.uuid || null,
+            name: item.sender?.name || null,
+            lastMessage: item.content && item.content !== 'undefined' ? item.content : null,
+            lastMessageTime: item.timestamp
+        };
         chat.lastMessageTime = item.timestamp;
-        chat.lastMessageSender = item.sender; // sender 정보 저장
+
+        // 디버깅: 업데이트된 채팅 정보 로그
+        console.log(`Updated chat ID: ${chat.id}, lastMessageSender:`, chat.lastMessageSender);
 
         if (state.isChatOpen && !state.isChatRoomOpen) {
             setTimeout(() => renderChatList(chatRoomsCache), 0);
@@ -624,28 +637,33 @@ const chatApp = (function() {
             const isOwner = chat.owner?.uuid === currentUser;
             const isClosed = chat.status === 'CLOSED' || chat.status === 'BLOCKED';
 
+            // 디버깅: 채팅방 정보 로그
+            console.log(`Chat ID: ${chat.id}, lastMessageSender:`, chat.lastMessageSender);
+
             const item = document.createElement('article');
             item.className = `chat-item ${isRequest ? 'request-item' : ''} ${isClosed ? 'closed-item' : ''}`;
-            if (chat.status === 'ACTIVE') {
+            if (chat.status !== 'PENDING') {
                 item.addEventListener('click', () => openPersonalChat(chat));
                 item.style.cursor = 'pointer';
             }
 
             const chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group') :
                 (isRequester ? chat.owner?.name : chat.requester?.name) || 'Unknown';
-            const lastMessageDate = new Date(chat.lastMessageSender.lastMessageTime);
+            const lastMessageDate = chat.lastMessageTime ? new Date(chat.lastMessageTime) : null;
             const today = new Date();
-            const isToday = lastMessageDate.toDateString() === today.toDateString();
-            const lastMessageTime = isToday ?
-                lastMessageDate.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) :
-                lastMessageDate.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+            const isToday = lastMessageDate && lastMessageDate.toDateString() === today.toDateString();
+            const lastMessageTime = lastMessageDate ?
+                (isToday ?
+                    lastMessageDate.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) :
+                    lastMessageDate.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })) : '';
+
             // 아바타 이미지 및 텍스트 설정
             let avatarHtml = '';
             if (chat.type === 'GROUP' && chat.clubImage) {
                 avatarHtml = `
                 <div class="chat-avatar">
                     <div class="avatar group has-image">
-                        <img class="avatar-image" src="/upload/${chat.clubImage}" style="display: block;" />
+                        <img class="avatar-image" src="/upload/${chat.clubImage}" style="display: block;" loading="lazy" />
                         <span class="avatar-text" style="display: none;">${chatName.slice(0, 2)}</span>
                     </div>
                 </div>`;
@@ -654,7 +672,7 @@ const chatApp = (function() {
                 avatarHtml = `
                 <div class="chat-avatar">
                     <div class="avatar has-image">
-                        <img class="avatar-image" src="${profileImage}"  style="display: block;" />
+                        <img class="avatar-image" src="${profileImage}" style="display: block;" loading="lazy" />
                         <span class="avatar-text" style="display: none;">${chatName.slice(0, 2)}</span>
                     </div>
                 </div>`;
@@ -672,12 +690,20 @@ const chatApp = (function() {
             let chatPreview = '';
             if (isRequest) {
                 chatPreview = isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`;
-            } else if (chat.lastMessageSender?.lastMessage) {
-                const senderName = chat.lastMessageSender.name || 'Unknown';
-                chatPreview = `${senderName}: ${chat.lastMessageSender.lastMessage}`;
+            } else if (chat.lastMessageSender?.lastMessage && chat.lastMessageSender.lastMessage.trim() !== '') {
+                if (chat.lastMessageSender.name) {
+                    const senderName = chat.lastMessageSender.name || 'Unknown';
+                    chatPreview = `${senderName}: ${chat.lastMessageSender.lastMessage}`;
+                } else {
+                    // 시스템 메시지: 발신자 이름 없이 메시지 내용만 표시
+                    chatPreview = chat.lastMessageSender.lastMessage;
+                }
             } else {
                 chatPreview = '대화가 없습니다.';
             }
+
+            // 디버깅: 최종 chatPreview 로그
+            console.log(`Chat ID: ${chat.id}, chatPreview: "${chatPreview}"`);
 
             item.innerHTML = `
             ${avatarHtml}
@@ -762,14 +788,14 @@ const chatApp = (function() {
                     <img class="avatar-image" src="${participant.profileImage}"  style="display: block;" loading="lazy" />
                     <span class="avatar-text" style="display: none;">${participant.name.slice(0, 2)}</span>
                 </div>` :
-                    `
+                `
                 <div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-text">
                     <img class="avatar-image" style="display: none;"  />
                     <span class="avatar-text" style="display: block;">${participant.name.slice(0, 2)}</span>
                 </div>`;
             const participantItem = document.createElement('li');
-                participantItem.className = 'participant-item';
-                participantItem.innerHTML = `
+            participantItem.className = 'participant-item';
+            participantItem.innerHTML = `
                 <div class="participant-avatar-container">
                     ${avatarHtml}
                     <div class="status-indicator" data-uuid="${participant.uuid}" style="background-color: #666"></div>
@@ -822,6 +848,7 @@ const chatApp = (function() {
     }
 
     // 개인 채팅 열기
+    // 개인 채팅 열기
     async function openPersonalChat(chat) {
         if (!chat || !chat.id || isChatOpening) return;
 
@@ -830,11 +857,6 @@ const chatApp = (function() {
         state.isChatRoomOpen = true;
         state.isChatOpen = false;
 
-        const totalMessages = await getMessageCount(chat.id);
-        const lastPage = Math.max(0, Math.ceil(totalMessages / pageSize) - 1);
-
-        renderedMessageIds.set(chat.id, new Set());
-
         const chatWindow = document.querySelector('.personal-chat');
         let messagesContainer = chatWindow.querySelector('.messages-container');
         if (!messagesContainer) {
@@ -842,29 +864,36 @@ const chatApp = (function() {
             messagesContainer.className = 'messages-container';
             chatWindow.appendChild(messagesContainer);
         }
-        messagesContainer.innerHTML = '';
 
-        let allMessages = [];
-        for (let page = 0; page <= lastPage; page++) {
-            const messages = await refreshMessages(chat.id, page);
-            allMessages = allMessages.concat(messages);
-        }
+        // 기존 메시지가 없는 경우에만 메시지 가져오기
+        if (!renderedMessageIds.has(chat.id)) {
+            renderedMessageIds.set(chat.id, new Set());
+            const totalMessages = await getMessageCount(chat.id);
+            const lastPage = Math.max(0, Math.ceil(totalMessages / pageSize) - 1);
 
-        allMessages.forEach(msg => {
-            if (!renderedMessageIds.get(chat.id).has(msg.id)) {
-                renderedMessageIds.get(chat.id).add(msg.id);
-                if (msg.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
+            let allMessages = [];
+            for (let page = 0; page <= lastPage; page++) {
+                const messages = await getMessagesWithoutSubscription(chat.id, page);
+                allMessages = allMessages.concat(messages);
+            }
+
+            allMessages.forEach(msg => {
+                if (!renderedMessageIds.get(chat.id).has(msg.id)) {
+                    renderedMessageIds.get(chat.id).add(msg.id);
                     renderMessage(msg, 'append');
                 }
-            }
-        });
+            });
+        }
 
+        // UI 업데이트
         chatWindow.classList.add('visible');
         document.getElementById('messagesList').classList.remove('visible');
 
         const chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group') :
             (chat.requester?.uuid === currentUser ? chat.owner?.name : chat.requester?.name) || 'Unknown';
         chatWindow.querySelector('.chat-name').textContent = chatName;
+
+        // 아바타 및 상태 설정
         const avatar = chatWindow.querySelector('.avatar.personal');
         const avatarImage = avatar.querySelector('.avatar-image');
         const avatarText = avatar.querySelector('.avatar-text');
@@ -882,17 +911,17 @@ const chatApp = (function() {
         } else if (chat.type === 'PRIVATE' && (chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage)) {
             const profileImage = chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage;
             avatar.classList.add('has-image');
-            avatarImage.src = `${profileImage}`;
+            avatarImage.src = profileImage;
             avatarImage.style.display = 'block';
             avatarText.style.display = 'none';
             if (statusIndicator) statusIndicator.style.display = 'block';
         } else {
             avatar.classList.add('has-text');
             avatarImage.style.display = 'none';
-            avatarText.textContent = chatName.slice(0, 2); // 여기서 2글자 설정
+            avatarText.textContent = chatName.slice(0, 2);
             avatarText.style.display = 'block';
         }
-        // 이미지 로드 실패 처리
+
         if (avatarImage) {
             avatarImage.onerror = () => {
                 const avatar = avatarImage.closest('.avatar');
@@ -904,6 +933,8 @@ const chatApp = (function() {
                 avatarText.style.display = 'block';
             };
         }
+
+        // 옵션 메뉴 설정
         const optionsMenu = document.querySelector('.options-menu');
         optionsMenu.innerHTML = '';
 
@@ -918,7 +949,6 @@ const chatApp = (function() {
             leaveButton.textContent = '나가기';
             optionsMenu.appendChild(leaveButton);
 
-            // 개인 채팅에서는 공지사항 숨기기
             const noticeSection = document.getElementById('noticeSection');
             if (noticeSection) noticeSection.style.display = 'none';
             checkOnlineStatus(chat.id);
@@ -930,7 +960,7 @@ const chatApp = (function() {
                 optionsMenu.appendChild(leaveButton);
             }
             renderParticipantsList(chat);
-            fetchNotice(chat.id); // 그룹 채팅에서만 공지사항 로드
+            fetchNotice(chat.id);
             renderNotice(chat);
         }
 
@@ -944,6 +974,27 @@ const chatApp = (function() {
         saveChatState();
         updateChatUI();
         isChatOpening = false;
+    }
+    function getMessagesWithoutSubscription(chatId, page) {
+        return new Promise((resolve, reject) => {
+            if (!chatId || !stompClient?.connected) {
+                reject(new Error('Chat ID or connection not available'));
+                return;
+            }
+            state.isLoading = true;
+            stompClient.send("/app/getMessages", {}, JSON.stringify({ id: chatId, page, size: pageSize }));
+            const subscription = stompClient.subscribe(`/user/${currentUser}/topic/messages`, message => {
+                const items = JSON.parse(message.body);
+                const processedItems = Array.isArray(items) ? items : [items];
+                subscription.unsubscribe();
+                state.isLoading = false;
+                resolve(processedItems);
+            }, error => {
+                subscription.unsubscribe();
+                state.isLoading = false;
+                reject(error);
+            });
+        });
     }
 
     // 메시지 렌더링
@@ -1179,13 +1230,16 @@ const chatApp = (function() {
             showError(content.length > MAX_MESSAGE_LENGTH ? `최대 ${MAX_MESSAGE_LENGTH}자까지 가능합니다.` : "메시지를 너무 빨리 보낼 수 없습니다.");
             return;
         }
-        if (content && currentChatRoomId && stompClient?.connected) {
+        if (!stompClient?.connected) {
+            showError("서버와 연결이 끊겼습니다. 다시 시도해주세요.");
+            connect();
+            return;
+        }
+        if (content && currentChatRoomId) {
             content = content.replace(/[<>&"']/g, '');
             stompClient.send('/app/sendMessage', {}, JSON.stringify({ chatRoomId: currentChatRoomId, content }));
             lastSendTime = Date.now();
             messageInput.value = '';
-        } else {
-            showError("연결 상태가 올바르지 않습니다. 다시 시도해주세요.");
         }
     }
 

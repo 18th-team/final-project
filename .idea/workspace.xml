@@ -4,25 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="모임 채팅 공지사항 프론트 완료">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="최근 메시지 수정 완료">
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomParticipant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomParticipant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomUpdateEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomUpdateEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/NoticeDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/NoticeDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/NoticeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/NoticeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/NoticeStateRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/NoticeStateRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/chat.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/chat.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/chat2.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/chat2.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/chat.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/chat.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -242,7 +238,9 @@
       <workItem from="1743465831257" duration="26532000" />
       <workItem from="1743552863897" duration="29483000" />
       <workItem from="1743638889575" duration="14030000" />
-      <workItem from="1744447550935" duration="1874000" />
+      <workItem from="1744447550935" duration="4034000" />
+      <workItem from="1744477343343" duration="4118000" />
+      <workItem from="1744520218591" duration="14641000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -508,7 +506,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743725592065</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="최근 메시지 수정 완료">
+      <option name="closed" value="true" />
+      <created>1744449469989</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1744449469989</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -553,7 +559,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="커뮤니티 기능 작업 중" />
     <MESSAGE value="로그인, 회원가입 기능 완료" />
     <MESSAGE value="로그인 창 수정&#10;피드 작업 중" />
     <MESSAGE value="웹 소켓 연결 부분 추가&#10;개인 채팅 리스트 프론트, 백엔드 작업중" />
@@ -578,7 +583,8 @@
     <MESSAGE value="openPersonalChat 수정" />
     <MESSAGE value="스크립트 부분 수정" />
     <MESSAGE value="온라인 상태 확인 작업중" />
-    <option name="LAST_COMMIT_MESSAGE" value="온라인 상태 확인 작업중" />
+    <MESSAGE value="최근 메시지 수정 완료" />
+    <option name="LAST_COMMIT_MESSAGE" value="최근 메시지 수정 완료" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

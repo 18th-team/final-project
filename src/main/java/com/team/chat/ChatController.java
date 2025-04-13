@@ -271,7 +271,9 @@ public class ChatController {
     @MessageMapping("/handleChatRequest")
     @Transactional
     public void handleChatRequest(Principal principal, @Payload ChatRequestDTO request) {
+        System.out.println("채팅 요청 처리: chatRoomId=" + request.getChatRoomId() + ", action=" + request.getAction());
         SiteUser currentUser = getCurrentUser(principal);
+        System.out.println("현재 사용자: " + currentUser.getUuid());
         chatRoomService.handleChatRequest(currentUser, request.getChatRoomId(), request.getAction());
     }
 

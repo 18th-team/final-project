@@ -159,6 +159,8 @@
     gap: 16px;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    contain: content;
+    will-change: scroll-position;
 }
 
 

@@ -211,12 +211,17 @@ public class ChatRoomService {
         String ownerUuid = chatRoom.getOwner().getUuid();
         switch (action.toUpperCase()) {
             case "APPROVE":
+                System.out.println("승인 처리 시작: chatRoomId=" + chatRoomId);
                 chatRoom.setStatus("ACTIVE");
                 if (!chatRoom.getParticipants().contains(currentUser)) {
                     chatRoom.getParticipants().add(currentUser);
                 }
                 chatMessageService.createMessage(chatRoom, currentUser, currentUser.getName() + "님이 채팅을 수락하셨습니다.", MessageType.SYSTEM);
-                chatRoomRepository.save(chatRoom);
+                ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+                System.out.println("저장된 채팅방 상태: " + savedChatRoom.getStatus());
+                // 데이터베이스 직접 확인
+                ChatRoom dbChatRoom = chatRoomRepository.findById(chatRoomId).orElse(null);
+                System.out.println("DB에서 조회한 상태: " + (dbChatRoom != null ? dbChatRoom.getStatus() : "없음"));
                 break;
             case "REJECT":
             case "BLOCK":
@@ -230,6 +235,7 @@ public class ChatRoomService {
             default:
                 throw new IllegalArgumentException("지원하지 않는 액션: " + action);
         }
+        System.out.println("이벤트 발행: requester=" + requesterUuid + ", owner=" + ownerUuid);
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(requesterUuid, ownerUuid));
     }
 
@@ -242,21 +248,27 @@ public class ChatRoomService {
             ChatRoomDTO dto = convertToChatRoomDTO(chat);
             long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chat)
                     .stream()
-                    .filter(msg -> !msg.getSender().getUuid().equals(user.getUuid()))
+                    .filter(msg -> msg.getSender() != null && !msg.getSender().getUuid().equals(user.getUuid())) // null 체크 추가
                     .filter(msg -> msg.getReadBy() == null || !msg.getReadBy().contains(user))
                     .count();
             dto.setUnreadCount((int) unreadCount);
 
-            // ChatRoom의 lastMessage와 lastMessageTime을 사용
-            if (chat.getLastMessage() != null && chat.getLastMessageTime() != null) {
+            Optional<ChatMessage> lastMessageOpt = chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat);
+            if (lastMessageOpt.isPresent()) {
+                ChatMessage lastMessage = lastMessageOpt.get();
                 ChatRoomDTO.SenderDTO senderDTO = new ChatRoomDTO.SenderDTO();
-                chatMessageRepository.findTopByChatRoomOrderByTimestampDesc(chat).ifPresent(msg -> {
-                    senderDTO.setUuid(msg.getSender().getUuid());
-                    senderDTO.setName(msg.getSender().getName());
-                });
-                senderDTO.setLastMessage(chat.getLastMessage());
-                senderDTO.setLastMessageTime(chat.getLastMessageTime());
+                if (lastMessage.getType() == MessageType.SYSTEM || lastMessage.getSender() == null) { // 시스템 메시지 또는 null 처리
+                    senderDTO.setUuid(null);
+                    senderDTO.setName(null);
+                } else {
+                    senderDTO.setUuid(lastMessage.getSender().getUuid());
+                    senderDTO.setName(lastMessage.getSender().getName());
+                }
+                senderDTO.setLastMessage(lastMessage.getContent());
+                senderDTO.setLastMessageTime(lastMessage.getTimestamp());
                 dto.setLastMessageSender(senderDTO);
+            } else {
+                dto.setLastMessageSender(null);
             }
 
             ChatRoomParticipant participant = chatRoomParticipantRepository.findByChatRoomAndUser(chat, user)
@@ -276,9 +288,15 @@ public class ChatRoomService {
     }
 
     private ChatRoom validateChatRoom(Long chatRoomId, SiteUser user) {
+        System.out.println("유효성 검사: chatRoomId=" + chatRoomId + ", userUuid=" + user.getUuid());
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
+                .orElseThrow(() -> {
+                    System.out.println("채팅방 없음: " + chatRoomId);
+                    return new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId);
+                });
+        System.out.println("채팅방 상태=" + chatRoom.getStatus() + ", 소유자=" + chatRoom.getOwner().getUuid());
         if (!chatRoom.getOwner().getUuid().equals(user.getUuid()) || !"PENDING".equals(chatRoom.getStatus())) {
+            System.out.println("검사 실패: 소유자=" + chatRoom.getOwner().getUuid().equals(user.getUuid()) + ", 상태=" + "PENDING".equals(chatRoom.getStatus()));
             throw new SecurityException("권한이 없습니다.");
         }
         return chatRoom;
@@ -321,11 +339,11 @@ public class ChatRoomService {
     }
 
     @EventListener(ChatRoomUpdateEvent.class)
-    @Async
     public void handleChatRoomUpdate(ChatRoomUpdateEvent event) {
         for (String uuid : event.getAffectedUuids()) {
             List<ChatRoomDTO> chatRooms = getChatRoomsForUser(uuid);
             messagingTemplate.convertAndSend("/user/" + uuid + "/topic/chatrooms", chatRooms);
+            System.out.println("Sent /topic/chatrooms to UUID: " + uuid + ", ChatRooms: " + chatRooms);
         }
     }
 }
