@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,15 +108,12 @@ public class UserService {
             builder.gender("여자");
         }
 
-        // 나이 계산 로직
+        // birthdate 계산
         String yearPrefix = (Integer.parseInt(birthDay1.substring(0, 2)) >= 0 &&
                 Integer.parseInt(birthDay1.substring(0, 2)) <= 24) ? "20" : "19";
         String fullBirthDate = yearPrefix + birthDay1;
-        LocalDate birthDate = LocalDate.parse(fullBirthDate, java.time.format.DateTimeFormatter.BASIC_ISO_DATE);
-        LocalDate currentDate = LocalDate.now();
-        int age = currentDate.getYear() - birthDate.getYear();
-        builder.age(age);
-
+        LocalDate birthdate = LocalDate.parse(fullBirthDate, DateTimeFormatter.BASIC_ISO_DATE);
+        builder.birthdate(birthdate);
         // 프로필 이미지 처리
         if (!profileImage.isEmpty()) {
             try {
@@ -131,7 +129,7 @@ public class UserService {
                 throw new RuntimeException(e);
             }
         }
-        builder.createdAt(currentDate);
+        builder.createdAt(LocalDate.now());
         builder.money(0);
         // SiteUser 객체 생성 및 저장
         SiteUser siteUser = builder.build();

@@ -1,7 +1,8 @@
 package com.team.moim;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team.chat.ChatRoom;
+import com.team.chat.ChatRoomRepository;
+import com.team.chat.ChatRoomService;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubRepository;
@@ -13,25 +14,18 @@ import com.team.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Controller
 @RequestMapping("/clubs")
@@ -41,7 +35,8 @@ public class ClubController {
     private final UserService userService;
     private final ClubRepository clubRepository;
     private final KeywordRepository keywordRepository;
-
+    private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
     // ✅ 중복 코드 줄이기 ->
     @ModelAttribute("keywordList")
@@ -56,6 +51,7 @@ public class ClubController {
 
     @GetMapping("/create")
     public String createForm(Model model) {
+        model.addAttribute("clubDTO", new ClubDTO());
         return "club/create";
     }
 
@@ -71,7 +67,15 @@ public class ClubController {
                 ", **locationTitle=" + locationTitle +
                 ", latitude=" +latitude +
                 ", longitude=" +longitude);
-        clubService.save(clubDTO,location,locationTitle,latitude ,longitude,host);
+        Club getClub = clubService.save(clubDTO,location,locationTitle,latitude ,longitude,host);
+        //모임 생성 시 채팅방 자동 생성
+        ChatRoom chatRoom =  chatRoomService.CreateMoimChatRoom(
+                getClub.getId(),
+                getClub.getTitle(),
+                host.getUuid()
+        );
+        getClub.setChatRoom(chatRoom);
+        clubRepository.save(getClub);
         return "redirect:/clubs";
     }
 
@@ -124,7 +128,6 @@ public class ClubController {
                 ", longitude=" + clubDTO.getLongitude());
         System.out.println("clubDetail called with id: " + id);
         model.addAttribute("clubDTO", clubDTO);
-
         return "club/detail";
     }
 
@@ -183,16 +186,29 @@ public class ClubController {
             return "redirect:/login";
         }
         // 서비스 호출
-        boolean isJoined = clubService.joinClub(clubId, user.getUsername()); // email 반환
-        if (isJoined) {
-            redirectAttributes.addFlashAttribute("message", "참여완료!");
-        } else {
+        SiteUser getuser = user.getSiteUser();
+        boolean check = clubService.getClub(clubId).getHost().equals(getuser);
+        if (check) {
             redirectAttributes.addFlashAttribute("message", "이미 참여하셨습니다 😁");
+        }
+        else{
+            boolean isJoined = clubService.joinClub(clubId, user.getUsername()); // email 반환
+            if (isJoined) {
+                Optional<Club> getClub = clubRepository.findById(clubId);
+                if (getClub.isPresent()) {
+                    Club club = getClub.get();
+                    Long chatRoomId = club.getChatRoom().getId();
+                    chatRoomService.JoinMoimChatRoom(chatRoomId, user.getUsername());
+                }
+                redirectAttributes.addFlashAttribute("message", "참여완료!");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "이미 참여하셨습니다 😁");
+            }
         }
         return "redirect:/clubs/" + clubId;
     }
 
-    //    //클럽 취소하기
+    //클럽 취소하기
     @PostMapping("/leave/{clubId}")
     public String leaveClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal CustomSecurityUserDetails user, RedirectAttributes redirectAttributes) {
         if (user == null) {
@@ -201,9 +217,72 @@ public class ClubController {
         }
         boolean isLeft = clubService.leaveClub(clubId, user.getUsername());
         if (isLeft) {
+            Optional<Club> getClub = clubRepository.findById(clubId);
+            if (getClub.isPresent()) {
+                Club club = getClub.get();
+                Long chatRoomId = club.getChatRoom().getId();
+                ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
+                if (chatRoom.getParticipants().contains(user)) {
+                    chatRoomService.leaveChatRoom(chatRoomId, user.getUsername());
+                }
+
+            }
             redirectAttributes.addFlashAttribute("message","참여 취소 되었습니다 ! ");
         }
         else {redirectAttributes.addFlashAttribute("error","참여하지 않은 클럽입니다.");
+        }
+        return "redirect:/clubs/" + clubId;
+    }
+    @PostMapping("/joinchat/{clubId}")
+    public String joinChatRoom(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal CustomSecurityUserDetails user, RedirectAttributes redirectAttributes) {
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다!");
+            return "redirect:/login";
+        }
+        SiteUser getuser = user.getSiteUser();
+        boolean check = clubService.getClub(clubId).getMembers().contains(getuser);
+        if (check) {
+            Optional<Club> getClub = clubRepository.findById(clubId);
+            if (getClub.isPresent()) {
+                Club club = getClub.get();
+                Long chatRoomId = club.getChatRoom().getId();
+                ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                        .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
+                boolean isAlreadyParticipant = chatRoom.getParticipants().contains(getuser);
+                if (isAlreadyParticipant) {
+                    redirectAttributes.addFlashAttribute("message","이미 참여중인 모임 채팅방입니다.");
+                }
+                else{
+                    chatRoomService.JoinMoimChatRoom(chatRoomId, user.getUsername());
+                    redirectAttributes.addFlashAttribute("message","모임 채팅방 참가 완료! ");
+                }
+            }
+        }
+        else {
+            //호스트 구분
+            SiteUser getuser2 = user.getSiteUser();
+            boolean check2 = clubService.getClub(clubId).getHost().equals(getuser2);
+            if (check2) {
+                Optional<Club> getClub = clubRepository.findById(clubId);
+                if (getClub.isPresent()) {
+                    Club club = getClub.get();
+                    Long chatRoomId = club.getChatRoom().getId();
+                    ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                            .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
+                    boolean isAlreadyParticipant = chatRoom.getParticipants().contains(getuser);
+                    if (isAlreadyParticipant) {
+                        redirectAttributes.addFlashAttribute("message","이미 참여중인 모임 채팅방입니다.");
+                    }
+                    else{
+                        chatRoomService.JoinMoimChatRoom(chatRoomId, user.getUsername());
+                        redirectAttributes.addFlashAttribute("message","모임 채팅방 참가 완료! ");
+                    }
+                }
+            }
+            else{
+                redirectAttributes.addFlashAttribute("error","참여하지 않은 클럽입니다.");
+            }
         }
         return "redirect:/clubs/" + clubId;
     }

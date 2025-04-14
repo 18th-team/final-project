@@ -11,7 +11,7 @@ const chatApp = (function() {
     const MAX_MESSAGE_LENGTH = 1000;
     const CONNECTION_TIMEOUT = 10000;
     let lastSendTime = 0;
-    const sendRateLimit = 1000;
+    const sendRateLimit = 300;
     let lastConnectTime = 0;
     const connectRateLimit = 2000;
     let isChatOpening = false;
@@ -87,7 +87,7 @@ const chatApp = (function() {
             lastConnectTime = Date.now();
             currentUser = frame.headers['user-name'];
             if (!currentUser) {
-                // window.location.href = "/login";
+                window.location.href = "/login";
                 return;
             }
             subscribeToTopics();
@@ -107,7 +107,7 @@ const chatApp = (function() {
                 setTimeout(connect, 1000 * retryCount);
             } else {
                 showError("채팅 서버에 연결할 수 없습니다.");
-                // window.location.href = "/login";
+                window.location.href = "/login";
             }
             isConnected = false;
             updateChatUI();
@@ -188,7 +188,6 @@ const chatApp = (function() {
             stompClient.send("/app/getNotice", {}, JSON.stringify({ chatRoomId }));
         }
     }
-
     // 공지사항 렌더링
     function renderNotice(chat) {
         const noticeSection = document.getElementById('noticeSection');
@@ -219,7 +218,7 @@ const chatApp = (function() {
 
         let notice = notices.get(chat.id);
         if (!notice) {
-            notice = { content: null, expanded: chat.expanded || false };
+            notice = { content: null, expanded: chat.expanded || false }; // chat.expanded 사용
             notices.set(chat.id, notice);
         }
         const isOwner = chat.owner?.uuid === currentUser;
@@ -262,7 +261,6 @@ const chatApp = (function() {
         noticeToggle.addEventListener('click', toggleNoticeHandler);
         noticePreview.addEventListener('click', previewClickHandler);
     }
-
     function toggleNoticeHandler() {
         const noticeContent = document.getElementById('noticeContent');
         const noticePreview = document.getElementById('noticePreview');
@@ -282,14 +280,14 @@ const chatApp = (function() {
         notices.set(currentChatRoomId, notice);
 
         if (stompClient?.connected && currentChatRoomId) {
-            const payload = JSON.stringify({ chatRoomId: currentChatRoomId, expanded: newExpanded });
+            const payload = JSON.stringify({ chatRoomId: currentChatRoomId, expanded: newExpanded }); // 키를 Expanded로 변경
             console.log('Sending at:', new Date().toISOString(), payload);
             stompClient.send("/app/toggleNoticeState", {}, payload);
         } else {
             console.error('WebSocket not connected or chatRoomId missing');
         }
 
-        // 즉시 UI 업데이트
+        // 즉시 UI 업데이트 (서버 응답 대기 없이)
         noticeToggle.setAttribute('aria-expanded', newExpanded);
         noticeContent.classList.toggle('expanded', newExpanded);
         noticePreview.classList.toggle('hidden', newExpanded);
@@ -362,25 +360,18 @@ const chatApp = (function() {
     // 토픽 구독
     function subscribeToTopics() {
         stompClient.subscribe(`/user/${currentUser}/topic/chatrooms`, message => {
-            const updatedChatRooms = JSON.parse(message.body);
-            console.log('Received chatrooms update:', updatedChatRooms);
-            chatRoomsCache = updatedChatRooms;
+            chatRoomsCache = JSON.parse(message.body);
             isChatRoomsLoaded = true;
             chatRoomsCache.forEach(chat => {
                 if (chat.type === 'GROUP' && !notices.has(chat.id)) {
-                    fetchNotice(chat.id);
+                    fetchNotice(chat.id); // 공지사항 미리 가져오기
                 }
             });
             renderChatList(chatRoomsCache);
-            // 현재 채팅방이 목록에서 사라졌는지 확인
             if (state.isChatRoomOpen && currentChatRoomId) {
                 const chat = chatRoomsCache.find(c => c.id === currentChatRoomId);
-                if (!chat) {
-                    console.log('Current chat room removed, resetting window');
-                    resetChatWindow();
-                } else {
-                    openPersonalChat(chat);
-                }
+                if (chat) openPersonalChat(chat);
+                else resetChatWindow();
             }
             updateChatUI();
         });
@@ -389,19 +380,9 @@ const chatApp = (function() {
             const items = JSON.parse(message.body);
             const processedItems = Array.isArray(items) ? items : [items];
             processedItems.forEach(item => {
-                console.log('Received message:', {
-                    id: item.id,
-                    chatRoomId: item.chatRoomId,
-                    content: item.content,
-                    sender: item.sender,
-                    timestamp: item.timestamp
-                });
                 handleMessage(item);
-                if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen && item.id) {
-                    setTimeout(() => {
-                        console.log('New message received, marking as read:', item.id);
-                        markMessageAsRead(item.id);
-                    }, 500);
+                if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
+                    markMessagesAsRead();
                 }
             });
             state.isLoading = false;
@@ -454,11 +435,11 @@ const chatApp = (function() {
             const update = JSON.parse(message.body);
             const notice = notices.get(update.chatRoomId);
             if (notice) {
-                notice.expanded = update.expanded;
+                notice.expanded = update.expanded; // Expanded로 변경
                 notices.set(update.chatRoomId, notice);
                 const chat = chatRoomsCache.find(c => c.id === update.chatRoomId);
                 if (chat) {
-                    chat.expanded = update.expanded;
+                    chat.expanded = update.expanded; // ChatRoomDTO와 동기화
                     if (update.chatRoomId === currentChatRoomId) {
                         renderNotice(chat);
                     }
@@ -470,7 +451,6 @@ const chatApp = (function() {
     // 채팅방 목록 새로고침
     function refreshChatRooms() {
         if (stompClient?.connected) {
-            console.log('Refreshing chat rooms for user:', currentUser);
             stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
         }
     }
@@ -501,16 +481,9 @@ const chatApp = (function() {
 
     // 메시지 읽음 처리
     function markMessagesAsRead() {
-        if (!stompClient?.connected || !currentChatRoomId || !state.isChatRoomOpen) {
-            console.warn('Mark skipped:', {
-                connected: stompClient?.connected,
-                chatRoomId: currentChatRoomId,
-                isChatRoomOpen: state.isChatRoomOpen
-            });
-            return;
-        }
-        console.log('Marking messages as read for chatRoomId:', currentChatRoomId);
+        if (Date.now() - lastMarkTime < markCooldown || !stompClient?.connected || !currentChatRoomId || !state.isChatRoomOpen) return;
         stompClient.send("/app/markMessagesAsRead", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
+        lastMarkTime = Date.now();
     }
 
     // 메시지 처리
@@ -518,35 +491,49 @@ const chatApp = (function() {
         console.log('Received message item:', item);
         const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
         if (!chat) {
-            console.warn(`Chat not found for chatRoomId: ${item.chatRoomId}`);
+            console.log(`Chat not found: ID=${item.chatRoomId}`);
             return;
         }
 
         const messageIds = renderedMessageIds.get(chat.id) || new Set();
         renderedMessageIds.set(chat.id, messageIds);
 
+        // 임시 메시지 제거
+        if (item.sender?.uuid === currentUser && item.timestamp) {
+            const tempId = `temp-${item.timestamp}`;
+            if (messageIds.has(tempId)) {
+                const tempElement = document.getElementById(`message-${tempId}`);
+                if (tempElement) {
+                    tempElement.remove();
+                    console.log(`Removed temp message: ID=${tempId}`);
+                }
+                messageIds.delete(tempId);
+            }
+        }
+
+        // 메시지 렌더링
         if (!messageIds.has(item.id)) {
             messageIds.add(item.id);
             if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
                 renderMessage(item, 'append');
-                const messagesContainer = document.querySelector('.messages-container');
-                if (isScrollable) messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
+        } else {
+            console.log(`Skipping duplicate message: ID=${item.id}`);
         }
 
-        // 최근 메시지 정보 업데이트
+        // 캐시 갱신
+        chat.lastMessage = item.content;
+        chat.lastMessageTime = item.timestamp;
         chat.lastMessageSender = {
-            uuid: item.sender?.uuid || null,
-            name: item.sender?.name || null,
-            lastMessage: item.content && item.content !== 'undefined' ? item.content : null,
+            uuid: item.type === 'SYSTEM' ? null : item.sender?.uuid,
+            name: item.type === 'SYSTEM' ? '시스템' : item.sender?.name || 'Unknown',
+            lastMessage: item.content,
             lastMessageTime: item.timestamp
         };
-        chat.lastMessageTime = item.timestamp;
 
-        console.log(`Updated chat ID: ${chat.id}, lastMessageSender:`, chat.lastMessageSender);
-
+        // 채팅 목록 갱신
         if (state.isChatOpen && !state.isChatRoomOpen) {
-            setTimeout(() => renderChatList(chatRoomsCache), 0);
+            requestAnimationFrame(() => renderChatList(chatRoomsCache));
         }
     }
 
@@ -565,13 +552,7 @@ const chatApp = (function() {
     function handleRequest(chatId, action) {
         if (stompClient?.connected) {
             stompClient.send("/app/handleChatRequest", {}, JSON.stringify({ chatRoomId: chatId, action }));
-            if (action === 'APPROVE' && chatId === currentChatRoomId) {
-                const chat = chatRoomsCache.find(c => c.id === chatId);
-                if (chat) openPersonalChat(chat);
-            } else if (['REJECT', 'BLOCK'].includes(action)) {
-                // 낙관적 업데이트: 채팅방 제거
-                chatRoomsCache = chatRoomsCache.filter(c => c.id !== chatId);
-                renderChatList(chatRoomsCache);
+            if (['REJECT', 'BLOCK'].includes(action)) {
                 resetChatWindow();
             }
         }
@@ -596,7 +577,7 @@ const chatApp = (function() {
     function showPushNotification(notification) {
         const container = document.getElementById('notificationContainer');
         if (!container) return;
-        container.style.visibility = 'visible';
+
         const nameText = container.querySelector('#notificationName');
         const messageText = container.querySelector('#notificationMessage');
         const timestampText = container.querySelector('.timestamp-text');
@@ -639,140 +620,147 @@ const chatApp = (function() {
             if (container.style.display === 'block') {
                 container.style.opacity = '0';
                 container.style.transform = 'translateX(400px)';
-                setTimeout(() => container.style.visibility = 'hidden', 300);
+                setTimeout(() => container.style.display = 'none', 300);
             }
         }, 5000);
     }
 
     // 채팅 목록 렌더링
-    function renderChatList(chatRooms) {
-        const chatList = document.getElementById('chatList');
-        if (!chatList) return;
+    function renderChatList(chats) {
+        const chatListContainer = document.querySelector('.chat-list');
+        if (!chatListContainer) return;
 
-        chatList.innerHTML = '';
-        if (state.isLoading) {
-            chatList.innerHTML = '<p>채팅 목록을 불러오는 중...</p>';
-            return;
-        }
-        if (!chatRooms?.length) {
-            chatList.innerHTML = '<p>채팅방이 없습니다.</p>';
-            return;
+        // 기존 항목 확인
+        const existingItems = new Map();
+        for (const item of chatListContainer.children) {
+            if (item.dataset.chatId) {
+                existingItems.set(item.dataset.chatId, item);
+            }
         }
 
-        let groupUnread = 0, personalUnread = 0;
-        chatRooms.filter(chat => activeTab === chat.type).forEach(chat => {
-            const isRequest = chat.status === 'PENDING';
-            const isRequester = chat.requester?.uuid === currentUser;
-            const isOwner = chat.owner?.uuid === currentUser;
-            const isClosed = chat.status === 'CLOSED' || chat.status === 'BLOCKED';
+        // 캐시된 채팅방 순회
+        const fragment = document.createDocumentFragment();
+        chats.forEach(chat => {
+            const existingItem = existingItems.get(chat.id);
+            let item;
 
-            console.log(`Chat ID: ${chat.id}, lastMessageSender:`, chat.lastMessageSender);
+            if (existingItem) {
+                // 기존 항목 업데이트
+                item = existingItem;
+                const chatPreviewElement = item.querySelector('.chat-preview');
+                const timeElement = item.querySelector('.chat-time');
+                const unreadElement = item.querySelector('.unread-count');
 
-            const item = document.createElement('article');
-            item.className = `chat-item ${isRequest ? 'request-item' : ''} ${isClosed ? 'closed-item' : ''}`;
-            if (chat.status !== 'PENDING') {
+                let chatPreview = '';
+                const isRequest = ['PENDING', 'REJECTED', 'BLOCKED'].includes(chat.status);
+                if (isRequest) {
+                    chatPreview = chat.isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`;
+                } else if (chat.lastMessageSender?.lastMessage) {
+                    const senderName = chat.lastMessageSender.name || 'Unknown';
+                    chatPreview = senderName === '시스템' ? chat.lastMessageSender.lastMessage : `${senderName}: ${chat.lastMessageSender.lastMessage}`;
+                } else {
+                    chatPreview = '대화가 없습니다.';
+                }
+
+                let lastMessageTime = '';
+                if (chat.lastMessageSender?.lastMessageTime) {
+                    const lastMessageDate = new Date(chat.lastMessageSender.lastMessageTime);
+                    const today = new Date();
+                    const isToday = lastMessageDate.toDateString() === today.toDateString();
+                    lastMessageTime = isToday ?
+                        lastMessageDate.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) :
+                        lastMessageDate.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+                }
+
+                chatPreviewElement.textContent = chatPreview;
+                timeElement.textContent = lastMessageTime;
+                unreadElement.textContent = chat.unreadCount > 0 ? chat.unreadCount : '';
+                unreadElement.style.display = chat.unreadCount > 0 ? 'block' : 'none';
+            } else {
+                // 신규 항목 생성
+                item = document.createElement('li');
+                item.className = 'chat-item';
+                item.dataset.chatId = chat.id;
+
+                let chatPreview = '';
+                const isRequest = ['PENDING', 'REJECTED', 'BLOCKED'].includes(chat.status);
+                if (isRequest) {
+                    chatPreview = chat.isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`;
+                } else if (chat.lastMessageSender?.lastMessage) {
+                    const senderName = chat.lastMessageSender.name || 'Unknown';
+                    chatPreview = senderName === '시스템' ? chat.lastMessageSender.lastMessage : `${senderName}: ${chat.lastMessageSender.lastMessage}`;
+                } else {
+                    chatPreview = '대화가 없습니다.';
+                }
+
+                let lastMessageTime = '';
+                if (chat.lastMessageSender?.lastMessageTime) {
+                    const lastMessageDate = new Date(chat.lastMessageSender.lastMessageTime);
+                    const today = new Date();
+                    const isToday = lastMessageDate.toDateString() === today.toDateString();
+                    lastMessageTime = isToday ?
+                        lastMessageDate.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) :
+                        lastMessageDate.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+                }
+
+                const profileImage = chat.type === 'PRIVATE' ?
+                    (chat.isRequester ? chat.owner?.profileImage : chat.requester?.profileImage) :
+                    chat.groupImage;
+
+                const avatarHtml = profileImage ?
+                    `<div class="avatar has-image">
+                    <img class="avatar-image" src="${profileImage}" style="display: block;" />
+                    <span class="avatar-text" style="display: none;">${chat.name?.slice(0, 2) || '??'}</span>
+                </div>` :
+                    `<div class="avatar has-text">
+                    <img class="avatar-image" style="display: none;" />
+                    <span class="avatar-text" style="display: block;">${chat.name?.slice(0, 2) || '??'}</span>
+                </div>`;
+
+                item.innerHTML = `
+                ${avatarHtml}
+                <div class="chat-info">
+                    <h2 class="chat-name">${chat.name || 'Unknown'}</h2>
+                    <p class="chat-preview">${chatPreview}</p>
+                </div>
+                <div class="chat-meta">
+                    <time class="chat-time">${lastMessageTime}</time>
+                    <span class="unread-count" style="display: ${chat.unreadCount > 0 ? 'block' : 'none'};">${chat.unreadCount > 0 ? chat.unreadCount : ''}</span>
+                </div>
+            `;
+
+                const avatarImage = item.querySelector('.avatar-image');
+                if (avatarImage) {
+                    avatarImage.onerror = () => {
+                        const avatar = avatarImage.closest('.avatar');
+                        avatar.classList.remove('has-image');
+                        avatar.classList.add('has-text');
+                        avatarImage.style.display = 'none';
+                        avatar.querySelector('.avatar-text').style.display = 'block';
+                    };
+                }
+
+                fragment.appendChild(item);
+            }
+
+            if (chat.status === 'ACTIVE') {
                 item.addEventListener('click', () => openPersonalChat(chat));
                 item.style.cursor = 'pointer';
-            }
-
-            const chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group') :
-                (isRequester ? chat.owner?.name : chat.requester?.name) || 'Unknown';
-            const lastMessageDate = chat.lastMessageTime ? new Date(chat.lastMessageTime) : null;
-            const today = new Date();
-            const isToday = lastMessageDate && lastMessageDate.toDateString() === today.toDateString();
-            const lastMessageTime = lastMessageDate ?
-                (isToday ?
-                    lastMessageDate.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) :
-                    lastMessageDate.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })) : '';
-
-            let avatarHtml = '';
-            if (chat.type === 'GROUP' && chat.clubImage) {
-                avatarHtml = `
-                <div class="chat-avatar">
-                    <div class="avatar group has-image">
-                        <img class="avatar-image" src="/upload/${chat.clubImage}" style="display: block;" loading="lazy" />
-                        <span class="avatar-text" style="display: none;">${chatName.slice(0, 2)}</span>
-                    </div>
-                </div>`;
-            } else if (chat.type === 'PRIVATE' && (isRequester ? chat.owner?.profileImage : chat.requester?.profileImage)) {
-                const profileImage = isRequester ? chat.owner?.profileImage : chat.requester?.profileImage;
-                avatarHtml = `
-                <div class="chat-avatar">
-                    <div class="avatar has-image">
-                        <img class="avatar-image" src="${profileImage}" style="display: block;" loading="lazy" />
-                        <span class="avatar-text" style="display: none;">${chatName.slice(0, 2)}</span>
-                    </div>
-                </div>`;
             } else {
-                avatarHtml = `
-                <div class="chat-avatar">
-                    <div class="avatar has-text">
-                        <img class="avatar-image" style="display: none;" />
-                        <span class="avatar-text" style="display: block;">${chatName.slice(0, 2)}</span>
-                    </div>
-                </div>`;
-            }
-
-            let chatPreview = '';
-            if (isRequest) {
-                chatPreview = isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`;
-            } else if (chat.lastMessageSender?.lastMessage && chat.lastMessageSender.lastMessage.trim() !== '') {
-                if (chat.lastMessageSender.name) {
-                    const senderName = chat.lastMessageSender.name || 'Unknown';
-                    chatPreview = `${senderName}: ${chat.lastMessageSender.lastMessage}`;
-                } else {
-                    chatPreview = chat.lastMessageSender.lastMessage;
-                }
-            } else {
-                chatPreview = '대화가 없습니다.';
-            }
-
-            console.log(`Chat ID: ${chat.id}, chatPreview: "${chatPreview}"`);
-
-            item.innerHTML = `
-            ${avatarHtml}
-            <div class="chat-content">
-                <div class="chat-header">
-                    <div class="chat-title-group">
-                        <h3 class="chat-name">${chatName}</h3>
-                        ${chat.unreadCount > 0 ? `<span class="unread-count">${chat.unreadCount}</span>` : ''}
-                    </div>
-                    <div class="chat-meta"><span class="chat-time">${lastMessageTime}</span></div>
-                </div>
-                <p class="chat-preview">${chatPreview}</p>
-                ${isRequest && isOwner && !isRequester ? `
-                    <div class="request-actions">
-                        <button class="action-button approve">승인</button>
-                        <button class="action-button reject">거부</button>
-                        <button class="action-button block">차단</button>
-                    </div>` : ''}
-            </div>
-        `;
-
-            if (isRequest && isOwner && !isRequester) {
-                item.querySelector('.approve').addEventListener('click', () => handleRequest(chat.id, 'APPROVE'));
-                item.querySelector('.reject').addEventListener('click', () => handleRequest(chat.id, 'REJECT'));
-                item.querySelector('.block').addEventListener('click', () => handleRequest(chat.id, 'BLOCK'));
-            }
-
-            chatList.appendChild(item);
-            if (chat.type === 'GROUP') groupUnread += chat.unreadCount || 0;
-            else personalUnread += chat.unreadCount || 0;
-
-            const avatarImage = item.querySelector('.chat-avatar').querySelector('.avatar-image');
-            if (avatarImage) {
-                avatarImage.onerror = () => {
-                    const avatar = avatarImage.closest('.avatar');
-                    avatar.classList.remove('has-image');
-                    avatar.classList.add('has-text');
-                    avatarImage.style.display = 'none';
-                    const avatarText = avatar.querySelector('.avatar-text');
-                    avatarText.style.display = 'block';
-                };
+                item.style.cursor = 'default';
+                item.replaceWith(item.cloneNode(true)); // 이벤트 제거
             }
         });
 
-        updateUnreadCounts(groupUnread, personalUnread);
+        // 삭제된 채팅방 제거
+        existingItems.forEach((item, chatId) => {
+            if (!chats.some(c => c.id === chatId)) {
+                item.remove();
+            }
+        });
+
+        // 신규 항목 추가
+        chatListContainer.appendChild(fragment);
     }
 
     // 읽지 않은 메시지 수 UI 업데이트
@@ -806,14 +794,15 @@ const chatApp = (function() {
         const participantList = participantsSidebar.querySelector('.participant-list');
         chat.participants.forEach(participant => {
             const isOwner = participant.uuid === chat.owner?.uuid;
+            // 아바타 HTML 구성
             const avatarHtml = participant.profileImage ?
                 `<div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-image">
-                    <img class="avatar-image" src="${participant.profileImage}" style="display: block;" loading="lazy" />
+                    <img class="avatar-image" src="${participant.profileImage}"  style="display: block;" loading="lazy" />
                     <span class="avatar-text" style="display: none;">${participant.name.slice(0, 2)}</span>
                 </div>` :
                 `
                 <div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-text">
-                    <img class="avatar-image" style="display: none;" />
+                    <img class="avatar-image" style="display: none;"  />
                     <span class="avatar-text" style="display: block;">${participant.name.slice(0, 2)}</span>
                 </div>`;
             const participantItem = document.createElement('li');
@@ -830,6 +819,7 @@ const chatApp = (function() {
                     </div>
                 </div>
             `;
+            // 이미지 로드 실패 처리
             const avatarImage = participantItem.querySelector('.avatar-image');
             if (avatarImage) {
                 avatarImage.onerror = () => {
@@ -838,7 +828,9 @@ const chatApp = (function() {
                     avatar.classList.add('has-text');
                     avatarImage.style.display = 'none';
                     const avatarText = avatar.querySelector('.avatar-text');
-                    if (avatarText) avatarText.style.display = 'block';
+                    if (avatarText) {
+                        avatarText.style.display = 'block';
+                    }
                 };
             }
             participantList.appendChild(participantItem);
@@ -867,30 +859,6 @@ const chatApp = (function() {
         checkOnlineStatus(chat.id);
     }
 
-    const markedMessageIds = new Set();
-    function markMessageAsRead(messageId) {
-        if (!stompClient?.connected || !currentChatRoomId || !state.isChatRoomOpen || !messageId) {
-            console.warn('Mark message skipped:', {
-                connected: stompClient?.connected,
-                chatRoomId: currentChatRoomId,
-                isChatRoomOpen: state.isChatRoomOpen,
-                messageId
-            });
-            return;
-        }
-        if (markedMessageIds.has(messageId)) {
-            console.log('Message already marked as read:', messageId);
-            return;
-        }
-        markedMessageIds.add(messageId);
-        console.log('Marking message as read:', { chatRoomId: currentChatRoomId, messageId });
-        stompClient.send(
-            "/app/markMessageAsRead",
-            {},
-            JSON.stringify({ chatRoomId: currentChatRoomId, messageId })
-        );
-    }
-
     // 개인 채팅 열기
     async function openPersonalChat(chat) {
         if (!chat || !chat.id || isChatOpening) return;
@@ -900,6 +868,11 @@ const chatApp = (function() {
         state.isChatRoomOpen = true;
         state.isChatOpen = false;
 
+        const totalMessages = await getMessageCount(chat.id);
+        const lastPage = Math.max(0, Math.ceil(totalMessages / pageSize) - 1);
+
+        renderedMessageIds.set(chat.id, new Set());
+
         const chatWindow = document.querySelector('.personal-chat');
         let messagesContainer = chatWindow.querySelector('.messages-container');
         if (!messagesContainer) {
@@ -907,25 +880,22 @@ const chatApp = (function() {
             messagesContainer.className = 'messages-container';
             chatWindow.appendChild(messagesContainer);
         }
+        messagesContainer.innerHTML = '';
 
-        if (!renderedMessageIds.has(chat.id)) {
-            renderedMessageIds.set(chat.id, new Set());
-            const totalMessages = await getMessageCount(chat.id);
-            const lastPage = Math.max(0, Math.ceil(totalMessages / pageSize) - 1);
+        let allMessages = [];
+        for (let page = 0; page <= lastPage; page++) {
+            const messages = await refreshMessages(chat.id, page);
+            allMessages = allMessages.concat(messages);
+        }
 
-            let allMessages = [];
-            for (let page = 0; page <= lastPage; page++) {
-                const messages = await getMessagesWithoutSubscription(chat.id, page);
-                allMessages = allMessages.concat(messages);
-            }
-
-            allMessages.forEach(msg => {
-                if (!renderedMessageIds.get(chat.id).has(msg.id)) {
-                    renderedMessageIds.get(chat.id).add(msg.id);
+        allMessages.forEach(msg => {
+            if (!renderedMessageIds.get(chat.id).has(msg.id)) {
+                renderedMessageIds.get(chat.id).add(msg.id);
+                if (msg.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
                     renderMessage(msg, 'append');
                 }
-            });
-        }
+            }
+        });
 
         chatWindow.classList.add('visible');
         document.getElementById('messagesList').classList.remove('visible');
@@ -933,7 +903,6 @@ const chatApp = (function() {
         const chatName = chat.type === 'GROUP' ? (chat.name || 'Unnamed Group') :
             (chat.requester?.uuid === currentUser ? chat.owner?.name : chat.requester?.name) || 'Unknown';
         chatWindow.querySelector('.chat-name').textContent = chatName;
-
         const avatar = chatWindow.querySelector('.avatar.personal');
         const avatarImage = avatar.querySelector('.avatar-image');
         const avatarText = avatar.querySelector('.avatar-text');
@@ -951,17 +920,17 @@ const chatApp = (function() {
         } else if (chat.type === 'PRIVATE' && (chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage)) {
             const profileImage = chat.requester?.uuid === currentUser ? chat.owner?.profileImage : chat.requester?.profileImage;
             avatar.classList.add('has-image');
-            avatarImage.src = profileImage;
+            avatarImage.src = `${profileImage}`;
             avatarImage.style.display = 'block';
             avatarText.style.display = 'none';
             if (statusIndicator) statusIndicator.style.display = 'block';
         } else {
             avatar.classList.add('has-text');
             avatarImage.style.display = 'none';
-            avatarText.textContent = chatName.slice(0, 2);
+            avatarText.textContent = chatName.slice(0, 2); // 여기서 2글자 설정
             avatarText.style.display = 'block';
         }
-
+        // 이미지 로드 실패 처리
         if (avatarImage) {
             avatarImage.onerror = () => {
                 const avatar = avatarImage.closest('.avatar');
@@ -973,7 +942,6 @@ const chatApp = (function() {
                 avatarText.style.display = 'block';
             };
         }
-
         const optionsMenu = document.querySelector('.options-menu');
         optionsMenu.innerHTML = '';
 
@@ -988,6 +956,7 @@ const chatApp = (function() {
             leaveButton.textContent = '나가기';
             optionsMenu.appendChild(leaveButton);
 
+            // 개인 채팅에서는 공지사항 숨기기
             const noticeSection = document.getElementById('noticeSection');
             if (noticeSection) noticeSection.style.display = 'none';
             checkOnlineStatus(chat.id);
@@ -999,7 +968,7 @@ const chatApp = (function() {
                 optionsMenu.appendChild(leaveButton);
             }
             renderParticipantsList(chat);
-            fetchNotice(chat.id);
+            fetchNotice(chat.id); // 그룹 채팅에서만 공지사항 로드
             renderNotice(chat);
         }
 
@@ -1015,32 +984,19 @@ const chatApp = (function() {
         isChatOpening = false;
     }
 
-    function getMessagesWithoutSubscription(chatId, page) {
-        return new Promise((resolve, reject) => {
-            if (!chatId || !stompClient?.connected) {
-                reject(new Error('Chat ID or connection not available'));
-                return;
-            }
-            state.isLoading = true;
-            stompClient.send("/app/getMessages", {}, JSON.stringify({ id: chatId, page, size: pageSize }));
-            const subscription = stompClient.subscribe(`/user/${currentUser}/topic/messages`, message => {
-                const items = JSON.parse(message.body);
-                const processedItems = Array.isArray(items) ? items : [items];
-                subscription.unsubscribe();
-                state.isLoading = false;
-                resolve(processedItems);
-            }, error => {
-                subscription.unsubscribe();
-                state.isLoading = false;
-                reject(error);
-            });
-        });
-    }
-
     // 메시지 렌더링
     function renderMessage(item, position = 'append') {
         const messagesContainer = document.querySelector('.messages-container');
         if (!messagesContainer) return;
+
+        // 캐시된 메시지 ID 확인
+        const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
+        if (!chat) return;
+        const messageIds = renderedMessageIds.get(chat.id) || new Set();
+        if (messageIds.has(item.id)) {
+            console.log(`Skipping duplicate render: message ID=${item.id}`);
+            return;
+        }
 
         const lastMessage = position === 'append' ? messagesContainer.lastElementChild : messagesContainer.firstElementChild;
         const lastDate = lastMessage?.dataset.date;
@@ -1069,26 +1025,21 @@ const chatApp = (function() {
                 <header class="message-header"><time class="timestamp">${timeStr}</time></header>
                 <p class="message-text">${item.content}</p>`;
             } else {
-                const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
                 let profileImage = null;
-                if (chat) {
-                    if (chat.type === 'PRIVATE') {
-                        const isRequester = chat.requester?.uuid === currentUser;
-                        profileImage = isRequester ? chat.owner?.profileImage : chat.requester?.profileImage;
-                    } else if (chat.type === 'GROUP') {
-                        const participant = chat.participants?.find(p => p.uuid === item.sender?.uuid);
-                        profileImage = participant?.profileImage;
-                    }
+                if (chat.type === 'PRIVATE') {
+                    const isRequester = chat.requester?.uuid === currentUser;
+                    profileImage = isRequester ? chat.owner?.profileImage : chat.requester?.profileImage;
+                } else if (chat.type === 'GROUP') {
+                    const participant = chat.participants?.find(p => p.uuid === item.sender?.uuid);
+                    profileImage = participant?.profileImage;
                 }
 
                 const avatarHtml = profileImage ?
-                    `
-                <div class="avatar has-image">
+                    `<div class="avatar has-image">
                     <img class="avatar-image" src="${profileImage}" style="display: block;" />
                     <span class="avatar-text" style="display: none;">${item.sender.name.slice(0, 2)}</span>
                 </div>` :
-                    `
-                <div class="avatar has-text">
+                    `<div class="avatar has-text">
                     <img class="avatar-image" style="display: none;" />
                     <span class="avatar-text" style="display: block;">${item.sender.name.slice(0, 2)}</span>
                 </div>`;
@@ -1102,38 +1053,51 @@ const chatApp = (function() {
                     </header>
                     <p class="message-text">${item.content}</p>
                 </div>`;
-
-                const avatarImage = element.querySelector('.avatar-image');
-                if (avatarImage) {
-                    avatarImage.onerror = () => {
-                        const avatar = avatarImage.closest('.avatar');
-                        avatar.classList.remove('has-image');
-                        avatar.classList.add('has-text');
-                        avatarImage.style.display = 'none';
-                        const avatarText = avatar.querySelector('.avatar-text');
-                        avatarText.style.display = 'block';
-                    };
-                }
             }
         }
         element.dataset.date = currentDate;
 
-        element.style.opacity = '0';
-        if (position === 'prepend') {
-            const previousHeight = messagesContainer.scrollHeight;
-            messagesContainer.insertBefore(element, messagesContainer.firstChild);
-            messagesContainer.scrollTop = messagesContainer.scrollTop + (messagesContainer.scrollHeight - previousHeight);
-        } else {
-            messagesContainer.appendChild(element);
-            if (isScrollable) messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+        // 스크롤 상태 확인
+        const isAtBottom = Math.abs(messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight) < 10;
+        requestAnimationFrame(() => {
+            if (position === 'prepend') {
+                const previousHeight = messagesContainer.scrollHeight;
+                messagesContainer.insertBefore(element, messagesContainer.firstChild);
+                messagesContainer.scrollTop += messagesContainer.scrollHeight - previousHeight;
+            } else {
+                messagesContainer.appendChild(element);
+                if (isAtBottom) {
+                    messagesContainer.scrollTo({
+                        top: messagesContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            }
 
-        setTimeout(() => {
-            element.style.transition = 'opacity 0.3s ease-in';
-            element.style.opacity = '1';
-        }, 0);
+            // 아바타 오류 처리
+            const avatarImage = element.querySelector('.avatar-image');
+            if (avatarImage) {
+                avatarImage.onerror = () => {
+                    const avatar = avatarImage.closest('.avatar');
+                    avatar.classList.remove('has-image');
+                    avatar.classList.add('has-text');
+                    avatarImage.style.display = 'none';
+                    avatar.querySelector('.avatar-text').style.display = 'block';
+                };
+            }
+
+            // 트랜지션
+            element.style.opacity = '0';
+            requestAnimationFrame(() => {
+                element.style.transition = 'opacity 0.2s ease-in';
+                element.style.opacity = '1';
+            });
+
+            // 캐시 갱신
+            messageIds.add(item.id);
+            renderedMessageIds.set(chat.id, messageIds);
+        });
     }
-
     // 알림 토글 업데이트
     function updateNotificationToggle() {
         const toggleButton = document.querySelector('.notification-toggle');
@@ -1209,11 +1173,6 @@ const chatApp = (function() {
                 if (target.classList.contains('block-option')) {
                     if (confirm("정말로 이 사용자를 차단하시겠습니까?") && currentChatRoomId && stompClient?.connected) {
                         stompClient.send("/app/blockUser", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
-                        // 낙관적 업데이트: 채팅방 즉시 제거
-                        chatRoomsCache = chatRoomsCache.filter(c => c.id !== currentChatRoomId);
-                        renderedMessageIds.delete(currentChatRoomId);
-                        notices.delete(currentChatRoomId);
-                        renderChatList(chatRoomsCache);
                         resetChatWindow();
                     }
                 }
@@ -1221,11 +1180,6 @@ const chatApp = (function() {
                 if (target.classList.contains('leave-option')) {
                     if (confirm("정말로 이 채팅방을 나가시겠습니까?") && currentChatRoomId && stompClient?.connected) {
                         stompClient.send("/app/leaveChatRoom", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
-                        // 낙관적 업데이트: 채팅방 즉시 제거
-                        chatRoomsCache = chatRoomsCache.filter(c => c.id !== currentChatRoomId);
-                        renderedMessageIds.delete(currentChatRoomId);
-                        notices.delete(currentChatRoomId);
-                        renderChatList(chatRoomsCache);
                         resetChatWindow();
                     }
                 }
@@ -1278,16 +1232,32 @@ const chatApp = (function() {
             showError(content.length > MAX_MESSAGE_LENGTH ? `최대 ${MAX_MESSAGE_LENGTH}자까지 가능합니다.` : "메시지를 너무 빨리 보낼 수 없습니다.");
             return;
         }
-        if (!stompClient?.connected) {
-            showError("서버와 연결이 끊겼습니다. 다시 시도해주세요.");
-            connect();
-            return;
-        }
-        if (content && currentChatRoomId) {
+        if (content && currentChatRoomId && stompClient?.connected) {
             content = content.replace(/[<>&"']/g, '');
+            const tempId = `temp-${Date.now()}`;
+            const messageItem = {
+                id: tempId,
+                chatRoomId: currentChatRoomId,
+                content: content,
+                sender: { uuid: currentUser, name: '나' },
+                timestamp: Date.now(),
+                type: 'NORMAL'
+            };
+
+            // 캐시 확인 및 렌더링
+            const chat = chatRoomsCache.find(c => c.id === currentChatRoomId);
+            if (chat) {
+                const messageIds = renderedMessageIds.get(chat.id) || new Set();
+                messageIds.add(tempId);
+                renderedMessageIds.set(chat.id, messageIds);
+                renderMessage(messageItem, 'append');
+            }
+
             stompClient.send('/app/sendMessage', {}, JSON.stringify({ chatRoomId: currentChatRoomId, content }));
             lastSendTime = Date.now();
             messageInput.value = '';
+        } else {
+            showError("연결 상태가 올바르지 않습니다. 다시 시도해주세요.");
         }
     }
 
@@ -1306,9 +1276,8 @@ const chatApp = (function() {
         state.isChatRoomOpen = false;
         state.isChatOpen = true;
         document.getElementById('messagesList').classList.add('visible');
-        // refreshChatRooms 호출 제거: 서버 응답에 의존
+        refreshChatRooms();
         saveChatState();
-        updateChatUI();
     }
 
     // 채팅 UI 업데이트
@@ -1358,6 +1327,7 @@ const chatApp = (function() {
     };
 })();
 
+// 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
     chatApp.loadChatState();
     chatApp.connect();

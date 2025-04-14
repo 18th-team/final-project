@@ -2,7 +2,6 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-
 <head>
     <title>크루상세보기</title>
 <style>
@@ -32,13 +31,13 @@
                                 th:attrappend="aria-label='Slide ' + ${iterStat.count}"></button>
                     </div>
                     <!-- 캐러셀 이미지 -->
-                    <div class="carousel-inner border border-2">
+                    <div class="carousel-inner">
                         <div th:each="fileName, iterStat : ${clubDTO.storedFileName}"
                              th:classappend="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
                             <!-- 변경된 이미지 경로 -->
                             <img th:src="@{|/upload/${fileName}|}"
-                                 class="d-block w-100 "
-                                 style="object-fit: cover;height: 600px"
+                                 class="d-block w-100"
+                                 style="height: 400px; object-fit: cover;"
                                  alt="크루 사진">
                         </div>
                     </div>

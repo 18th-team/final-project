@@ -1,6 +1,9 @@
 package com.team;
 
+import com.team.chat.ChatRoomService;
+import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
+import com.team.moim.repository.ClubRepository;
 import com.team.moim.repository.KeywordRepository;
 import com.team.user.MemberRole;
 import com.team.user.SiteUser;
@@ -16,7 +19,7 @@ import java.util.stream.Collectors;
 
 
 @SpringBootTest
-public class ApplicationTests {
+class ApplicationTests {
 
     @Autowired
     private UserRepository userRepository;
@@ -26,7 +29,7 @@ public class ApplicationTests {
     private KeywordRepository keywordRepository;
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 		List<String> keywordNames = new ArrayList<>();
 		keywordNames.add("액티비티");
 		keywordNames.add("자기계발");
@@ -40,10 +43,10 @@ public class ApplicationTests {
 				.name("테스트용1")
 				.email("test1@t")
 				.password(passwordEncoder.encode("1"))
-				.age(1)
+				.birthdate(LocalDate.now())
 				.gender("남성")
 				.phone("010-1234-5671")
-				.profileImage("/images/test1.jpg")
+				.profileImage("/img/test_main.png")
 				.money(10000)
 				.createdAt(LocalDate.now())
 				.role(MemberRole.USER)
@@ -52,16 +55,17 @@ public class ApplicationTests {
 				.uuid(UUID.randomUUID().toString())
 				.introduction("테스트용 계정 입니다")
 				.keywords(keywords)
+				.lastOnline(null)
 				.build();
 		userRepository.save(user1);
 		SiteUser user2 = SiteUser.builder()
 				.name("테스트용2")
 				.email("test2@t")
 				.password(passwordEncoder.encode("1"))
-				.age(1)
+				.birthdate(LocalDate.now())
 				.gender("남성")
 				.phone("010-1234-5674")
-				.profileImage("/images/test1.jpg")
+				.profileImage("/img/test1.jpg")
 				.money(10000)
 				.createdAt(LocalDate.now())
 				.role(MemberRole.USER)
@@ -70,8 +74,30 @@ public class ApplicationTests {
 				.uuid(UUID.randomUUID().toString())
 				.introduction("테스트용 계정 입니다")
 				.keywords(keywords)
+				.lastOnline(null)
 				.build();
 		userRepository.save(user2);
+
+		SiteUser user3 = SiteUser.builder()
+				.name("테스트용3")
+				.email("test3@t")
+				.password(passwordEncoder.encode("1"))
+				.birthdate(LocalDate.now())
+				.gender("남성")
+				.phone("010-1234-2412")
+				.profileImage("/img/test1.jpg")
+				.money(10000)
+				.createdAt(LocalDate.now())
+				.role(MemberRole.USER)
+				.provider(null) // 폼 로그인
+				.providerId(null)
+				.uuid(UUID.randomUUID().toString())
+				.introduction("테스트용 계정 입니다")
+				.keywords(keywords)
+				.lastOnline(null)
+				.build();
+		userRepository.save(user3);
+/*        chatRoomService.CreateMoimChatRoom("모임이름", "7cd06dce-2e70-497a-8fec-cb7482c06258");*/
 	}
 
 }

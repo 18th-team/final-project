@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @ToString
 public class ClubDTO {
     private Long id;
-    private String title;
+    private String title; //모임 제목 <- 채팅 타이틀로 출력
     private String content;
     private String city; // 모임 장소 (시)
     private String district; // 모임 장소 (군/구)

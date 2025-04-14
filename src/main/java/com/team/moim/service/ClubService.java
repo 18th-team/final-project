@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class
-ClubService {
+public class ClubService {
     private final ClubRepository clubRepository;
     private final ClubFileRepository clubFileRepository;
     private final KeywordRepository keywordRepository; // 의존성 추가
@@ -31,7 +30,7 @@ ClubService {
 
     // 1. 클럽 저장
     @Transactional
-    public void save(ClubDTO clubDTO,String location,String locationTitle, Double latitude,Double longitude, SiteUser host) throws IOException {
+    public Club save(ClubDTO clubDTO,String location,String locationTitle, Double latitude,Double longitude, SiteUser host) throws IOException {
         // theme을 Keyword로 변환
         Set<Keyword> keywords = new HashSet<>();
         if (clubDTO.getSelectedTheme() != null && !clubDTO.getSelectedTheme().isEmpty()) {
@@ -47,6 +46,7 @@ ClubService {
             clubEntity.setLatitude(latitude);
             clubEntity.setLongitude(longitude);
             clubRepository.save(clubEntity);
+            return clubEntity;
         } else {
             Club clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords);
             clubEntity.setLocation(location);
@@ -80,7 +80,7 @@ ClubService {
                     clubFileRepository.save(clubFileEntity);
                 }
             }
-
+            return clubEntity;
         }
     }
 

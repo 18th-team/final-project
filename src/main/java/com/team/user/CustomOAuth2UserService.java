@@ -1,10 +1,12 @@
 package com.team.user;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,11 +16,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-
-    @Autowired
-    private UserRepository userRepository; // SiteUserRepository → UserRepository
-
+    private final UserRepository userRepository; // SiteUserRepository → UserRepository
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         System.out.println("OAuth2UserRequest: " + userRequest);
@@ -33,9 +33,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String Phone = getPhoneNumber(oAuth2User, provider).replace("-","");
         LocalDate birthDate = getBirthDate(oAuth2User, provider);
         System.out.println("Provider: " + provider + ", ProviderId: " + providerId + ", Email: " + email + ", BirthDate: " + getAge(birthDate) + ", Gender: " + gender + ", Phone: " + Phone);
-        // 이메일이 중복될 경우 providerId를 붙여 고유성 보장
-        String uniqueEmail = email != null ? email : provider + "_" + providerId;
-
 
         // 1. provider와 providerId로 기존 OAuth 사용자 조회
         Optional<SiteUser> existingOAuthUser = userRepository.findByProviderAndProviderId(provider, providerId);
@@ -44,7 +41,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomSecurityUserDetails(siteUser, oAuth2User.getAttributes());
         }
         // 2. 이메일 중복 체크
-        Optional<SiteUser> existingUserByEmail = userRepository.findByEmail(uniqueEmail);
+        Optional<SiteUser> existingUserByEmail = userRepository.findByEmail(email);
         if (existingUserByEmail.isPresent()) {
             SiteUser user = existingUserByEmail.get();
             if (user.getProvider() == null && user.getProviderId() == null) {
@@ -77,17 +74,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         // 4. 신규 OAuth 사용자 생성
         SiteUser newUser = SiteUser.builder()
-                .email(uniqueEmail)
+                .email(email)
                 .name(name != null ? name : "소셜 사용자")
                 .provider(provider)
                 .providerId(providerId)
                 .role(MemberRole.USER)
-                .age(getAge(birthDate))
+                .birthdate(birthDate)
                 .gender(gender)
                 .phone(Phone)
                 .money(0)
                 .createdAt(LocalDate.now())
                 .uuid(String.valueOf(UUID.randomUUID()))
+                .introduction(null)
                 .build();
         userRepository.save(newUser);
         return new CustomSecurityUserDetails(newUser, oAuth2User.getAttributes());
@@ -97,7 +95,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (name != null && !name.isEmpty()) user.setName(name);
         if (gender != null) user.setGender(gender);
         if (phone != null) user.setPhone(phone);
-        if (birthDate != null) user.setAge(getAge(birthDate));
+        if (birthDate != null) user.setBirthdate(birthDate);
     }
     private String getProviderId(OAuth2User oAuth2User, String provider) {
         if ("kakao".equals(provider)) {

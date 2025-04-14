@@ -1,8 +1,11 @@
 package com.team.chat;
 
+import lombok.Getter;
+
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
 public class ChatRoomUpdateEvent {
     private Set<String> affectedUuids;
 
@@ -16,7 +19,4 @@ public class ChatRoomUpdateEvent {
         this.affectedUuids.add(ownerUuid);
     }
 
-    public Set<String> getAffectedUuids() {
-        return affectedUuids;
-    }
 }
