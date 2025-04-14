@@ -133,7 +133,7 @@ public class Club extends BaseEntity {
     }
 
     // 파일 포함 업데이트 (기존 clubFileEntityList 유지)
-    public static Club toUpdateFileEntity(ClubDTO clubDTO, SiteUser host, Club existingClub, Set<Keyword> keywords) {
+    public static Club toUpdateFileEntity(ClubDTO clubDTO, String location, String locationTitle, Double latitude, Double longitude, SiteUser host, Club existingClub, Set<Keyword> keywords) {
         return Club.builder()
                 .id(existingClub.getId())
                 .title(clubDTO.getTitle())

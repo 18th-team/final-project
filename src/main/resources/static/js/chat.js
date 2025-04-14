@@ -87,7 +87,7 @@ const chatApp = (function() {
             lastConnectTime = Date.now();
             currentUser = frame.headers['user-name'];
             if (!currentUser) {
-                window.location.href = "/login";
+                // window.location.href = "/login";
                 return;
             }
             subscribeToTopics();
@@ -107,7 +107,7 @@ const chatApp = (function() {
                 setTimeout(connect, 1000 * retryCount);
             } else {
                 showError("채팅 서버에 연결할 수 없습니다.");
-                window.location.href = "/login";
+                // window.location.href = "/login";
             }
             isConnected = false;
             updateChatUI();
