@@ -56,7 +56,7 @@
 <!-- 공통 푸터 -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
-<!-- 로그인된 사용자만 채팅창 표시 -->'
+<!-- 로그인된 사용자만 채팅창 표시 -->
 
 <div th:if="${#request.requestURI.startsWith('/chat') or
              #request.requestURI.startsWith('/message') or
