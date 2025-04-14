@@ -101,7 +101,20 @@
                 icon: {url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'}
             });
             const userInfoWindow = new naver.maps.InfoWindow({
-                content: `<div style="padding:10px;"><strong>현재위치</strong></div>`
+                maxWidth: 300,
+                backgroundColor: "#eee",
+                borderColor: "#2db400",
+                borderWidth: 3,
+                anchorSize: new naver.maps.Size(30, 30),
+                anchorSkew: true,
+                anchorColor: "#eee",
+                pixelOffset: new naver.maps.Point(20, -20),
+                content: `<div style="padding:10px;font-family: 'Pretendard-ExtraLight', sans-serif;color: #333;">
+<div style="font-size: 17px">현재위치</div>
+<span>위도 : ${userLat}
+</span><span>경도 : ${userLng}
+</span>
+</div>`
             });
             naver.maps.Event.addListener(userMarker, 'click', () => {
                 userInfoWindow.getMap() ? userInfoWindow.close() : userInfoWindow.open(map, userMarker);
@@ -114,12 +127,25 @@
                     title: club.locationTitle,
                     icon: {url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'}
                 });
+
+
                 const infoWindow = new naver.maps.InfoWindow({
-                    content: `<div style="font-family: 'Pretendard-Regular', sans-serif;color: #333;padding: 10px">
-<div style="font-size: 18px">
+                    maxWidth: 300,
+                    backgroundColor: "#eee",
+                    borderColor: "#2db400",
+                    borderWidth: 3,
+                    anchorSize: new naver.maps.Size(30, 30),
+                    anchorSkew: true,
+                    anchorColor: "#eee",
+                    pixelOffset: new naver.maps.Point(20, -20),
+                    content: `<div style="font-family: 'Pretendard-ExtraLight', sans-serif;color: #333;padding: 10px">
+<div style="font-size: 16px">
 ${club.title}
-</div><div style="font-size: 14px;color: #cc5f17">장소:${club.locationTitle}</div></div>`
+</div><div style="font-size: 12px;color: #cc5f17">장소:${club.locationTitle}</div></div>`
                 });
+
+
+
                 naver.maps.Event.addListener(marker, 'click', () => {
                     infoWindow.open(map, marker);
                 });
@@ -137,8 +163,8 @@ ${club.title}
           onerror="this.style.display='none';"
         >
         <div class="card-body meeting-details">
-          <p class="card-title meeting-location text-truncate" style="color: #667085">${club.title}</p>
-          <p class="card-text meeting-description text-truncate" style="font-size: 1.3em">${club.content}</p>
+          <p class="card-title meeting-location text-truncate">${club.title}</p>
+          <p class="card-text meeting-description text-truncate" >${club.content}</p>
         </div>
       </a>
     </div>

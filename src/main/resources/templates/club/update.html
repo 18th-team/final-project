@@ -6,87 +6,100 @@
     <link th:href="@{/css/update.css}" rel="stylesheet"/>
 </head>
 <body>
-<div layout:fragment="content" class="container mt-5">
-    <h1>크루 상세정보 수정하기</h1>
-    <form th:action="@{/clubs/update}" method="post" id="clubForm" class="needs-validation" novalidate
-          enctype="multipart/form-data">
-        <!-- Hidden ID -->
-        <input type="hidden" name="id" th:value="${clubUpdate.id}">
+<div layout:fragment="content">
+    <div class="container my-5 shadow-lg p-4 rounded-3 w-80">
+        <h1 class="mb-5 text-center fw-bold">크루 수정하기 🍳</h1>
+        <form th:action="@{/clubs/update}" method="post" id="clubForm" class="needs-validation" novalidate
+              enctype="multipart/form-data">
+            <!-- Hidden ID -->
+            <input type="hidden" name="id" th:value="${clubUpdate.id}">
 
-        <!-- Title -->
-        <div class="mb-3">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" name="title" id="title" class="form-control" th:value="${clubUpdate.title}" required>
-            <div class="invalid-feedback">제목을 입력해주세요.</div>
-        </div>
+            <!-- Title -->
+            <div class="mb-3">
+                <label for="title" class="form-label create-name text-dark">크루명 🍳</label>
+                <input type="text" name="title" id="title" class="form-control" th:value="${clubUpdate.title}" required>
+                <div class="invalid-feedback">제목을 입력해주세요.</div>
+            </div>
 
-        <!-- Content -->
-        <div class="mb-3">
-            <label for="content" class="form-label">Content</label>
-            <textarea name="content" id="content" class="form-control" rows="4" th:text="${clubUpdate.content}"
-                      required></textarea>
-            <div class="invalid-feedback">내용을 입력해주세요.</div>
-        </div>
+            <!-- Content -->
+            <div class="mb-3">
+                <label for="content" class="form-label create-name text-dark">크루 설명 ✍️</label>
+                <textarea name="content" id="content" class="form-control" rows="4" th:text="${clubUpdate.content}"
+                          required></textarea>
+                <div class="invalid-feedback">내용을 입력해주세요.</div>
+            </div>
 
-        <!-- 주소 검색 -->
-        <div class="mb-3">
-            <label for="search-query" class="form-label">주소 검색</label>
-            <input type="text" id="search-query" class="form-control" th:value="${clubUpdate.location}"
-                   placeholder="주소 검색">
-            <button type="button" onclick="searchAddress()" class="btn btn-primary mt-2">검색</button>
-        </div>
-        <div  class="mb-3" id="search-container">
-            <div id="search-results"></div>
-        </div>
-        <div  class="mb-3"  id="map"></div>
-        <input  name="location" id="location" th:value="${clubUpdate.location}" required>
-        <input  name="locationTitle" id="locationTitle" th:value="${clubUpdate.locationTitle}" required>
-        <input  name="latitude" id="latitude" th:value="${clubUpdate.latitude}" required>
-        <input  name="longitude" id="longitude" th:value="${clubUpdate.longitude}" required>
+            <!-- 주소 -->
+            <div class="row">
+                <div class="col-10">
+                    <label for="search-query" class="form-label create-name text-dark">모임 장소 🚩</label>
+                    <input type="text" id="search-query" placeholder="주소 검색" name="address"
+                           class="form-control border-primary" required th:value="${clubUpdate.locationTitle}">
+                    <div class="invalid-feedback" id="fields-feedback">주소를 다시 확인해주세요😅</div>
 
-        <!-- Age Restriction -->
-        <div class="mb-3">
-            <label for="ageRestriction" class="form-label create-name text-dark">가입 조건 나이 🎂</label>
-            <input type="number" name="ageRestriction" id="ageRestriction" class="form-control border-primary"
-                   placeholder="20세 이상 입력" step="1" th:value="${clubUpdate.ageRestriction}" required>
-            <div class="invalid-feedback">20세 이상 나이를 입력해주세요! 👶</div>
-        </div>
-
-        <!-- Theme -->
-        <div class="mb-3">
-            <label for="selectedTheme" class="form-label create-name text-dark">키워드 수정🎨</label>
-            <select name="selectedTheme" id="selectedTheme" class="form-select border-primary" required>
-                <option value="">선택하세요</option>
-                <option value="액티비티" th:selected="${clubUpdate.selectedTheme == '액티비티'}">액티비티 🏃</option>
-                <option value="자기계발" th:selected="${clubUpdate.selectedTheme == '자기계발'}">자기계발 📚</option>
-                <option value="취미" th:selected="${clubUpdate.selectedTheme == '취미'}">취미 🎮</option>
-                <option value="여행" th:selected="${clubUpdate.selectedTheme == '여행'}">여행 ✈️</option>
-                <option value="문화/예술" th:selected="${clubUpdate.selectedTheme == '문화/예술'}">문화/예술 🎭</option>
-                <option value="푸드/드링크" th:selected="${clubUpdate.selectedTheme == '푸드/드링크'}">푸드/드링크 🍔</option>
-            </select>
-            <div class="invalid-feedback">테마를 골라주세요! 🤔</div>
-        </div>
-
-        <!-- 이미지 수정 -->
-        <div class="mb-3">
-            <label for="clubFile" class="form-label">사진 업로드🍳 (새로운 사진으로 교체)</label>
-            <input type="file" name="clubFile" id="clubFile" class="form-control" multiple accept="image/*">
-            <small class="form-text text-muted">새로운 파일을 선택하면 기존 사진이 교체됩니다.</small>
-            <div th:if="${clubUpdate.fileAttached == 1}" class="mt-3">
-                <h6>현재 등록된 사진</h6>
-                <div class="d-flex flex-wrap gap-3">
-                    <img th:each="fileName : ${clubUpdate.storedFileName}" th:src="@{|/upload/${fileName}|}"
-                         class="img-thumbnail" style="max-width: 150px; max-height: 150px;" alt="현재 사진">
+                </div>
+                <div class="col-2 d-flex align-items-center">
+                    <button type="button" class="btn btn-primary w-100" onclick="searchAddress()">검색</button>
                 </div>
             </div>
-            <div id="preview" class="mt-3 d-flex flex-wrap gap-3"></div>
-        </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div id="search-results"></div>
+                </div>
+                <div id="map" class="col-md-6"></div>
 
-        <!-- Submit -->
-        <button type="submit" class="btn btn-primary">수정하기</button>
-        <a th:href="@{/clubs}" class="btn btn-secondary">Back to List</a>
-    </form>
+                <input type="hidden" name="location" id="location" required th:value="${clubUpdate.location}">
+                <input type="hidden" name="locationTitle" id="locationTitle" required
+                       th:value="${clubUpdate.locationTitle}">
+                <input type="hidden" name="latitude" id="latitude" required th:value="${clubUpdate.latitude}">
+                <input type="hidden" name="longitude" id="longitude" required th:value="${clubUpdate.longitude}">
+                <div class="invalid-feedback" id="hidden-fields-feedback">자세한 장소를 선택해주세요😅</div>
+            </div>
+
+
+            <!-- Age Restriction -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label for="ageRestriction" class="form-label create-name text-dark">가입 조건 나이 🎂</label>
+                    <input type="number" name="ageRestriction" id="ageRestriction" class="form-control border-primary"
+                           placeholder="20세 이상 입력" step="1" th:value="${clubUpdate.ageRestriction}" required>
+                    <div class="invalid-feedback">20세 이상 나이를 입력해주세요! 👶</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="selectedTheme" class="form-label create-name text-dark">키워드 수정🎨</label>
+                    <select name="selectedTheme" id="selectedTheme" class="form-select border-primary" required>
+                        <option value="">선택하세요</option>
+                        <option value="액티비티" th:selected="${clubUpdate.selectedTheme == '액티비티'}">액티비티 🏃</option>
+                        <option value="자기계발" th:selected="${clubUpdate.selectedTheme == '자기계발'}">자기계발 📚</option>
+                        <option value="취미" th:selected="${clubUpdate.selectedTheme == '취미'}">취미 🎮</option>
+                        <option value="여행" th:selected="${clubUpdate.selectedTheme == '여행'}">여행 ✈️</option>
+                        <option value="문화/예술" th:selected="${clubUpdate.selectedTheme == '문화/예술'}">문화/예술 🎭</option>
+                        <option value="푸드/드링크" th:selected="${clubUpdate.selectedTheme == '푸드/드링크'}">푸드/드링크 🍔</option>
+                    </select>
+                    <div class="invalid-feedback">테마를 골라주세요! 🤔</div>
+                </div>
+            </div>
+
+            <!-- 이미지 수정 -->
+            <div class="mb-4">
+                <label for="clubFile" class="form-label create-name text-dark">사진 업로드 📸</label>
+                <input type="file" name="clubFile" id="clubFile" class="form-control" multiple accept="image/*">
+                <small class="form-text text-muted">새로운 파일을 선택하면 기존 사진이 교체됩니다.</small>
+                <div th:if="${clubUpdate.fileAttached == 1}" class="mt-3">
+                    <h6>현재 등록된 사진</h6>
+                    <div class="d-flex flex-wrap gap-3">
+                        <img th:each="fileName : ${clubUpdate.storedFileName}" th:src="@{|/upload/${fileName}|}"
+                             class="img-thumbnail" style="max-width: 150px; max-height: 150px;" alt="현재 사진">
+                    </div>
+                </div>
+                <div id="preview" class="mt-3 d-flex flex-wrap gap-3"></div>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary">수정하기</button>
+            <a th:href="@{/clubs}" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
 </div>
-
 </body>
 </html>

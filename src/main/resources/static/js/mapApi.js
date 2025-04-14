@@ -3,9 +3,22 @@ let map = new naver.maps.Map('map', {
     center: new naver.maps.LatLng(37.5665, 126.9780), // 기본: 서울
     zoom: 10
 });
+
 let markers = [];
 let infoWindows = [];
 let selectedMarker = null;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search-query');
+
+    searchInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // 기본 form 제출 막기
+            searchAddress(); // 검색 함수 호출
+        }
+    });
+});
+
 
 function searchAddress() {
     const query = document.getElementById('search-query').value;
@@ -21,7 +34,9 @@ function searchAddress() {
             // 검색 결과 리스트 렌더링
             const resultList = document.getElementById('search-results');
             resultList.innerHTML = '';
+
             data.forEach((place, index) => {
+                resultList.style.display='block';
                 const item = document.createElement('div');
                 item.className = 'result-item';
                 item.innerHTML = `<strong>${place.title}</strong><br>${place.address}`;
@@ -69,65 +84,34 @@ function searchAddress() {
 }
 
 
+
+
 function selectAddress(place, index, item) {
     // 기존 정보 창 닫기
     infoWindows.forEach(info => info.close());
 
     // 선택된 마커 강조
     if (selectedMarker) selectedMarker.setIcon(null);
-    selectedMarker = markers[index];
-    selectedMarker.setIcon({
-        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' // 선택된 마커 색상 변경
+    selectedMarker = markers[index];  // 현재 클릭한 마커
+
+    // 리스트 항목 배경색 설정 (인라인 스타일)
+    document.querySelectorAll('.result-item').forEach(el => {
+        el.style.backgroundColor = '';
+        el.style.fontWeight = ''; // 추가 스타일 초기화
     });
+    item.style.backgroundColor = '#2196f3';
+    item.style.fontWeight = 'bold';
+    selectedItem = item;
 
     // 정보 창 열기
     infoWindows[index].open(map, markers[index]);
 
     // 선택된 값을 폼에 저장
-    const cleanTitle = place.title.replace(/<[^>]+>/g, '');
+    const cleanTitle = place.title.replace(/<[^>]+>/g, ''); // HTML 태그 제거
     document.getElementById('location').value = place.address;
-    document.getElementById('locationTitle').value = cleanTitle
-    document.getElementById('latitude').value = place.mapy / 1e7;
-    document.getElementById('longitude').value = place.mapx / 1e7;
+    document.getElementById('locationTitle').value = cleanTitle;
+    document.getElementById('latitude').value = place.mapy / 1e7;  // 위도
+    document.getElementById('longitude').value = place.mapx / 1e7;  // 경도
 }
 
 
-
-// * 나이검사 및 사진 미리보기
-$(document).ready(function () {
-    // Age Restriction 실시간 검증
-    $('#ageRestriction').on('input', function () {
-        let age = parseInt($(this).val());
-        if (age < 20) {
-            $(this).val(20);
-            $(this).addClass('is-invalid');
-        } else {
-            $(this).removeClass('is-invalid');
-        }
-    });
-
-
-    // 파일 선택 시 미리보기
-    $('#clubFile').on('change', function (event) {
-        let preview = $('#preview');
-        preview.empty(); // 기존 미리보기 초기화
-
-        let files = event.target.files;
-        if (files) {
-            $.each(files, function (index, file) {
-                if (file.type.match('image.*')) { // 이미지 파일만 처리
-                    let reader = new FileReader();
-                    reader.onload = function (e) {
-                        let img = $('<img>').attr('src', e.target.result)
-                            // .addClass('img-fluid')
-                            .css({'max-width': '200px', 'max-height': '200px'});
-                        preview.append(img);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    });
-    console.log(typeof jQuery); // "function"이면 로드 성공, "undefined"면 실패
-
-});

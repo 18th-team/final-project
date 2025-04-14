@@ -5,11 +5,10 @@
 <head>
     <title>Club List</title>
     <link th:href="@{/css/custom_category_badge.css}" rel="stylesheet" type="text/css"/>
-
-
     <style>
-        * {
+        .card-title  {
             font-family: 'Pretendard-Medium';
+            font-size: 1.2rem;
         }
 
         /* 카드 그림자 효과 */
@@ -19,8 +18,9 @@
             text-decoration: none;
         }
 
-        span, p {
+        .card-text,span  {
             font-family: 'Pretendard-Light';
+            font-size: 14px;
 
         }
 
@@ -48,7 +48,6 @@
                     <div class="col-8 col-md-7">
                         <div class="card-body">
                             <p class="card-text">
-                            <h5>
                                 <span th:switch="${club.selectedTheme}">
                                     <span th:case="'액티비티'" class="badge custom-badge custom-badge-success"
                                           th:text="${club.selectedTheme}">액티비티</span>
@@ -66,18 +65,17 @@
                                     <span th:case="*" class="badge custom-badge custom-badge-light text-dark"
                                           th:text="'미정'">미정</span>
                                 </span>
-                            </h5>
                             </p>
-                            <h4 class="card-title create-name mb-2 text-truncate" style="max-width: 100%;"
+                            <h4 class="card-title create-name mb-3 text-truncate" style="max-width: 100%;"
                                 th:text="${club.title}"></h4>
-
-                            <p class="card-text my-3 text-truncate"><i class="bi bi-people-fill"></i> 참여자 수 : <span
+<br>
+                            <p class="card-text  text-truncate"><i class="bi bi-people-fill"></i> 참여자 수 : <span
                                     th:text="${club.memberCount}">참여자수</span></p>
-                            <p class="card-text my-3 text-truncate"><i class="bi bi-geo-alt-fill"></i>  <span
+                            <p class="card-text text-truncate"><i class="bi bi-geo-alt-fill"></i>  <span
                                     th:text="${club.location}"> 주소</span></p>
 
                             <p class="card-text" style="
-       font-family: 'Pretendard-Medium';
+
 "><i class="bi bi-patch-check"></i> 가입조건 : <span
                                     th:text="${club.ageRestriction != null ? club.ageRestriction + '세 이상' : '제한 없음'}">나이</span>
                             </p>

@@ -1,6 +1,7 @@
 /*    커스텀뱃지*/
 /* 타원형 배지 스타일 */
 /* 파스텔톤 배지 스타일 */
+
 .custom-badge {
     padding: 0.4em 1em;
     border-radius: 50px;
@@ -8,6 +9,8 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.3s ease;
+    font-family: 'Pretendard-Thin';
+
 }
 
 /* 각 색상에 맞는 파스텔 배경색 */

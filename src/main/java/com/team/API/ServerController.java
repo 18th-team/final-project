@@ -62,7 +62,7 @@ public class ServerController {
 
             URI uri = UriComponentsBuilder.fromUriString("https://openapi.naver.com")
                     .path("/v1/search/local")
-                    .queryParam("query", encode).queryParam("display", 10)
+                    .queryParam("query", encode).queryParam("display", 5)
                     .queryParam("start", 1).queryParam("sort", "random")
                     .encode().build().toUri();
 
@@ -85,6 +85,8 @@ public class ServerController {
                 result.put("mapx", itemNode.path("mapx").asText());
                 // 변환 제거
                 results.add(result);
+                System.out.println("검색 결과 수: " + itemsNode.size());
+
             }
         } catch (Exception e) {
             e.printStackTrace();

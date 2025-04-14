@@ -10,24 +10,48 @@
     <section class="recommended-meetings" aria-labelledby="recommended-title" id="recommend">
         <!-- 한 줄에 3개의 카드가 보이도록 row로 묶고, 카드들은 col-12 col-sm-6 col-md-4로 처리 -->
         <div class="row g-4 mt-4">
-            <div th:if="${not #lists.isEmpty(recommendedClubs)}">
-                <div th:each="club : ${recommendedClubs}" class="col-6 col-md-4">
+            <div th:if="${not #lists.isEmpty(recommendedClubs)}" class="row">
+                <div class="col-md-4" th:each="club : ${recommendedClubs}">
                     <a class="card meeting-card h-100" th:href="@{/clubs/{id}(id=${club.id})}">
                         <img th:if="${club.storedFileName != null and #lists.size(club.storedFileName) > 0}"
                              th:src="@{/upload/{filename}(filename=${club.storedFileName[0]})}"
-                             alt="클럽 이미지" class="rounded img-fluid">
+                             alt="클럽 이미지" class="rounded img-fluid h-100" >
                         <div class="card-body meeting-details">
-                            <p class="card-title meeting-location" th:text="${club.title}"></p>
+                            <p class="card-text">
+                            <h5>
+                                <span th:switch="${club.selectedTheme}">
+                                    <span th:case="'액티비티'" class="badge custom-badge custom-badge-success"
+                                          th:text="${club.selectedTheme}">액티비티</span>
+
+                                    <span th:case="'자기계발'" class="badge custom-badge custom-badge-info"
+                                          th:text="${club.selectedTheme}">자기계발</span>
+                                    <span th:case="'취미'" class="badge custom-badge custom-badge-warning"
+                                          th:text="${club.selectedTheme}">취미</span>
+                                    <span th:case="'여행'" class="badge custom-badge custom-badge-danger"
+                                          th:text="${club.selectedTheme}">여행</span>
+                                    <span th:case="'문화/예술'" class="badge custom-badge custom-badge-primary"
+                                          th:text="${club.selectedTheme}">문화/예술</span>
+                                    <span th:case="'푸드/드링크'" class="badge custom-badge custom-badge-secondary"
+                                          th:text="${club.selectedTheme}">푸드/드링크</span>
+                                    <span th:case="*" class="badge custom-badge custom-badge-light text-dark"
+                                          th:text="'미정'">미정</span>
+                                </span>
+                            </h5>
+                            </p>
+                            <p class="card-title meeting-location text-truncate" th:text="${club.title}"></p>
                             <p class="card-text meeting-description text-truncate" th:text="${club.content}"></p>
                         </div>
                     </a>
                 </div>
             </div>
+
             <!-- 클럽 리스트 없을 경우 -->
             <div th:if="${#lists.isEmpty(recommendedClubs)}" class="text-center w-100 mt-4">
                 <h4 class="text-muted">키워드 선택을 다시 해주세요 🙏</h4>
             </div>
         </div>
+
+
     </section>
 </div>
 </body>

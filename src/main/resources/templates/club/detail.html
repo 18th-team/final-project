@@ -2,24 +2,21 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
 <head>
     <title>크루상세보기</title>
+<style>
+    dt{
+        font-size: 1.4rem;
+    }
+    dd, .custom-badge{
+       font-size: 1.2rem;
+    }
+</style>
 </head>
 <body>
 <div class="container my-5" layout:fragment="content">
-    <div class="row">
-        <div class="col">
-            <!--                            모임 참여 버튼추가 !! -->
-            <!-- 참여하기 -->
-            <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn custom-button-success">모임 참여하기</button>
-            </form>
-            <!-- 취소하기 -->
-            <form th:action="@{/clubs/leave/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn custom-button-info">참여 취소하기</button>
-            </form>
-        </div>
-    </div>
+
 
     <!-- 모임 상세 정보 -->
     <div class="card" style="overflow: hidden">
@@ -35,13 +32,13 @@
                                 th:attrappend="aria-label='Slide ' + ${iterStat.count}"></button>
                     </div>
                     <!-- 캐러셀 이미지 -->
-                    <div class="carousel-inner">
+                    <div class="carousel-inner border border-2">
                         <div th:each="fileName, iterStat : ${clubDTO.storedFileName}"
                              th:classappend="${iterStat.first} ? 'carousel-item active' : 'carousel-item'">
                             <!-- 변경된 이미지 경로 -->
                             <img th:src="@{|/upload/${fileName}|}"
-                                 class="d-block w-100"
-                                 style="height: 400px; object-fit: cover;"
+                                 class="d-block w-100 "
+                                 style="object-fit: cover;height: 600px"
                                  alt="크루 사진">
                         </div>
                     </div>
@@ -149,8 +146,8 @@
                 </dd>
 
                 <!-- Host -->
-                <dt class="col-4 col-md-3 mt-5">호스트 소개📚</dt>
-                <div class="col-8 col-md-9 mb-4 mt-5">
+                <dt class="col-5 col-md-3 mt-5">호스트 소개📚</dt>
+                <div class="col-7 col-md-9 mb-4 mt-5">
                     <div class="row align-items-center">
                         <div class="col-md-3 "><img th:if="${clubDTO.hostImg != null}"
                                                     th:src="${clubDTO.hostImg}"
@@ -179,8 +176,8 @@
                     th:text="${clubDTO.memberCount + '명'}">
                 </dd>
 
-                <dt class="col-4 col-md-3 mt-5">참여자 목록📚</dt>
-                <div class="col-8 col-md-9 mb-4 mt-5">
+                <dt class="col-5 col-md-3 mt-5">참여자 목록📚</dt>
+                <div class="col-7 col-md-9 mb-4 mt-5">
                     <div class="row mb-3" th:each="name, iterStat : ${clubDTO.memberNames}">
                         <div class="col-md-3 col-12 d-flex align-items-center mb-2 mb-md-0">
                             <img th:src="${clubDTO.memberImages[iterStat.index]}"
@@ -192,6 +189,19 @@
                              th:text="${clubDTO.memberDescriptions[iterStat.index]}"></div>
                     </div>
 
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <!--                            모임 참여 버튼추가 !! -->
+                        <!-- 참여하기 -->
+                        <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn custom-button-success">모임 참여하기</button>
+                        </form>
+                        <!-- 취소하기 -->
+                        <form th:action="@{/clubs/leave/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn custom-button-info">참여 취소하기</button>
+                        </form>
+                    </div>
                 </div>
 
             </dl>

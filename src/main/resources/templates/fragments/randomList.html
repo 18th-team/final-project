@@ -12,7 +12,7 @@
                     <a class="card meeting-card h-100" th:href="@{/clubs/{id}(id=${randomClub.id})}">
                         <img th:if="${randomClub.storedFileName != null and #lists.size(randomClub.storedFileName) > 0}"
                              th:src="@{/upload/{filename}(filename=${randomClub.storedFileName[0]})}"
-                             alt="클럽 이미지" class="rounded img-fluid h-100">
+                             alt="클럽 이미지" class="rounded img-fluid w-100 h-100">
                         <div class="card-body meeting-details">
                             <p class="card-text">
                             <h5>
