@@ -2,6 +2,8 @@ package com.team.moim;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team.chat.ChatRoom;
+import com.team.chat.ChatRoomService;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.Keyword;
 import com.team.moim.repository.ClubRepository;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Controller
 @RequestMapping("/clubs")
 @RequiredArgsConstructor
@@ -41,7 +44,7 @@ public class ClubController {
     private final UserService userService;
     private final ClubRepository clubRepository;
     private final KeywordRepository keywordRepository;
-
+    private final ChatRoomService chatRoomService;
 
     // ✅ 중복 코드 줄이기 ->
     @ModelAttribute("keywordList")
@@ -56,6 +59,7 @@ public class ClubController {
 
     @GetMapping("/create")
     public String createForm(Model model) {
+        model.addAttribute("clubDTO", new ClubDTO());
         return "club/create";
     }
 
@@ -71,7 +75,15 @@ public class ClubController {
                 ", **locationTitle=" + locationTitle +
                 ", latitude=" +latitude +
                 ", longitude=" +longitude);
-        clubService.save(clubDTO,location,locationTitle,latitude ,longitude,host);
+        Club getClub = clubService.save(clubDTO,location,locationTitle,latitude ,longitude,host);
+        //모임 생성 시 채팅방 자동 생성
+        ChatRoom chatRoom =  chatRoomService.CreateMoimChatRoom(
+                getClub.getId(),
+                getClub.getTitle(),
+                host.getUuid()
+        );
+        getClub.setChatRoom(chatRoom);
+        clubRepository.save(getClub);
         return "redirect:/clubs";
     }
 
@@ -124,7 +136,6 @@ public class ClubController {
                 ", longitude=" + clubDTO.getLongitude());
         System.out.println("clubDetail called with id: " + id);
         model.addAttribute("clubDTO", clubDTO);
-
         return "club/detail";
     }
 
@@ -185,6 +196,12 @@ public class ClubController {
         // 서비스 호출
         boolean isJoined = clubService.joinClub(clubId, user.getUsername()); // email 반환
         if (isJoined) {
+            Optional<Club> getClub = clubRepository.findById(clubId);
+            if (getClub.isPresent()) {
+                Club club = getClub.get();
+                Long chatRoomId = club.getChatRoom().getId();
+                chatRoomService.JoinMoimChatRoom(chatRoomId, user.getUsername());
+            }
             redirectAttributes.addFlashAttribute("message", "참여완료!");
         } else {
             redirectAttributes.addFlashAttribute("message", "이미 참여하셨습니다 😁");

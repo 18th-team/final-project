@@ -27,20 +27,23 @@ public class ChatMessageService {
     public ChatMessage createMessage(ChatRoom chatRoom, SiteUser sender, String content, MessageType type) {
         ChatMessage message = ChatMessage.builder()
                 .chatRoom(chatRoom)
-                .sender(sender)
+                .sender(type == MessageType.SYSTEM ? null : sender) // 시스템 메시지면 sender null
                 .content(content)
                 .type(type)
                 .timestamp(LocalDateTime.now())
                 .build();
         ChatMessage savedMessage = chatMessageRepository.save(message);
 
-        // 일반 메시지일 경우 unreadCount 업데이트
+        chatRoom.setLastMessage(content);
+        chatRoom.setLastMessageTime(savedMessage.getTimestamp());
+        chatRoomRepository.save(chatRoom);
+
         if (type == MessageType.NORMAL) {
             chatRoom.getParticipants().forEach(participant -> {
-                if (!participant.equals(sender)) { // 발신자는 제외
+                if (!participant.equals(sender)) {
                     long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
                             .stream()
-                            .filter(msg -> !msg.getSender().equals(participant))
+                            .filter(msg -> msg.getSender() != null && !msg.getSender().equals(participant)) // null 체크 추가
                             .filter(msg -> !msg.getReadBy().contains(participant))
                             .count();
                     messagingTemplate.convertAndSend(
@@ -56,7 +59,7 @@ public class ChatMessageService {
     public int markMessagesAsRead(ChatRoom chatRoom, SiteUser user) {
         List<ChatMessage> unreadMessages = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
                 .stream()
-                .filter(msg -> !msg.getSender().getUuid().equals(user.getUuid()))
+                .filter(msg -> msg.getSender() != null && !msg.getSender().getUuid().equals(user.getUuid())) // null 체크
                 .filter(msg -> !msg.getReadBy().contains(user))
                 .toList();
 
@@ -68,10 +71,37 @@ public class ChatMessageService {
         // long을 int로 캐스팅
         long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
                 .stream()
-                .filter(msg -> !msg.getSender().getUuid().equals(user.getUuid()))
+                .filter(msg -> msg.getSender() != null && !msg.getSender().getUuid().equals(user.getUuid())) // null 체크 추가
                 .filter(msg -> !msg.getReadBy().contains(user))
                 .count();
-        return (int) unreadCount; // 캐스팅 추가
+        return (int) unreadCount; // 캐스팅
+    }
+    @Transactional
+    public int markMessageAsRead(ChatRoom chatRoom, SiteUser user, Long messageId) {
+        System.out.println("Attempting to mark message as read: chatRoomId=" + chatRoom.getId() +
+                ", userUuid=" + user.getUuid() +
+                ", messageId=" + messageId);
+        ChatMessage message = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다: " + messageId));
+
+        // 메시지가 해당 채팅방에 속하는지 확인
+        if (!message.getChatRoom().getId().equals(chatRoom.getId())) {
+            throw new IllegalArgumentException("메시지가 이 채팅방에 속하지 않습니다.");
+        }
+
+        // 이미 읽음 처리된 경우 스킵
+        if (!message.getReadBy().contains(user)) {
+            message.getReadBy().add(user);
+            chatMessageRepository.save(message);
+        }
+
+        // 읽지 않은 메시지 수 계산
+        long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
+                .stream()
+                .filter(msg -> msg.getSender() != null && !msg.getSender().getUuid().equals(user.getUuid()))
+                .filter(msg -> !msg.getReadBy().contains(user))
+                .count();
+        return (int) unreadCount;
     }
 }
 

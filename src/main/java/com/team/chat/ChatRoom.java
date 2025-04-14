@@ -2,6 +2,7 @@ package com.team.chat;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.team.moim.entity.Club;
 import com.team.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,10 +48,21 @@ public class ChatRoom {
     @Builder.Default
     private List<ChatRoomParticipant> participantSettings = new ArrayList<>(); // 초기화 추가
 
+    // Club과의 관계 추가
+    @OneToOne
+    @JoinColumn(name = "club_id")
+    private Club club; // 그룹 채팅일 경우 연결된 모임
+
     // 관계 설정 헬퍼 메서드 (선택적)
-    public void addParticipantSetting(ChatRoomParticipant participant) {
-        this.participantSettings.add(participant);
-        participant.setChatRoom(this);
+    public void addParticipant(SiteUser user) {
+        if (!participants.contains(user)) {
+            participants.add(user);
+            if (participantSettings.stream().noneMatch(ps -> ps.getUser().equals(user))) {
+                ChatRoomParticipant participant = new ChatRoomParticipant(this, user, true);
+                participantSettings.add(participant);
+                participant.setChatRoom(this);
+            }
+        }
     }
 
 }

@@ -7,6 +7,7 @@ import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,8 +29,8 @@ public class SiteUser {
     @Column(nullable = false)
     private String name;
 
-    // 새로 추가할 자기소개 컬럼
-    @Column(length = 50, nullable = false) // 50자 제한
+    // 새로 추가할 자기소개 컬럼 (null 허용)
+    @Column(length = 50) // 50자 제한
     private String introduction;
 
     @Column(nullable = false, unique = true)
@@ -39,7 +40,7 @@ public class SiteUser {
     private String password;
 
     @Column(nullable = false)
-    private Integer age;
+    private LocalDate birthdate; //age <- LocalDate birthdate로 변경 나이 제한의 경우 birthdate 기준으로 계산해서 확인 하게
 
     @Column(nullable = false)
     private String gender;
@@ -81,6 +82,7 @@ public class SiteUser {
     private Set<Keyword> keywords = new HashSet<>();
 
     //클럽가입관계추가
+    //가입된 모임 <- 모임 채팅방 출력 할떄 사용 ?
     @ManyToMany(mappedBy = "members")
     private Set<Club>clubs = new HashSet<>();
 
@@ -99,7 +101,8 @@ public class SiteUser {
             inverseJoinColumns = @JoinColumn(name = "blocked_uuid")
     )
     private Set<SiteUser> blockedUsers = new HashSet<>();
-
+    @Column
+    private LocalDateTime lastOnline;
     // 차단 유저 추가 메서드
     public void blockUser(SiteUser blocked) {
         this.blockedUsers.add(blocked);
@@ -109,6 +112,7 @@ public class SiteUser {
     public void unblockUser(SiteUser blocked) {
         this.blockedUsers.remove(blocked);
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
