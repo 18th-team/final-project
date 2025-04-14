@@ -188,6 +188,7 @@ const chatApp = (function() {
             stompClient.send("/app/getNotice", {}, JSON.stringify({ chatRoomId }));
         }
     }
+
     // 공지사항 렌더링
     function renderNotice(chat) {
         const noticeSection = document.getElementById('noticeSection');
@@ -218,7 +219,7 @@ const chatApp = (function() {
 
         let notice = notices.get(chat.id);
         if (!notice) {
-            notice = { content: null, expanded: chat.expanded || false }; // chat.expanded 사용
+            notice = { content: null, expanded: chat.expanded || false };
             notices.set(chat.id, notice);
         }
         const isOwner = chat.owner?.uuid === currentUser;
@@ -261,6 +262,7 @@ const chatApp = (function() {
         noticeToggle.addEventListener('click', toggleNoticeHandler);
         noticePreview.addEventListener('click', previewClickHandler);
     }
+
     function toggleNoticeHandler() {
         const noticeContent = document.getElementById('noticeContent');
         const noticePreview = document.getElementById('noticePreview');
@@ -280,14 +282,14 @@ const chatApp = (function() {
         notices.set(currentChatRoomId, notice);
 
         if (stompClient?.connected && currentChatRoomId) {
-            const payload = JSON.stringify({ chatRoomId: currentChatRoomId, expanded: newExpanded }); // 키를 Expanded로 변경
+            const payload = JSON.stringify({ chatRoomId: currentChatRoomId, expanded: newExpanded });
             console.log('Sending at:', new Date().toISOString(), payload);
             stompClient.send("/app/toggleNoticeState", {}, payload);
         } else {
             console.error('WebSocket not connected or chatRoomId missing');
         }
 
-        // 즉시 UI 업데이트 (서버 응답 대기 없이)
+        // 즉시 UI 업데이트
         noticeToggle.setAttribute('aria-expanded', newExpanded);
         noticeContent.classList.toggle('expanded', newExpanded);
         noticePreview.classList.toggle('hidden', newExpanded);
@@ -360,18 +362,25 @@ const chatApp = (function() {
     // 토픽 구독
     function subscribeToTopics() {
         stompClient.subscribe(`/user/${currentUser}/topic/chatrooms`, message => {
-            chatRoomsCache = JSON.parse(message.body);
+            const updatedChatRooms = JSON.parse(message.body);
+            console.log('Received chatrooms update:', updatedChatRooms);
+            chatRoomsCache = updatedChatRooms;
             isChatRoomsLoaded = true;
             chatRoomsCache.forEach(chat => {
                 if (chat.type === 'GROUP' && !notices.has(chat.id)) {
-                    fetchNotice(chat.id); // 공지사항 미리 가져오기
+                    fetchNotice(chat.id);
                 }
             });
             renderChatList(chatRoomsCache);
+            // 현재 채팅방이 목록에서 사라졌는지 확인
             if (state.isChatRoomOpen && currentChatRoomId) {
                 const chat = chatRoomsCache.find(c => c.id === currentChatRoomId);
-                if (chat) openPersonalChat(chat);
-                else resetChatWindow();
+                if (!chat) {
+                    console.log('Current chat room removed, resetting window');
+                    resetChatWindow();
+                } else {
+                    openPersonalChat(chat);
+                }
             }
             updateChatUI();
         });
@@ -392,7 +401,7 @@ const chatApp = (function() {
                     setTimeout(() => {
                         console.log('New message received, marking as read:', item.id);
                         markMessageAsRead(item.id);
-                    }, 500); // 500ms 지연
+                    }, 500);
                 }
             });
             state.isLoading = false;
@@ -445,11 +454,11 @@ const chatApp = (function() {
             const update = JSON.parse(message.body);
             const notice = notices.get(update.chatRoomId);
             if (notice) {
-                notice.expanded = update.expanded; // Expanded로 변경
+                notice.expanded = update.expanded;
                 notices.set(update.chatRoomId, notice);
                 const chat = chatRoomsCache.find(c => c.id === update.chatRoomId);
                 if (chat) {
-                    chat.expanded = update.expanded; // ChatRoomDTO와 동기화
+                    chat.expanded = update.expanded;
                     if (update.chatRoomId === currentChatRoomId) {
                         renderNotice(chat);
                     }
@@ -461,6 +470,7 @@ const chatApp = (function() {
     // 채팅방 목록 새로고침
     function refreshChatRooms() {
         if (stompClient?.connected) {
+            console.log('Refreshing chat rooms for user:', currentUser);
             stompClient.send("/app/refreshChatRooms", {}, JSON.stringify({ uuid: currentUser }));
         }
     }
@@ -533,7 +543,6 @@ const chatApp = (function() {
         };
         chat.lastMessageTime = item.timestamp;
 
-        // 디버깅: 업데이트된 채팅 정보 로그
         console.log(`Updated chat ID: ${chat.id}, lastMessageSender:`, chat.lastMessageSender);
 
         if (state.isChatOpen && !state.isChatRoomOpen) {
@@ -560,6 +569,9 @@ const chatApp = (function() {
                 const chat = chatRoomsCache.find(c => c.id === chatId);
                 if (chat) openPersonalChat(chat);
             } else if (['REJECT', 'BLOCK'].includes(action)) {
+                // 낙관적 업데이트: 채팅방 제거
+                chatRoomsCache = chatRoomsCache.filter(c => c.id !== chatId);
+                renderChatList(chatRoomsCache);
                 resetChatWindow();
             }
         }
@@ -654,7 +666,6 @@ const chatApp = (function() {
             const isOwner = chat.owner?.uuid === currentUser;
             const isClosed = chat.status === 'CLOSED' || chat.status === 'BLOCKED';
 
-            // 디버깅: 채팅방 정보 로그
             console.log(`Chat ID: ${chat.id}, lastMessageSender:`, chat.lastMessageSender);
 
             const item = document.createElement('article');
@@ -674,7 +685,6 @@ const chatApp = (function() {
                     lastMessageDate.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }) :
                     lastMessageDate.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })) : '';
 
-            // 아바타 이미지 및 텍스트 설정
             let avatarHtml = '';
             if (chat.type === 'GROUP' && chat.clubImage) {
                 avatarHtml = `
@@ -703,7 +713,6 @@ const chatApp = (function() {
                 </div>`;
             }
 
-            // chat-preview 설정
             let chatPreview = '';
             if (isRequest) {
                 chatPreview = isRequester ? '승인 대기중입니다' : `요청 사유: ${chat.requestReason || '없음'}`;
@@ -712,14 +721,12 @@ const chatApp = (function() {
                     const senderName = chat.lastMessageSender.name || 'Unknown';
                     chatPreview = `${senderName}: ${chat.lastMessageSender.lastMessage}`;
                 } else {
-                    // 시스템 메시지: 발신자 이름 없이 메시지 내용만 표시
                     chatPreview = chat.lastMessageSender.lastMessage;
                 }
             } else {
                 chatPreview = '대화가 없습니다.';
             }
 
-            // 디버깅: 최종 chatPreview 로그
             console.log(`Chat ID: ${chat.id}, chatPreview: "${chatPreview}"`);
 
             item.innerHTML = `
@@ -799,15 +806,14 @@ const chatApp = (function() {
         const participantList = participantsSidebar.querySelector('.participant-list');
         chat.participants.forEach(participant => {
             const isOwner = participant.uuid === chat.owner?.uuid;
-            // 아바타 HTML 구성
             const avatarHtml = participant.profileImage ?
                 `<div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-image">
-                    <img class="avatar-image" src="${participant.profileImage}"  style="display: block;" loading="lazy" />
+                    <img class="avatar-image" src="${participant.profileImage}" style="display: block;" loading="lazy" />
                     <span class="avatar-text" style="display: none;">${participant.name.slice(0, 2)}</span>
                 </div>` :
                 `
                 <div class="avatar participant-avatar ${isOwner ? 'avatar-leader' : ''} has-text">
-                    <img class="avatar-image" style="display: none;"  />
+                    <img class="avatar-image" style="display: none;" />
                     <span class="avatar-text" style="display: block;">${participant.name.slice(0, 2)}</span>
                 </div>`;
             const participantItem = document.createElement('li');
@@ -824,7 +830,6 @@ const chatApp = (function() {
                     </div>
                 </div>
             `;
-            // 이미지 로드 실패 처리
             const avatarImage = participantItem.querySelector('.avatar-image');
             if (avatarImage) {
                 avatarImage.onerror = () => {
@@ -833,9 +838,7 @@ const chatApp = (function() {
                     avatar.classList.add('has-text');
                     avatarImage.style.display = 'none';
                     const avatarText = avatar.querySelector('.avatar-text');
-                    if (avatarText) {
-                        avatarText.style.display = 'block';
-                    }
+                    if (avatarText) avatarText.style.display = 'block';
                 };
             }
             participantList.appendChild(participantItem);
@@ -864,7 +867,7 @@ const chatApp = (function() {
         checkOnlineStatus(chat.id);
     }
 
-    const markedMessageIds = new Set(); // 중복 읽음 처리 방지
+    const markedMessageIds = new Set();
     function markMessageAsRead(messageId) {
         if (!stompClient?.connected || !currentChatRoomId || !state.isChatRoomOpen || !messageId) {
             console.warn('Mark message skipped:', {
@@ -887,6 +890,7 @@ const chatApp = (function() {
             JSON.stringify({ chatRoomId: currentChatRoomId, messageId })
         );
     }
+
     // 개인 채팅 열기
     async function openPersonalChat(chat) {
         if (!chat || !chat.id || isChatOpening) return;
@@ -904,7 +908,6 @@ const chatApp = (function() {
             chatWindow.appendChild(messagesContainer);
         }
 
-        // 기존 메시지가 없는 경우에만 메시지 가져오기
         if (!renderedMessageIds.has(chat.id)) {
             renderedMessageIds.set(chat.id, new Set());
             const totalMessages = await getMessageCount(chat.id);
@@ -924,7 +927,6 @@ const chatApp = (function() {
             });
         }
 
-        // UI 업데이트
         chatWindow.classList.add('visible');
         document.getElementById('messagesList').classList.remove('visible');
 
@@ -932,7 +934,6 @@ const chatApp = (function() {
             (chat.requester?.uuid === currentUser ? chat.owner?.name : chat.requester?.name) || 'Unknown';
         chatWindow.querySelector('.chat-name').textContent = chatName;
 
-        // 아바타 및 상태 설정
         const avatar = chatWindow.querySelector('.avatar.personal');
         const avatarImage = avatar.querySelector('.avatar-image');
         const avatarText = avatar.querySelector('.avatar-text');
@@ -973,7 +974,6 @@ const chatApp = (function() {
             };
         }
 
-        // 옵션 메뉴 설정
         const optionsMenu = document.querySelector('.options-menu');
         optionsMenu.innerHTML = '';
 
@@ -1014,6 +1014,7 @@ const chatApp = (function() {
         updateChatUI();
         isChatOpening = false;
     }
+
     function getMessagesWithoutSubscription(chatId, page) {
         return new Promise((resolve, reject) => {
             if (!chatId || !stompClient?.connected) {
@@ -1068,7 +1069,6 @@ const chatApp = (function() {
                 <header class="message-header"><time class="timestamp">${timeStr}</time></header>
                 <p class="message-text">${item.content}</p>`;
             } else {
-                // chatRoomsCache에서 해당 사용자의 프로필 이미지 찾기
                 const chat = chatRoomsCache.find(c => c.id === item.chatRoomId);
                 let profileImage = null;
                 if (chat) {
@@ -1103,7 +1103,6 @@ const chatApp = (function() {
                     <p class="message-text">${item.content}</p>
                 </div>`;
 
-                // 이미지 로드 실패 처리
                 const avatarImage = element.querySelector('.avatar-image');
                 if (avatarImage) {
                     avatarImage.onerror = () => {
@@ -1210,6 +1209,11 @@ const chatApp = (function() {
                 if (target.classList.contains('block-option')) {
                     if (confirm("정말로 이 사용자를 차단하시겠습니까?") && currentChatRoomId && stompClient?.connected) {
                         stompClient.send("/app/blockUser", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
+                        // 낙관적 업데이트: 채팅방 즉시 제거
+                        chatRoomsCache = chatRoomsCache.filter(c => c.id !== currentChatRoomId);
+                        renderedMessageIds.delete(currentChatRoomId);
+                        notices.delete(currentChatRoomId);
+                        renderChatList(chatRoomsCache);
                         resetChatWindow();
                     }
                 }
@@ -1217,6 +1221,11 @@ const chatApp = (function() {
                 if (target.classList.contains('leave-option')) {
                     if (confirm("정말로 이 채팅방을 나가시겠습니까?") && currentChatRoomId && stompClient?.connected) {
                         stompClient.send("/app/leaveChatRoom", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
+                        // 낙관적 업데이트: 채팅방 즉시 제거
+                        chatRoomsCache = chatRoomsCache.filter(c => c.id !== currentChatRoomId);
+                        renderedMessageIds.delete(currentChatRoomId);
+                        notices.delete(currentChatRoomId);
+                        renderChatList(chatRoomsCache);
                         resetChatWindow();
                     }
                 }
@@ -1297,8 +1306,9 @@ const chatApp = (function() {
         state.isChatRoomOpen = false;
         state.isChatOpen = true;
         document.getElementById('messagesList').classList.add('visible');
-        refreshChatRooms();
+        // refreshChatRooms 호출 제거: 서버 응답에 의존
         saveChatState();
+        updateChatUI();
     }
 
     // 채팅 UI 업데이트
@@ -1348,10 +1358,8 @@ const chatApp = (function() {
     };
 })();
 
-// 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
     chatApp.loadChatState();
-   /* if (!document.body.classList.contains('authenticated')) return;*/
     chatApp.connect();
     chatApp.setupEventListeners();
     chatApp.updateChatUI();
