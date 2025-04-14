@@ -58,8 +58,8 @@
                             <input type="text" th:field="*{phone}" id="phone" class="form-control"/>
                         </div>
                         <div class="mb-3">
-                            <label for="age" class="form-label">나이</label>
-                            <input type="number" th:field="*{age}" id="age" class="form-control" readonly/>
+                            <label for="birthdate" class="form-label">생년월일</label>
+                            <input type="date" th:value="${#temporals.format(user.birthdate, 'yyyy-MM-dd')}" id="birthdate" class="form-control" readonly/>
                         </div>
                         <div class="mb-3">
                             <label for="gender" class="form-label">성별</label>
@@ -112,6 +112,7 @@
 
 <script layout:fragment="script">
     document.addEventListener('DOMContentLoaded', function () {
+
         const input = document.getElementById('profile-upload');
         const preview = document.getElementById('profile-preview');
 
