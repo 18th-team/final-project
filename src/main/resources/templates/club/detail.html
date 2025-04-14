@@ -18,6 +18,10 @@
             <form th:action="@{/clubs/leave/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
                 <button type="submit" class="btn custom-button-info">참여 취소하기</button>
             </form>
+            <!-- 채팅방 참가 -->
+            <form th:action="@{/clubs/joinchat/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn custom-button-info">채팅방 참가하기</button>
+            </form>
         </div>
     </div>
 

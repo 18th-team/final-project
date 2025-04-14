@@ -49,29 +49,49 @@ public class ChatRoomService {
     }
     @Transactional
     public void leaveChatRoom(Long chatRoomId, String userUuid) {
-        ChatRoom chatRoom = findChatRoomById(chatRoomId);
+        // 채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
+
+        // 사용자 조회
         SiteUser user = userRepository.findByUuidWithBlockedUsers(userUuid)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userUuid));
 
+        // 참여자 확인
         if (!chatRoom.getParticipants().contains(user)) {
             throw new IllegalStateException("이 채팅방의 참여자가 아닙니다.");
         }
 
+        // 참여자 목록에서 사용자 제거
         chatRoom.getParticipants().remove(user);
+
+
         if (chatRoom.getParticipants().isEmpty()) {
             chatMessageRepository.deleteByChatRoom(chatRoom);
             chatRoomRepository.delete(chatRoom);
         } else {
-            chatRoom.setStatus("CLOSED");
+            if(chatRoom.getType().equals("PRIVATE")){
+                chatRoom.setStatus("CLOSED");
+            }
             chatMessageService.createMessage(chatRoom, user, user.getName() + "님이 채팅방을 떠났습니다.", MessageType.SYSTEM);
             chatRoomRepository.save(chatRoom);
         }
-        // 모든 참가자에게 이벤트 발행
+        // 이벤트 발행: 영향을 받는 UUID 수집
         Set<String> affectedUuids = chatRoom.getParticipants().stream()
                 .map(SiteUser::getUuid)
                 .collect(Collectors.toSet());
-        affectedUuids.add(chatRoom.getRequester().getUuid());
-        affectedUuids.add(chatRoom.getOwner().getUuid());
+
+        // owner 추가 (null 체크)
+        if (chatRoom.getOwner() != null) {
+            affectedUuids.add(chatRoom.getOwner().getUuid());
+        }
+
+        // 모임 채팅이 아닌 경우에만 requester 추가
+        if (chatRoom.getClub() == null && chatRoom.getRequester() != null) {
+            affectedUuids.add(chatRoom.getRequester().getUuid());
+        }
+
+        // 이벤트 발행
         eventPublisher.publishEvent(new ChatRoomUpdateEvent(affectedUuids));
     }
 
