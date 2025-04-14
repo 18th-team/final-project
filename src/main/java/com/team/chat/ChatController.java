@@ -154,11 +154,15 @@ public class ChatController {
     }
 
     @MessageMapping("/refreshChatRooms")
-    @Transactional(readOnly = true)
-    public void refreshChatRooms(Principal principal, @Payload ChatRequestDTO request) {
+    @Transactional
+    public void refreshChatRooms(Principal principal) {
         SiteUser currentUser = getCurrentUser(principal);
+        System.out.println("Refreshing chat rooms for user: " + currentUser.getUuid());
         List<ChatRoomDTO> chatRooms = chatRoomService.getChatRoomsForUser(currentUser.getUuid());
-        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/chatrooms", chatRooms);
+        messagingTemplate.convertAndSend(
+                "/user/" + currentUser.getUuid() + "/topic/chatrooms",
+                chatRooms
+        );
     }
 
     // onlineStatus (수동 요청 시 사용)
@@ -395,7 +399,30 @@ public class ChatController {
         return userRepository.findByUuidWithBlockedUsers(userDetails.getSiteUser().getUuid())
                 .orElseThrow(() -> new SecurityException("사용자를 찾을 수 없습니다: " + userDetails.getSiteUser().getUuid()));
     }
+    @MessageMapping("/markMessageAsRead")
+    @Transactional
+    public void markMessageAsRead(Principal principal, @Payload MarkMessageReadRequest request) {
+        System.out.println("Received markMessageAsRead: user=" + principal.getName() +
+                ", chatRoomId=" + request.getChatRoomId() +
+                ", messageId=" + request.getMessageId());
+        SiteUser currentUser = getCurrentUser(principal);
+        ChatRoom chatRoom = chatRoomService.findChatRoomById(request.getChatRoomId());
 
+        // 채팅방 접근 권한 확인
+        if (!chatRoom.getParticipants().contains(currentUser)) {
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방에 접근할 권한이 없습니다.");
+            return;
+        }
+
+        // 메시지 읽음 처리
+        int unreadCount = chatMessageService.markMessageAsRead(chatRoom, currentUser, request.getMessageId());
+
+        // 읽음 상태 업데이트 전송
+        Map<String, Object> update = new HashMap<>();
+        update.put("chatRoomId", chatRoom.getId());
+        update.put("unreadCount", unreadCount);
+        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/readUpdate", update);
+    }
     private void sendPushNotification(ChatRoom chatRoom, ChatMessage message, SiteUser sender) {
         PushNotificationDTO notification = new PushNotificationDTO(
                 chatRoom.getId(),

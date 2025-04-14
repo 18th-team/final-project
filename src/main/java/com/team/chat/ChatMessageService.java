@@ -76,5 +76,32 @@ public class ChatMessageService {
                 .count();
         return (int) unreadCount; // 캐스팅
     }
+    @Transactional
+    public int markMessageAsRead(ChatRoom chatRoom, SiteUser user, Long messageId) {
+        System.out.println("Attempting to mark message as read: chatRoomId=" + chatRoom.getId() +
+                ", userUuid=" + user.getUuid() +
+                ", messageId=" + messageId);
+        ChatMessage message = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new IllegalArgumentException("메시지를 찾을 수 없습니다: " + messageId));
+
+        // 메시지가 해당 채팅방에 속하는지 확인
+        if (!message.getChatRoom().getId().equals(chatRoom.getId())) {
+            throw new IllegalArgumentException("메시지가 이 채팅방에 속하지 않습니다.");
+        }
+
+        // 이미 읽음 처리된 경우 스킵
+        if (!message.getReadBy().contains(user)) {
+            message.getReadBy().add(user);
+            chatMessageRepository.save(message);
+        }
+
+        // 읽지 않은 메시지 수 계산
+        long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
+                .stream()
+                .filter(msg -> msg.getSender() != null && !msg.getSender().getUuid().equals(user.getUuid()))
+                .filter(msg -> !msg.getReadBy().contains(user))
+                .count();
+        return (int) unreadCount;
+    }
 }
 

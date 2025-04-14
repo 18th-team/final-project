@@ -4,21 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="최근 메시지 수정 완료">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="채팅방 목록 최근 메시지 수정중">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/MarkMessageReadRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatMessageService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/chat.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/chat.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/chat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/chat2.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/chat2.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/chat.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/chat.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,8 +55,8 @@
         <option value="JavaScript File" />
         <option value="CSS File" />
         <option value="HTML File" />
-        <option value="Interface" />
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -62,7 +64,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="jy" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -77,7 +79,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
-    &quot;accountId&quot;: &quot;c3482248-7a2c-4111-ad8e-4e12d7a700b9&quot;
+    &quot;accountId&quot;: &quot;af438f09-1c98-4fc6-896c-82d063cb9dc4&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -110,7 +112,7 @@
     &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;jsw&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/GREEN/IdeaProjects/final-project/src/main/java/com/team/authentication&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/GREEN/IdeaProjects/final-project/src/main/resources/static/js&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -120,7 +122,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.CommitDialog&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -129,10 +131,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\resources\static\js" />
+      <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\resources\static\img\user" />
       <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\java\com\team\authentication" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\admin\Desktop\final-project\src\main\resources\static\img" />
       <recent name="C:\Users\GREEN\IdeaProjects\final-project\src\main\resources\templates" />
       <recent name="C:\Users\GREEN\final-project\src\main\resources\templates\feed" />
     </key>
@@ -200,8 +203,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
       </set>
     </attachedChunks>
   </component>
@@ -238,9 +241,13 @@
       <workItem from="1743465831257" duration="26532000" />
       <workItem from="1743552863897" duration="29483000" />
       <workItem from="1743638889575" duration="14030000" />
-      <workItem from="1744447550935" duration="4034000" />
-      <workItem from="1744477343343" duration="4118000" />
-      <workItem from="1744520218591" duration="14641000" />
+      <workItem from="1744072144886" duration="4775000" />
+      <workItem from="1744076944504" duration="413000" />
+      <workItem from="1744077378790" duration="24340000" />
+      <workItem from="1744156970817" duration="21872000" />
+      <workItem from="1744187915846" duration="1150000" />
+      <workItem from="1744189205492" duration="213000" />
+      <workItem from="1744243512344" duration="10768000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -506,15 +513,127 @@
       <option name="project" value="LOCAL" />
       <updated>1743725592065</updated>
     </task>
-    <task id="LOCAL-00034" summary="최근 메시지 수정 완료">
+    <task id="LOCAL-00034" summary="온라인, 마지막 접속 시간 표시 완료">
       <option name="closed" value="true" />
-      <created>1744449469989</created>
+      <created>1743998376391</created>
       <option name="number" value="00034" />
       <option name="presentableId" value="LOCAL-00034" />
       <option name="project" value="LOCAL" />
-      <updated>1744449469989</updated>
+      <updated>1743998376391</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="마지막 접속 시간 수정">
+      <option name="closed" value="true" />
+      <created>1744002127746</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1744002127746</updated>
+    </task>
+    <task id="LOCAL-00036" summary="프로필 이미지가 있는 경우 프로필 이미지 표시">
+      <option name="closed" value="true" />
+      <created>1744007163910</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1744007163910</updated>
+    </task>
+    <task id="LOCAL-00037" summary="모임 채팅방 생성 작업중&#10;오류 수정 해야됨&#10;java.lang.IllegalStateException: 참여자를 찾을 수 없습니다.&#10;&#9;at com.team.chat.ChatRoomService.lambda$getChatRoomsForUser$9(ChatRoomService.java:195) ~[classes/:na]">
+      <option name="closed" value="true" />
+      <created>1744015948668</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1744015948668</updated>
+    </task>
+    <task id="LOCAL-00038" summary="모임 등록 시 모임 채팅 생성 추가&#10;&#10;- ClubController에서 모임 생성 후 채팅방 자동 생성&#10;- ClubService에서 Club 엔티티 반환하도록 업데이트&#10;- Club와 ChatRoom 간 엔티티 관계 추가로 모임 채팅 지원">
+      <option name="closed" value="true" />
+      <created>1744090377969</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1744090377969</updated>
+    </task>
+    <task id="LOCAL-00039" summary="모임 채팅 참가 메소드 추가&#10;ChatRoom, Club 1:1 관계로 변경&#10;Chat.css, chat.js 수정">
+      <option name="closed" value="true" />
+      <created>1744094884077</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1744094884077</updated>
+    </task>
+    <task id="LOCAL-00040" summary="모임 채팅 참여자 목록 작업중">
+      <option name="closed" value="true" />
+      <created>1744102525389</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1744102525389</updated>
+    </task>
+    <task id="LOCAL-00041" summary="모임 채팅 참여자 목록 작업중2">
+      <option name="closed" value="true" />
+      <created>1744182080889</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1744182080889</updated>
+    </task>
+    <task id="LOCAL-00042" summary="모임 채팅 참여자 목록 완료">
+      <option name="closed" value="true" />
+      <created>1744187626981</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1744187626981</updated>
+    </task>
+    <task id="LOCAL-00043" summary="checkOnlineStatus 중복 호출 수정">
+      <option name="closed" value="true" />
+      <created>1744188962668</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1744188962668</updated>
+    </task>
+    <task id="LOCAL-00044" summary="누락된 기능 추가">
+      <option name="closed" value="true" />
+      <created>1744246541918</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1744246541918</updated>
+    </task>
+    <task id="LOCAL-00045" summary="모임채팅 공지사항 프론트 작업중">
+      <option name="closed" value="true" />
+      <created>1744252958104</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1744252958104</updated>
+    </task>
+    <task id="LOCAL-00046" summary="모임채팅 공지사항 백엔드 완료">
+      <option name="closed" value="true" />
+      <created>1744350533037</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1744350533037</updated>
+    </task>
+    <task id="LOCAL-00047" summary="SiteUser age -&gt; LocalDate birthdate; 나이 제한이 있는 모임의 경우 생년월일로 직접 계산">
+      <option name="closed" value="true" />
+      <created>1744352628385</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1744352628385</updated>
+    </task>
+    <task id="LOCAL-00048" summary="채팅방 목록 최근 메시지 수정중">
+      <option name="closed" value="true" />
+      <created>1744360660076</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1744360660076</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -559,19 +678,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="로그인, 회원가입 기능 완료" />
-    <MESSAGE value="로그인 창 수정&#10;피드 작업 중" />
-    <MESSAGE value="웹 소켓 연결 부분 추가&#10;개인 채팅 리스트 프론트, 백엔드 작업중" />
-    <MESSAGE value="개인 채팅 목록을 보여주는 부분만 완료" />
-    <MESSAGE value="개인 채팅 목록 수정: 1대1 채팅 요청자와 수신자 구분 기능 추가" />
-    <MESSAGE value="개인 채팅 목록 수정" />
-    <MESSAGE value="개인 채팅 메시지 작업중" />
-    <MESSAGE value="개인 채팅 메시지 프론트 작업중" />
-    <MESSAGE value="개인 채팅 메시지 90% 완료&#10;차단 기능, 채팅 나가기 기능 남았음" />
-    <MESSAGE value="." />
-    <MESSAGE value="개인 채팅 나가기 및 입력창 비활성화, 채팅방 삭제&#10;&#10;- 개인 채팅창에서 나가기 기능 추가&#10;- 나가면 남은 사용자의 입력창 비활성화 ( 개인 채팅 )&#10;- 참여자가 0명일 때 채팅방 삭제" />
-    <MESSAGE value="localStorage로 채팅창 닫을 때 마지막 채팅방 상태 저장" />
-    <MESSAGE value="채팅 스타일 수정" />
     <MESSAGE value="개인 채팅 차단 기능 추가" />
     <MESSAGE value="기능 개선" />
     <MESSAGE value="개인 채팅 기능 완료&#10;&#10;남은 작업 &#10;모임 채팅 구현&#10;메시지 알림&#10;안 읽은 메시지 개수 표시&#10;온라인 상태" />
@@ -582,9 +688,22 @@
     <MESSAGE value="메시지 불러오는 부분 수정중&#10;메시지가 많아지면 웹소켓 오류가 발생 한번에 불러오는 방식에서 페이징 처리해서 불러오는 방식으로 변경 작업중" />
     <MESSAGE value="openPersonalChat 수정" />
     <MESSAGE value="스크립트 부분 수정" />
-    <MESSAGE value="온라인 상태 확인 작업중" />
-    <MESSAGE value="최근 메시지 수정 완료" />
-    <option name="LAST_COMMIT_MESSAGE" value="최근 메시지 수정 완료" />
+    <MESSAGE value="온라인, 마지막 접속 시간 표시 완료" />
+    <MESSAGE value="마지막 접속 시간 수정" />
+    <MESSAGE value="프로필 이미지가 있는 경우 프로필 이미지 표시" />
+    <MESSAGE value="모임 채팅방 생성 작업중&#10;오류 수정 해야됨&#10;java.lang.IllegalStateException: 참여자를 찾을 수 없습니다.&#10;&#9;at com.team.chat.ChatRoomService.lambda$getChatRoomsForUser$9(ChatRoomService.java:195) ~[classes/:na]" />
+    <MESSAGE value="모임 등록 시 모임 채팅 생성 추가&#10;&#10;- ClubController에서 모임 생성 후 채팅방 자동 생성&#10;- ClubService에서 Club 엔티티 반환하도록 업데이트&#10;- Club와 ChatRoom 간 엔티티 관계 추가로 모임 채팅 지원" />
+    <MESSAGE value="모임 채팅 참가 메소드 추가&#10;ChatRoom, Club 1:1 관계로 변경&#10;Chat.css, chat.js 수정" />
+    <MESSAGE value="모임 채팅 참여자 목록 작업중" />
+    <MESSAGE value="모임 채팅 참여자 목록 작업중2" />
+    <MESSAGE value="모임 채팅 참여자 목록 완료" />
+    <MESSAGE value="checkOnlineStatus 중복 호출 수정" />
+    <MESSAGE value="누락된 기능 추가" />
+    <MESSAGE value="모임채팅 공지사항 프론트 작업중" />
+    <MESSAGE value="모임채팅 공지사항 백엔드 완료" />
+    <MESSAGE value="SiteUser age -&gt; LocalDate birthdate; 나이 제한이 있는 모임의 경우 생년월일로 직접 계산" />
+    <MESSAGE value="채팅방 목록 최근 메시지 수정중" />
+    <option name="LAST_COMMIT_MESSAGE" value="채팅방 목록 최근 메시지 수정중" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -598,37 +717,213 @@
           <option name="timeStamp" value="8" />
         </breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
-          <line>99</line>
-          <option name="timeStamp" value="10" />
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomRepository.java</url>
+          <line>12</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
-          <line>73</line>
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/security/SecurityHandshakeInterceptor.java</url>
+          <line>38</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
-          <line>68</line>
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
-          <line>74</line>
+          <line>63</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
-          <line>64</line>
+          <line>62</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
-          <line>63</line>
+          <line>64</line>
           <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>73</line>
+          <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>135</line>
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>134</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>136</line>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>137</line>
+          <option name="timeStamp" value="53" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>167</line>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>166</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>165</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>163</line>
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>164</line>
+          <option name="timeStamp" value="59" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>161</line>
+          <option name="timeStamp" value="60" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>162</line>
+          <option name="timeStamp" value="61" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>169</line>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>170</line>
+          <option name="timeStamp" value="63" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>171</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>168</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>75</line>
+          <option name="timeStamp" value="66" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java</url>
+          <line>74</line>
+          <option name="timeStamp" value="67" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
+          <line>37</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
+          <line>38</line>
+          <option name="timeStamp" value="80" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
+          <line>39</line>
+          <option name="timeStamp" value="81" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
+          <line>41</line>
+          <option name="timeStamp" value="82" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/user/CustomOAuth2UserService.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="83" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>199</line>
+          <option name="timeStamp" value="85" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>196</line>
+          <option name="timeStamp" value="87" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>183</line>
+          <option name="timeStamp" value="93" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>179</line>
+          <option name="timeStamp" value="95" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>180</line>
+          <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>176</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>172</line>
+          <properties>
+            <option name="lambda-ordinal" value="0" />
+          </properties>
+          <option name="timeStamp" value="99" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>171</line>
+          <option name="timeStamp" value="100" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>174</line>
+          <properties>
+            <option name="lambda-ordinal" value="0" />
+          </properties>
+          <option name="timeStamp" value="101" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
+          <line>173</line>
+          <option name="timeStamp" value="102" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/main/resources/static/js/chat.js</url>
+          <line>895</line>
+          <option name="timeStamp" value="105" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="java.util.Optional" memberName="value" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

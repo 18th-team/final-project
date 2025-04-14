@@ -380,9 +380,19 @@ const chatApp = (function() {
             const items = JSON.parse(message.body);
             const processedItems = Array.isArray(items) ? items : [items];
             processedItems.forEach(item => {
+                console.log('Received message:', {
+                    id: item.id,
+                    chatRoomId: item.chatRoomId,
+                    content: item.content,
+                    sender: item.sender,
+                    timestamp: item.timestamp
+                });
                 handleMessage(item);
-                if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen) {
-                    markMessagesAsRead();
+                if (item.chatRoomId === currentChatRoomId && state.isChatRoomOpen && item.id) {
+                    setTimeout(() => {
+                        console.log('New message received, marking as read:', item.id);
+                        markMessageAsRead(item.id);
+                    }, 500); // 500ms 지연
                 }
             });
             state.isLoading = false;
@@ -481,9 +491,16 @@ const chatApp = (function() {
 
     // 메시지 읽음 처리
     function markMessagesAsRead() {
-        if (Date.now() - lastMarkTime < markCooldown || !stompClient?.connected || !currentChatRoomId || !state.isChatRoomOpen) return;
+        if (!stompClient?.connected || !currentChatRoomId || !state.isChatRoomOpen) {
+            console.warn('Mark skipped:', {
+                connected: stompClient?.connected,
+                chatRoomId: currentChatRoomId,
+                isChatRoomOpen: state.isChatRoomOpen
+            });
+            return;
+        }
+        console.log('Marking messages as read for chatRoomId:', currentChatRoomId);
         stompClient.send("/app/markMessagesAsRead", {}, JSON.stringify({ chatRoomId: currentChatRoomId }));
-        lastMarkTime = Date.now();
     }
 
     // 메시지 처리
@@ -847,7 +864,29 @@ const chatApp = (function() {
         checkOnlineStatus(chat.id);
     }
 
-    // 개인 채팅 열기
+    const markedMessageIds = new Set(); // 중복 읽음 처리 방지
+    function markMessageAsRead(messageId) {
+        if (!stompClient?.connected || !currentChatRoomId || !state.isChatRoomOpen || !messageId) {
+            console.warn('Mark message skipped:', {
+                connected: stompClient?.connected,
+                chatRoomId: currentChatRoomId,
+                isChatRoomOpen: state.isChatRoomOpen,
+                messageId
+            });
+            return;
+        }
+        if (markedMessageIds.has(messageId)) {
+            console.log('Message already marked as read:', messageId);
+            return;
+        }
+        markedMessageIds.add(messageId);
+        console.log('Marking message as read:', { chatRoomId: currentChatRoomId, messageId });
+        stompClient.send(
+            "/app/markMessageAsRead",
+            {},
+            JSON.stringify({ chatRoomId: currentChatRoomId, messageId })
+        );
+    }
     // 개인 채팅 열기
     async function openPersonalChat(chat) {
         if (!chat || !chat.id || isChatOpening) return;
