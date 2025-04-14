@@ -596,7 +596,7 @@ const chatApp = (function() {
     function showPushNotification(notification) {
         const container = document.getElementById('notificationContainer');
         if (!container) return;
-
+        container.style.visibility = 'visible';
         const nameText = container.querySelector('#notificationName');
         const messageText = container.querySelector('#notificationMessage');
         const timestampText = container.querySelector('.timestamp-text');
@@ -639,7 +639,7 @@ const chatApp = (function() {
             if (container.style.display === 'block') {
                 container.style.opacity = '0';
                 container.style.transform = 'translateX(400px)';
-                setTimeout(() => container.style.display = 'none', 300);
+                setTimeout(() => container.style.visibility = 'hidden', 300);
             }
         }, 5000);
     }

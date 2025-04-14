@@ -663,6 +663,7 @@
     top: 24px;
     transform: translateX(400px);
     opacity: 0;
+    visibility: hidden;
 }
 
 .notification-box {
