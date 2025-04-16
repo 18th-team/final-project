@@ -29,17 +29,7 @@ public class Club extends BaseEntity {
     private String content;
 
     @Column
-    private String city;
-
-    @Column
-    private String district;
-
-    @Column
     private String ageRestriction;
-
-    @ManyToOne
-    @JoinColumn(name = "host_id")
-    private SiteUser host;
 
     @Column
     private int fileAttached;
@@ -57,6 +47,10 @@ public class Club extends BaseEntity {
     @Column
     private Double longitude; // 경도
 
+    /* note ****** join ************** */
+    @ManyToOne
+    @JoinColumn(name = "host_id")
+    private SiteUser host;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ClubFileEntity> clubFileEntityList = new ArrayList<>();
@@ -69,7 +63,6 @@ public class Club extends BaseEntity {
     )
     private Set<Keyword> keywords = new HashSet<>();
 
-    // 가입자 추가
     @ManyToMany
     @JoinTable(
             name = "club_member",
@@ -78,7 +71,6 @@ public class Club extends BaseEntity {
     )
     private Set<SiteUser> members = new HashSet<>();
 
-    // ChatRoom과의 관계 추가
     @OneToOne(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private ChatRoom chatRoom;
 
@@ -87,8 +79,6 @@ public class Club extends BaseEntity {
         return Club.builder()
                 .title(clubDTO.getTitle())
                 .content(clubDTO.getContent())
-                .city(clubDTO.getCity())
-                .district(clubDTO.getDistrict())
                 .ageRestriction(clubDTO.getAgeRestriction())
                 .host(host)
                 .fileAttached(0)
@@ -100,27 +90,12 @@ public class Club extends BaseEntity {
                 .build();
     }
 
-    // DTO -> Entity로 업데이트
-    public static Club toUpdateEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
-        return Club.builder()
-                .id(clubDTO.getId())
-                .title(clubDTO.getTitle())
-                .content(clubDTO.getContent())
-                .city(clubDTO.getCity())
-                .district(clubDTO.getDistrict())
-                .ageRestriction(clubDTO.getAgeRestriction())
-                .host(host)
-                .keywords(keywords)
-                .build();
-    }
 
     // 파일 포함 저장
     public static Club toSaveFileEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
         return Club.builder()
                 .title(clubDTO.getTitle())
                 .content(clubDTO.getContent())
-                .city(clubDTO.getCity())
-                .district(clubDTO.getDistrict())
                 .ageRestriction(clubDTO.getAgeRestriction())
                 .host(host)
                 .fileAttached(1)
@@ -138,8 +113,6 @@ public class Club extends BaseEntity {
                 .id(existingClub.getId())
                 .title(clubDTO.getTitle())
                 .content(clubDTO.getContent())
-                .city(clubDTO.getCity())
-                .district(clubDTO.getDistrict())
                 .ageRestriction(clubDTO.getAgeRestriction())
                 .host(host)
                 .fileAttached(clubDTO.getClubFile() != null && !clubDTO.getClubFile().stream().allMatch(MultipartFile::isEmpty) ? 1 : existingClub.getFileAttached())

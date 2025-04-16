@@ -40,7 +40,8 @@ public class SiteUser {
     private String password;
 
     @Column(nullable = false)
-    private LocalDate birthdate; //age <- LocalDate birthdate로 변경 나이 제한의 경우 birthdate 기준으로 계산해서 확인 하게
+    private LocalDate birthdate;
+    //age <- LocalDate birthdate로 변경 나이 제한의 경우 birthdate 기준으로 계산해서 확인 하게
 
     @Column(nullable = false)
     private String gender;
@@ -59,6 +60,7 @@ public class SiteUser {
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
     // OAuth 관련 필드
     @Column
     private String provider; // OAuth 제공자 ("kakao", "naver")
@@ -101,8 +103,12 @@ public class SiteUser {
             inverseJoinColumns = @JoinColumn(name = "blocked_uuid")
     )
     private Set<SiteUser> blockedUsers = new HashSet<>();
+
+
     @Column
     private LocalDateTime lastOnline;
+
+
     // 차단 유저 추가 메서드
     public void blockUser(SiteUser blocked) {
         this.blockedUsers.add(blocked);

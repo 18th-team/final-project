@@ -3,41 +3,15 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title>크루 만들기</title>
-    <link th:href="@{/css/create.css}" rel="stylesheet"/>
-    <style>
-        #search-results {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid #cc5f17;
-            padding: 10px;
-            border-radius: 8px;
-            display: none;
-        }
+    <link th:href="@{/css/form.css}" rel="stylesheet"/>
 
-        .result-item {
-            padding: 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .result-item:hover {
-            background-color: #f1f1f1;
-        }
-
-        #map{
-            overflow-y: auto;
-            border: 1px solid #cc5f17;
-            border-radius: 8px;
-            height: 400px;
-        }
-    </style>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="container my-5 shadow-lg p-4 rounded-3 w-80">
         <h1 class="mb-5 text-center fw-bold">모락 크루 만들기 🍳</h1>
-        <form th:action="@{/clubs/insert}" method="post" id="clubForm" class="needs-validation"
-              enctype="multipart/form-data">
+        <form th:action="@{/clubs/insert}" method="post" id="clubForm"
+              enctype="multipart/form-data" >
             <!-- Title -->
             <div class="mb-4">
                 <label for="title" class="form-label create-name text-dark">크루명 🍳</label>

@@ -28,7 +28,7 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     @Query("SELECT c FROM Club c WHERE " +
             "c.title LIKE %:query% OR " +
             "c.content LIKE %:query% OR " +
-            "c.city LIKE %:query% OR " +
+            "c.locationTitle LIKE %:query% OR " +
             "EXISTS (SELECT k FROM c.keywords k WHERE k.name LIKE %:query%)")
     List<Club> findBySearchQuery(String query);
 

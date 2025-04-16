@@ -5,7 +5,6 @@ import lombok.*;
 
 @Data
 @Entity
-@Table(name = "keyword")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Keyword {

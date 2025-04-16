@@ -62,11 +62,6 @@ public class ClubController {
                              @RequestParam("longitude") Double longitude,Authentication authentication) throws IOException {
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
-        System.out.println("save ClubDTO: id=" +clubDTO +
-                ", location=" +location +
-                ", **locationTitle=" + locationTitle +
-                ", latitude=" +latitude +
-                ", longitude=" +longitude);
         Club getClub = clubService.save(clubDTO,location,locationTitle,latitude ,longitude,host);
         //모임 생성 시 채팅방 자동 생성
         ChatRoom chatRoom =  chatRoomService.CreateMoimChatRoom(
@@ -87,7 +82,6 @@ public class ClubController {
                 .map(ClubDTO::toDTO)
                 .collect(Collectors.toList());
         model.addAttribute("clubList", clubDTOList);
-        System.out.println("All clubs: " + clubDTOList.size()); // 디버깅
         return "club/list";
     }
 

@@ -40,11 +40,8 @@ public class HomeController {
    @PostMapping("/nearby")
    public ResponseEntity<List<ClubDTO>> getNearByClubs(@RequestBody Map<String,Double>location)
    {
-       //디버깅추가
-       System.out.println("Request received: " + location);
        double userLat = location.get("latitude");
        double userLng = location.get("longitude");
-
 
        List<ClubDTO> fullList = clubService.findNearByClubs(userLat, userLng);
        // 리스트를 랜덤하게 섞기
@@ -55,6 +52,8 @@ public class HomeController {
        System.out.println("Nearby clubs: " + nearbyClubs);
        return ResponseEntity.ok(nearbyClubs);
    }
+
+
     @GetMapping("/")
     public String home(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -132,6 +131,9 @@ public class HomeController {
         model.addAttribute("nearbyClubs", Collections.emptyList());
         return "index";  // view 이름 반환
     }
+
+
+
 
     @GetMapping("/mobti")
     public String mobtiTest() {
