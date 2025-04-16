@@ -26,7 +26,7 @@ public class ChatRoomDTO {
     private Integer size; // 페이징: 페이지 크기
 
     private String clubImage; // 그룹 채팅방의 모임 이미지
-
+    private String replyTo;
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -52,5 +52,12 @@ public class ChatRoomDTO {
         private String content;
         private LocalDateTime timestamp;
         private String type; // "NORMAL" or "SYSTEM"
+    }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UnreadCountUpdate {
+        private Long chatRoomId;
+        private int unreadCount;
     }
 }

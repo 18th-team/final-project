@@ -70,6 +70,10 @@
                             <textarea th:field="*{introduction}" id="introduction" class="form-control"
                                       rows="4"></textarea>
                         </div>
+                        <div class="mb-3">
+                            <label for="uuid" class="form-label">UUID</label>
+                            <input type="text" th:field="*{uuid}" id="uuid" class="form-control" readonly/>
+                        </div>
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <button type="submit" class="btn cs-orange">수정하기</button>
                     </div>

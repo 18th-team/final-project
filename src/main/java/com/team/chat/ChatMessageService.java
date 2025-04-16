@@ -16,43 +16,29 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final SimpMessagingTemplate messagingTemplate;
     @Transactional
     public ChatMessage createMessage(ChatRoom chatRoom, SiteUser sender, String content, MessageType type) {
         ChatMessage message = ChatMessage.builder()
                 .chatRoom(chatRoom)
-                .sender(type == MessageType.SYSTEM ? null : sender) // 시스템 메시지면 sender null
+                .sender(sender)
                 .content(content)
                 .type(type)
                 .timestamp(LocalDateTime.now())
                 .build();
         ChatMessage savedMessage = chatMessageRepository.save(message);
 
+        // 마지막 메시지 및 시간 갱신
         chatRoom.setLastMessage(content);
         chatRoom.setLastMessageTime(savedMessage.getTimestamp());
         chatRoomRepository.save(chatRoom);
 
-        if (type == MessageType.NORMAL) {
-            chatRoom.getParticipants().forEach(participant -> {
-                if (!participant.equals(sender)) {
-                    long unreadCount = chatMessageRepository.findByChatRoomOrderByTimestampAsc(chatRoom)
-                            .stream()
-                            .filter(msg -> msg.getSender() != null && !msg.getSender().equals(participant)) // null 체크 추가
-                            .filter(msg -> !msg.getReadBy().contains(participant))
-                            .count();
-                    messagingTemplate.convertAndSend(
-                            "/user/" + participant.getUuid() + "/topic/readUpdate",
-                            new UnreadCountUpdate(chatRoom.getId(), (int) unreadCount)
-                    );
-                }
-            });
-        }
         return savedMessage;
     }
     @Transactional

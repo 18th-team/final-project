@@ -11,7 +11,7 @@
                     <span class="name-text" id="notificationName">
                       <!-- Name will be dynamically inserted -->
                     </span>
-                <span class="timestamp-text">06:06 오후</span>
+                <span class="timestamp-text"></span>
             </div>
             <p class="notification-text" id="notificationMessage">
                 <!-- Message will be dynamically inserted -->
@@ -34,6 +34,19 @@
 <div class="chat-system">
     <!-- Messages List -->
     <section class="messages-list" aria-label="Messages List" id="messagesList">
+        <!-- 채팅 요청 -->
+        <div class="notice-modal" id="ChatModal" style="display: none;">
+            <div class="notice-modal-content">
+                <h3 id="ChatmodalTitle"></h3>
+                <form id="ChatForm">
+                   <input type="text" id="ChatText" placeholder="" required class="form-control"/>
+                    <div class="modal-actions">
+                        <button type="submit" id="submitChat"></button>
+                        <button type="button" id="cancelChat">취소</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div class="messages-header">
             <h1>채팅</h1>
         </div>
@@ -48,7 +61,13 @@
                 <span class="unread-badge" id="personalUnreadCount">0</span>
             </button>
         </div>
-
+        <div class="user-search-area p-3" id="userSearchArea" style="display: none;">
+            <div class="d-flex align-items-center gap-2">
+                <input type="search" id="user-search-input" class="form-control" placeholder="사용자 UUID로 검색..." aria-label="Search User by UUID">
+                <button id="user-search-button" class="btn btn-secondary btn-sm" style="white-space: nowrap;">검색</button>
+            </div>
+            <div id="user-search-results" class="mt-2"></div>
+        </div>
         <div class="chat-list" id="chatList">
             <!-- 동적으로 채팅 항목이 추가됨 -->
         </div>
@@ -142,6 +161,7 @@
             </div>
         </div>
         <div class="messages-container">
+            <div id="message-load-sentinel" style="height: 1px; pointer-events: none;"></div>
             <!-- 공지사항 (고정 또는 조건부 표시) -->
 
         </div>

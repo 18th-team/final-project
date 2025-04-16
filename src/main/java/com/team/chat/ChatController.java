@@ -1,5 +1,8 @@
 package com.team.chat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.team.user.CustomSecurityUserDetails;
 import com.team.user.SiteUser;
 import com.team.user.UserRepository;
@@ -232,6 +235,7 @@ public class ChatController {
     public void getMessageCount(Principal principal, @Payload ChatRoomDTO request) {
         SiteUser currentUser = getCurrentUser(principal);
         Long chatRoomId = request.getId();
+        String replyTo = request.getReplyTo(); // DTO에서 replyTo 값 읽기
 
         if (chatRoomId == null) {
             messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방 ID가 제공되지 않았습니다.");
@@ -245,7 +249,22 @@ public class ChatController {
         }
 
         long messageCount = chatMessageRepository.countByChatRoom(chatRoom);
-        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/messageCount", messageCount);
+
+        // 응답 데이터를 Map 또는 DTO로 구성 (chatId 포함 권장)
+        Map<String, Object> responsePayload = new HashMap<>();
+        responsePayload.put("chatId", chatRoomId);
+        responsePayload.put("count", messageCount);
+
+        // replyTo 값이 있는지 확인하고 해당 토픽으로 응답 전송
+        if (replyTo != null && !replyTo.isEmpty()) {
+            System.out.println("Sending message count (" + messageCount + ") for chat " + chatRoomId + " back to specific topic: " + replyTo);
+            messagingTemplate.convertAndSend(replyTo, responsePayload); // 클라이언트가 지정한 토픽으로 전송
+        } else {
+            // replyTo가 없는 경우의 예외 처리 또는 기본 동작 (선택 사항)
+            System.err.println("Warning: replyTo topic not provided for getMessageCount request from user " + currentUser.getUuid() + ", chatRoomId " + chatRoomId);
+            // 필요하다면 기존 방식처럼 일반 토픽으로 보내거나 오류를 보낼 수 있습니다.
+            // messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "Reply topic missing in getMessageCount request.");
+        }
     }
 
     @MessageMapping("/getMessages")
@@ -256,6 +275,7 @@ public class ChatController {
         int page = request.getPage() != null ? request.getPage() : 0; // 기본값: 0
         System.out.println(page);
         int size = request.getSize() != null ? Math.min(request.getSize(), 50) : 50; // 최대 50개로 제한
+        String replyTo = request.getReplyTo(); // DTO에서 replyTo 값 읽기 (필드 추가됨)
 
         if (chatRoomId == null) {
             messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/errors", "채팅방 ID가 제공되지 않았습니다.");
@@ -269,7 +289,17 @@ public class ChatController {
         }
 
         List<ChatRoomDTO.ChatMessageDTO> messages = chatRoomService.getMessages(chatRoom, page, size);
-        messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/messages", messages);
+
+        // replyTo 값이 있는지 확인하고 해당 토픽으로 응답 전송
+        if (replyTo != null && !replyTo.isEmpty()) {
+            System.out.println("Sending messages (page=" + page + ", size=" + messages.size() + ") for chat " + chatRoomId + " back to specific topic: " + replyTo);
+            messagingTemplate.convertAndSend(replyTo, messages); // 클라이언트가 지정한 토픽으로 전송
+        } else {
+            // replyTo가 없는 경우의 예외 처리 또는 기본 동작
+            System.err.println("Warning: replyTo topic not provided for getMessages request from user " + currentUser.getUuid() + ", chatRoomId " + chatRoomId);
+            // 기존처럼 일반 토픽으로 보내거나 오류 전송
+            messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/messages", messages); // 혹은 오류 전송
+        }
     }
 
     @MessageMapping("/handleChatRequest")
@@ -325,7 +355,7 @@ public class ChatController {
         chatRoomService.leaveChatRoom(request.getChatRoomId(), currentUser.getUuid());
     }
 
-    @MessageMapping("/sendMessage")
+    @MessageMapping("/sendMessage")//
     @Transactional
     public void sendMessage(@Payload ChatRoomDTO.ChatMessageDTO messageDTO, Principal principal) {
         SiteUser sender = getCurrentUser(principal);
@@ -343,14 +373,18 @@ public class ChatController {
 
         ChatMessage message = chatMessageService.createMessage(chatRoom, sender, content, MessageType.NORMAL);
 
-        chatRoom.setLastMessage(message.getContent());
-        chatRoom.setLastMessageTime(message.getTimestamp());
-        chatRoomService.updateChatRoom(chatRoom); // chatRoomRepository 대신 ChatRoomService 사용
+        ChatRoomDTO.ChatMessageDTO messageDtoToSend = chatRoomService.convertToChatMessageDTO(message); // 서비스에 이 메소드가 있다고 가정
+        // 만약 convertToChatMessageDTO 에서 profileImage를 설정하지 않는다면 여기서 설정
+        if (messageDtoToSend.getSender() != null && sender.getProfileImage() != null) {
+            messageDtoToSend.getSender().setProfileImage(sender.getProfileImage());
+        }
 
-        ChatRoomDTO.ChatMessageDTO messageDto = chatRoomService.convertToChatMessageDTO(message);
-        messageDto.getSender().setProfileImage(sender.getProfileImage());
-        chatRoom.getParticipants().forEach(p ->
-                messagingTemplate.convertAndSend("/user/" + p.getUuid() + "/topic/messages", messageDto));
+        chatRoom.getParticipants().stream()
+                .filter(p -> !p.getUuid().equals(sender.getUuid())) // <<< 보낸 사람 제외 필터 추가
+                .forEach(p -> {
+                    String destination = "/user/" + p.getUuid() + "/topic/messages";
+                    messagingTemplate.convertAndSend(destination, messageDtoToSend);
+                });
 
         Set<String> affectedUuids = chatRoom.getParticipants().stream()
                 .map(SiteUser::getUuid)
@@ -424,24 +458,28 @@ public class ChatController {
         messagingTemplate.convertAndSend("/user/" + currentUser.getUuid() + "/topic/readUpdate", update);
     }
     private void sendPushNotification(ChatRoom chatRoom, ChatMessage message, SiteUser sender) {
+        ChatRoomDTO.SiteUserDTO senderDto = new ChatRoomDTO.SiteUserDTO(
+                sender.getUuid(),
+                sender.getName(),
+                sender.getProfileImage() // 프로필 이미지 포함!
+        );
         PushNotificationDTO notification = new PushNotificationDTO(
                 chatRoom.getId(),
-                sender.getName(),
+                sender.getName(), // 기존 senderName 필드는 유지하거나 senderDto.getName() 사용
                 message.getContent(),
                 message.getTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-                message.getId() // 메시지 ID 추가
+                message.getId(),
+                senderDto // <<< 생성한 senderDto 전달
         );
-        // 디버깅 로그 추가
-        System.out.println("Sending notification: chatRoomId=" + notification.getChatRoomId() +
-                ", senderName=" + notification.getSenderName() +
-                ", content=" + notification.getContent() +
-                ", timestamp=" + notification.getTimestamp() +
-                ", messageId=" + notification.getMessageId());
+        System.out.println("Sending notification DTO: " + notification.toString()); // 전송 전 데이터 확인
         chatRoom.getParticipantSettings().stream()
                 .filter(p -> !p.getUser().getUuid().equals(sender.getUuid()))
                 .filter(ChatRoomParticipant::isNotificationEnabled)
-                .filter(p -> !message.getReadBy().contains(p.getUser()))
-                .forEach(p -> messagingTemplate.convertAndSend("/user/" + p.getUser().getUuid() + "/topic/notifications", notification));
+                // .filter(p -> !message.getReadBy().contains(p.getUser())) // 이 필터는 불필요하거나 부정확할 수 있음
+                .forEach(p -> {
+                    String destination = "/user/" + p.getUser().getUuid() + "/topic/notifications";
+                    messagingTemplate.convertAndSend(destination, notification); // 수정된 DTO 전송
+                });
     }
 
     @MessageMapping("/createNotice")
