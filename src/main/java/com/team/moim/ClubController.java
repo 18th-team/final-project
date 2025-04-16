@@ -209,6 +209,7 @@ public class ClubController {
             redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다!");
             return "redirect:/login";
         }
+        SiteUser userDetails = user.getSiteUser();
         boolean isLeft = clubService.leaveClub(clubId, user.getUsername());
         if (isLeft) {
             Optional<Club> getClub = clubRepository.findById(clubId);
@@ -217,7 +218,7 @@ public class ClubController {
                 Long chatRoomId = club.getChatRoom().getId();
                 ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                         .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다: " + chatRoomId));
-                if (chatRoom.getParticipants().contains(user)) {
+                if (chatRoom.getParticipants().contains(userDetails)) {
                     chatRoomService.leaveChatRoom(chatRoomId, user.getUsername());
                 }
 
