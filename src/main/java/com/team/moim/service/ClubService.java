@@ -45,6 +45,7 @@ public class ClubService {
             clubEntity.setLocation(location);
             clubEntity.setLatitude(latitude);
             clubEntity.setLongitude(longitude);
+            clubEntity.setHost(host);
             clubRepository.save(clubEntity);
             return clubEntity;
         } else {
@@ -53,8 +54,7 @@ public class ClubService {
             clubEntity.setLocationTitle(locationTitle);
             clubEntity.setLatitude(latitude);
             clubEntity.setLongitude(longitude);
-            System.out.println("****Saved Club: " + clubEntity.getId() + ", *******Location: " + clubEntity.getLocation() +
-                    ", Lat: " + clubEntity.getLatitude() + ", Lng: " + clubEntity.getLongitude());
+            clubEntity.setHost(host);
             Long saveId = clubRepository.save(clubEntity).getId();
             Club club = clubRepository.findById(saveId).get();
 
@@ -114,7 +114,8 @@ public class ClubService {
     // 3. 업데이트
     @Transactional
     public ClubDTO update(ClubDTO clubDTO,String location,String locationTitle, Double latitude, Double longitude, SiteUser host) throws IOException {
-        Club clubEntity = clubRepository.findById(clubDTO.getId())
+
+        Club club = clubRepository.findById(clubDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
 
         // theme을 Keyword로 변환
@@ -129,14 +130,14 @@ public class ClubService {
         boolean hasNewFiles = clubDTO.getClubFile() != null && !clubDTO.getClubFile().stream().allMatch(MultipartFile::isEmpty);
         if (hasNewFiles) {
             // 기존 파일 삭제
-            if (clubEntity.getFileAttached() == 1) {
-                List<ClubFileEntity> existingFiles = clubFileRepository.findByClub(clubEntity);
+            if (club.getFileAttached() == 1) {
+                List<ClubFileEntity> existingFiles = clubFileRepository.findByClub(club);
                 for (ClubFileEntity file : existingFiles) {
                     File storedFile = new File("C:/springBoot_img/" + file.getStoredFileName());
                     if (storedFile.exists()) storedFile.delete();
                     clubFileRepository.delete(file);
                 }
-                clubEntity.getClubFileEntityList().clear(); // 리스트 비우기
+                club.getClubFileEntityList().clear(); // 리스트 비우기
             }
             // 새 파일 저장
             for (MultipartFile clubFile : clubDTO.getClubFile()) {
@@ -145,20 +146,15 @@ public class ClubService {
                     String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
                     String savePath = "C:/springBoot_img/" + storedFilename;
                     clubFile.transferTo(new File(savePath));
-                    ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(clubEntity, originalFilename, storedFilename);
-                    clubEntity.getClubFileEntityList().add(clubFileEntity); // 새 파일 추가
+                    ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
+                    club.getClubFileEntityList().add(clubFileEntity); // 새 파일 추가
                 }
             }
-            clubEntity.setFileAttached(1);
-        } else {
-            // 새 파일이 없으면 기존 clubFileEntityList와 fileAttached 유지
-            // toUpdateFileEntity에서 이미 처리됨
+            club.setFileAttached(1);
         }
-
         // 엔티티 업데이트
-        Club updatedClub = Club.toUpdateFileEntity(clubDTO, location,locationTitle,latitude,longitude,host,clubEntity, keywords);
+        Club updatedClub = Club.toUpdateFileEntity(clubDTO, location,locationTitle,latitude,longitude,host,club, keywords);
         clubRepository.save(updatedClub);
-
         return findById(clubDTO.getId());
     }
 

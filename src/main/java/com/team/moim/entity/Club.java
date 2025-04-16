@@ -108,15 +108,16 @@ public class Club extends BaseEntity {
     }
 
     // 파일 포함 업데이트 (기존 clubFileEntityList 유지)
-    public static Club toUpdateFileEntity(ClubDTO clubDTO, String location, String locationTitle, Double latitude, Double longitude, SiteUser host, Club existingClub, Set<Keyword> keywords) {
+    public static Club toUpdateFileEntity(ClubDTO clubDTO, String location, String locationTitle,
+                                          Double latitude, Double longitude, SiteUser host, Club existingClub, Set<Keyword> keywords) {
         return Club.builder()
                 .id(existingClub.getId())
                 .title(clubDTO.getTitle())
                 .content(clubDTO.getContent())
                 .ageRestriction(clubDTO.getAgeRestriction())
                 .host(host)
-                .fileAttached(clubDTO.getClubFile() != null && !clubDTO.getClubFile().stream().allMatch(MultipartFile::isEmpty) ? 1 : existingClub.getFileAttached())
-                .clubFileEntityList(existingClub.getClubFileEntityList()) // 기존 파일 리스트 유지
+                .fileAttached(existingClub.getFileAttached()) // 파일 상태는 update 메서드에서 처리
+                .clubFileEntityList(existingClub.getClubFileEntityList()) // 파일 리스트도 update에서 설정
                 .keywords(keywords)
                 .location(location)
                 .locationTitle(locationTitle)

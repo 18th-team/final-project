@@ -60,6 +60,7 @@ public class ClubController {
                              @RequestParam("location") String location, @RequestParam("locationTitle") String locationTitle,
                              @RequestParam("latitude") Double latitude,
                              @RequestParam("longitude") Double longitude,Authentication authentication) throws IOException {
+
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
         Club getClub = clubService.save(clubDTO,location,locationTitle,latitude ,longitude,host);
@@ -103,7 +104,6 @@ public class ClubController {
                 .map(ClubDTO::toDTO)
                 .collect(Collectors.toList());
         model.addAttribute("clubList", clubDTOList);
-        System.out.println("Keyword ID: " + keywordId + ", Clubs found: " + clubDTOList.size()); // 디버깅
         return "club/list";
     }
 
@@ -115,12 +115,6 @@ public class ClubController {
         if (clubDTO == null) {
             throw new IllegalArgumentException("Club not found with id: " + id);
         }
-        System.out.println("Detail ClubDTO: id=" + clubDTO.getId() +
-                ", location=" + clubDTO.getLocation() +
-                ", **locationTitle=" + clubDTO.getLocationTitle() +
-                ", latitude=" + clubDTO.getLatitude() +
-                ", longitude=" + clubDTO.getLongitude());
-        System.out.println("clubDetail called with id: " + id);
         model.addAttribute("clubDTO", clubDTO);
         return "club/detail";
     }
@@ -133,10 +127,6 @@ public class ClubController {
         if (clubDTO == null) {
             throw new IllegalArgumentException("Club not found with id: " + id);
         }
-        System.out.println("ClubDTO for update: id=" + clubDTO.getId() +
-                ", location=" + clubDTO.getLocation() +
-                ", latitude=" + clubDTO.getLatitude() +
-                ", longitude=" + clubDTO.getLongitude());
         model.addAttribute("clubUpdate", clubDTO);
         return "club/update";
     }
@@ -145,15 +135,11 @@ public class ClubController {
     public String update(@ModelAttribute ClubDTO clubDTO,@RequestParam("location") String location,@RequestParam("locationTitle") String locationTitle,
                          @RequestParam("latitude") Double latitude,
                          @RequestParam("longitude") Double longitude, Authentication authentication,RedirectAttributes redirectAttributes) throws IOException {
+
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
         ClubDTO club = clubService.update(clubDTO, location, locationTitle,latitude, longitude,host);
-        System.out.println("Updated ClubDTO: id=" + club.getId() +
-                ", locationTitle=" + club.getLocationTitle() +
-                ", location=" + club.getLocation() +
-                ", latitude=" + club.getLatitude() +
-                ", longitude=" + club.getLongitude());
-        redirectAttributes.addAttribute("id", clubDTO.getId());
+        redirectAttributes.addAttribute("id", club.getId());
         return "redirect:/clubs/{id}";
     }
 
@@ -161,9 +147,6 @@ public class ClubController {
     @Transactional
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
-        Club club = clubRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Club not found"));
-
         clubService.delete(id);
         return "redirect:/clubs";
     }
