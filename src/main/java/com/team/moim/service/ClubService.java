@@ -1,6 +1,7 @@
 package com.team.moim.service;
 
 import com.team.API.DistanceUtil;
+import com.team.chat.*;
 import com.team.moim.ClubDTO;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.ClubFileEntity;
@@ -27,6 +28,8 @@ public class ClubService {
     private final ClubFileRepository clubFileRepository;
     private final KeywordRepository keywordRepository; // 의존성 추가
     private final UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
+    private final NoticeRepository noticeRepository;
 
     // 1. 클럽 저장
     @Transactional
@@ -170,6 +173,12 @@ public class ClubService {
                 if (storedFile.exists()) storedFile.delete();
                 clubFileRepository.delete(file);
             }
+        }
+        ChatRoom chatRoom = club.getChatRoom();
+        if (chatRoom != null) {
+            Optional<Notice> noticeToDelete = noticeRepository.findByChatRoom(chatRoom);
+            noticeToDelete.ifPresent(noticeRepository::delete);
+            chatMessageRepository.deleteByChatRoom(chatRoom);
         }
         clubRepository.deleteById(id);
     }
