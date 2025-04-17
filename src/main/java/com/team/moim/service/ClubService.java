@@ -1,6 +1,8 @@
 package com.team.moim.service;
 
 import com.team.API.DistanceUtil;
+import com.team.chat.ChatRoom;
+import com.team.chat.ChatRoomService;
 import com.team.moim.ClubDTO;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.ClubFileEntity;
@@ -13,6 +15,7 @@ import com.team.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -27,72 +30,60 @@ public class ClubService {
     private final ClubFileRepository clubFileRepository;
     private final KeywordRepository keywordRepository; // 의존성 추가
     private final UserRepository userRepository;
+    private final ChatRoomService chatRoomService;
 
+    // 1. ✅ 클럽 CREATE로직
     // 1. 클럽 저장
     @Transactional
-    public Club save(ClubDTO clubDTO,String location,String locationTitle, Double latitude,Double longitude, SiteUser host) throws IOException {
-        // theme을 Keyword로 변환
+    public Club save(ClubDTO clubDTO, SiteUser host) throws IOException {
+        // 키워드
         Set<Keyword> keywords = new HashSet<>();
-        if (clubDTO.getSelectedTheme() != null && !clubDTO.getSelectedTheme().isEmpty()) {
+        if (StringUtils.hasText(clubDTO.getSelectedTheme())) {
             Keyword keyword = keywordRepository.findByName(clubDTO.getSelectedTheme())
                     .orElseGet(() -> keywordRepository.save(new Keyword(null, clubDTO.getSelectedTheme())));
             keywords.add(keyword);
         }
 
         // 첨부파일 여부에 따라 로직 분리
-        if (clubDTO.getClubFile() == null || clubDTO.getClubFile().isEmpty()) {
-            Club clubEntity = Club.toSaveEntity(clubDTO, host, keywords);
-            clubEntity.setLocation(location);
-            clubEntity.setLatitude(latitude);
-            clubEntity.setLongitude(longitude);
-            clubEntity.setHost(host);
-            clubRepository.save(clubEntity);
-            return clubEntity;
-        } else {
-            Club clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords);
-            clubEntity.setLocation(location);
-            clubEntity.setLocationTitle(locationTitle);
-            clubEntity.setLatitude(latitude);
-            clubEntity.setLongitude(longitude);
-            clubEntity.setHost(host);
-            Long saveId = clubRepository.save(clubEntity).getId();
-            Club club = clubRepository.findById(saveId).get();
+        Club clubEntity;
 
+        if (clubDTO.getClubFile() == null || clubDTO.getClubFile().isEmpty()) {
+            clubEntity = Club.toSaveEntity(clubDTO, host, keywords);
+        } else {
+            clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords);
             // 파일 처리
             for (MultipartFile clubFile : clubDTO.getClubFile()) {
                 if (!clubFile.isEmpty()) {
                     String originalFilename = clubFile.getOriginalFilename();
                     String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
-                    String directoryPath = "C:/springBoot_img/";  // 저장할 폴더 경로
+                    String directoryPath = "C:/springBoot_img/";
                     String savePath = directoryPath + storedFilename;
-
-                    // 폴더가 존재하지 않으면 생성
                     File directory = new File(directoryPath);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
-
-                    // 파일 저장
                     clubFile.transferTo(new File(savePath));
-
-                    // 파일 엔티티 저장
-                    ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
+                    ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(clubEntity, originalFilename, storedFilename);
                     clubFileRepository.save(clubFileEntity);
                 }
             }
-            return clubEntity;
         }
+        Club savedClub = clubRepository.save(clubEntity);
+
+        // 채팅방
+        ChatRoom chatRoom = chatRoomService.CreateMoimChatRoom(
+                savedClub.getId(),
+                savedClub.getTitle(),
+                host.getUuid()
+        );
+        savedClub.setChatRoom(chatRoom);
+        return savedClub;
     }
 
     // 2-1. 전체 목록 조회
-    @Transactional(readOnly = true)
+//note 엔티티->DTO stream().map(ClubDTO::toDTO) 필수?
     public List<ClubDTO> findAll() {
-        List<Club> clubEntityList = clubRepository.findAll();
-        List<ClubDTO> clubDTOList = new ArrayList<>();
-        for (Club clubEntity : clubEntityList) {
-            clubDTOList.add(ClubDTO.toDTO(clubEntity));
-        }
-        return clubDTOList;
+        return clubRepository.findAll().stream().map(ClubDTO::toDTO).collect(Collectors.toList());
     }
 
     // 2-2. ID별 조회 (상세보기)
@@ -113,7 +104,7 @@ public class ClubService {
 
     // 3. 업데이트
     @Transactional
-    public ClubDTO update(ClubDTO clubDTO,String location,String locationTitle, Double latitude, Double longitude, SiteUser host) throws IOException {
+    public ClubDTO update(ClubDTO clubDTO, String location, String locationTitle, Double latitude, Double longitude, SiteUser host) throws IOException {
 
         Club club = clubRepository.findById(clubDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
@@ -153,7 +144,7 @@ public class ClubService {
             club.setFileAttached(1);
         }
         // 엔티티 업데이트
-        Club updatedClub = Club.toUpdateFileEntity(clubDTO, location,locationTitle,latitude,longitude,host,club, keywords);
+        Club updatedClub = Club.toUpdateFileEntity(clubDTO, location, locationTitle, latitude, longitude, host, club, keywords);
         clubRepository.save(updatedClub);
         return findById(clubDTO.getId());
     }
@@ -189,7 +180,7 @@ public class ClubService {
         return clubRepository.findByKeywords_NameIn(userKeywords);
     }
 
-//검색기능
+    //검색기능
     public List<ClubDTO> searchClubs(String query) {
         List<Club> clubs = clubRepository.findBySearchQuery(query);
         return clubs.stream().map(ClubDTO::toDTO).collect(Collectors.toList());
@@ -215,7 +206,7 @@ public class ClubService {
     }
 
 
-    // 상세 조회용 (필요 시)
+    // 클럽id 상세보기
     public ClubDTO getClubDetail(Long clubId) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
@@ -243,19 +234,20 @@ public class ClubService {
     }
 
     //5km 이내 클럽 필터링 및 정렬(사용자위치기반)
-    public List<ClubDTO> findNearByClubs(double userLat , double userLng) {
+    public List<ClubDTO> findNearByClubs(double userLat, double userLng) {
         List<Club> allClubs = clubRepository.findAll();
         return allClubs.stream().filter(club -> club.getLatitude() != null && club.getLongitude() != null) // null 필터링
-                .map(club->{
-            double distance = DistanceUtil.calculateDistance(
-                    userLat,userLng,club.getLatitude(),club.getLongitude()
-            );
-            ClubDTO dto = ClubDTO.toDTO(club);
-            dto
-                    .setDistance(distance);
-            return dto;
-        }).filter(dto ->dto.getDistance()<=5).sorted(Comparator.comparingDouble(ClubDTO::getDistance)).limit(5).collect(Collectors.toList());
+                .map(club -> {
+                    double distance = DistanceUtil.calculateDistance(
+                            userLat, userLng, club.getLatitude(), club.getLongitude()
+                    );
+                    ClubDTO dto = ClubDTO.toDTO(club);
+                    dto
+                            .setDistance(distance);
+                    return dto;
+                }).filter(dto -> dto.getDistance() <= 5).sorted(Comparator.comparingDouble(ClubDTO::getDistance)).limit(5).collect(Collectors.toList());
     }
+
     public List<Club> getClubsByUser(SiteUser user) {
         return clubRepository.findByMembersContaining(user);
     }

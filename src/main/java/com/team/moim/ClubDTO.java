@@ -55,7 +55,7 @@ public class ClubDTO {
     private List<String> memberDescriptions = new ArrayList<>();
     private List<String> memberImages = new ArrayList<>(); // 프로필 사진 리스트로 변경
     private List<String> memberEmails = new ArrayList<>(); // 추가
-    private int memberCount;
+    private int memberCount; //클럽참여가 되어있는지.
 
 
     // Entity -> DTO로 변환
