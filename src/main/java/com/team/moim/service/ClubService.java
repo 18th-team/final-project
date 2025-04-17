@@ -1,6 +1,7 @@
 package com.team.moim.service;
 
 import com.team.API.DistanceUtil;
+import com.team.chat.*;
 import com.team.chat.ChatRoom;
 import com.team.chat.ChatRoomService;
 import com.team.moim.ClubDTO;
@@ -15,7 +16,6 @@ import com.team.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -30,6 +30,8 @@ public class ClubService {
     private final ClubFileRepository clubFileRepository;
     private final KeywordRepository keywordRepository; // 의존성 추가
     private final UserRepository userRepository;
+    private final ChatMessageRepository chatMessageRepository;
+    private final NoticeRepository noticeRepository;
     private final ChatRoomService chatRoomService;
 
     // 1. ✅ 클럽 CREATE로직
@@ -161,6 +163,12 @@ public class ClubService {
                 if (storedFile.exists()) storedFile.delete();
                 clubFileRepository.delete(file);
             }
+        }
+        ChatRoom chatRoom = club.getChatRoom();
+        if (chatRoom != null) {
+            Optional<Notice> noticeToDelete = noticeRepository.findByChatRoom(chatRoom);
+            noticeToDelete.ifPresent(noticeRepository::delete);
+            chatMessageRepository.deleteByChatRoom(chatRoom);
         }
         clubRepository.deleteById(id);
     }
