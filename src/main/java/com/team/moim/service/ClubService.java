@@ -34,6 +34,7 @@ public class ClubService {
     private final ChatMessageRepository chatMessageRepository;
     private final NoticeRepository noticeRepository;
     private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
 
     // 1. ✅ 클럽 CREATE로직
     // 1. 클럽 저장
@@ -41,6 +42,7 @@ public class ClubService {
     public Club save(ClubDTO clubDTO, SiteUser host) throws IOException {
         // 키워드
         Set<Keyword> keywords = new HashSet<>();
+
         if (StringUtils.hasText(clubDTO.getSelectedTheme())) {
             Keyword keyword = keywordRepository.findByName(clubDTO.getSelectedTheme())
                     .orElseGet(() -> keywordRepository.save(new Keyword(null, clubDTO.getSelectedTheme())));
@@ -49,14 +51,16 @@ public class ClubService {
 
         // 첨부파일 여부에 따라 로직 분리
         Club clubEntity;
+
         // 호스트를 멤버로 추가
+        Set<SiteUser> member = new HashSet<>();
 
         if (clubDTO.getClubFile() == null || clubDTO.getClubFile().isEmpty()) {
-            clubEntity = Club.toSaveEntity(clubDTO, host, keywords);
+            clubEntity = Club.toSaveEntity(clubDTO, host, keywords,member);
             clubEntity.getMembers().add(host);
 
         } else {
-            clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords);
+            clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords,member);
             clubEntity.getMembers().add(host);
 
             // 파일 처리
@@ -79,6 +83,8 @@ public class ClubService {
         Club savedClub = clubRepository.save(clubEntity);
         return savedClub;
     }
+
+
 
 
     // 2-1. 전체 목록 조회
@@ -109,6 +115,8 @@ public class ClubService {
 
         Club club = clubRepository.findById(clubDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+        // 기존 멤버 유지
+        Set<SiteUser> members = club.getMembers();
 
         // theme을 Keyword로 변환
         Set<Keyword> keywords = new HashSet<>();
@@ -145,9 +153,27 @@ public class ClubService {
             club.setFileAttached(1);
         }
         // 엔티티 업데이트
-        Club updatedClub = Club.toUpdateFileEntity(clubDTO, location, locationTitle, latitude, longitude, host, club, keywords);
+        Club updatedClub = Club.toUpdateFileEntity(clubDTO, location, locationTitle, latitude, longitude, host, club, keywords,members);
+
+        //모임 업데이트 시 채팅방 자동업데이트
+        ChatRoom chatRoom = updatedClub.getChatRoom();
+        if (chatRoom == null) {
+            chatRoom = chatRoomService.updateChatRoom(updatedClub.getId(), clubDTO.getTitle());
+            updatedClub.setChatRoom(chatRoom);
+        } else {
+            String oldTitle = club.getTitle();
+            String newTitle = clubDTO.getTitle();
+            if (!oldTitle.equals(newTitle)) {
+                chatRoom.setName(newTitle);
+                chatRoomRepository.save(chatRoom);
+                System.out.println("ChatRoom title updated for Club ID: {}"+updatedClub.getId());
+            }
+        }
+
         clubRepository.save(updatedClub);
-        return findById(clubDTO.getId());
+        ClubDTO result = findById(updatedClub.getId());
+        result.setMemberCount(updatedClub.getMembers().size());
+        return result;
     }
 
     // 4. 삭제

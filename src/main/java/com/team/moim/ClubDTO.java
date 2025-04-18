@@ -1,5 +1,6 @@
 package com.team.moim;
 
+import com.team.chat.ChatRoom;
 import com.team.moim.entity.Club;
 import com.team.moim.entity.ClubFileEntity;
 import com.team.moim.entity.Keyword;
@@ -50,6 +51,11 @@ public class ClubDTO {
     private int fileAttached;//파일 첨부 여부(1:첨부,0:미첨부)
 
     // 새로 추가
+    //채팅방
+    // ChatRoom 필드 추가
+    private Long chatRoomId;
+    private String chatRoomName;
+
 // 참여자 정보
     private List<String> memberNames = new ArrayList<>();
     private List<String> memberDescriptions = new ArrayList<>();
@@ -106,6 +112,11 @@ public class ClubDTO {
             clubDTO.setMemberEmails(club.getMembers().stream().map(SiteUser::getEmail).collect(Collectors.toList()));
 
             return clubDTO;
+        }
+        ChatRoom chatRoom = club.getChatRoom();
+        if (chatRoom != null) {
+            clubDTO.setChatRoomId(chatRoom.getId());
+            clubDTO.setChatRoomName(chatRoom.getName());
         }
         return clubDTO;
     }

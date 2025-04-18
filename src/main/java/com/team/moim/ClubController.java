@@ -64,8 +64,6 @@ public class ClubController {
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
         Club getClub  = clubService.save(clubDTO, host);
-
-
         //모임 생성 시 채팅방 자동 생성
         ChatRoom chatRoom =  chatRoomService.CreateMoimChatRoom(
                 getClub.getId(),
@@ -76,6 +74,7 @@ public class ClubController {
         clubRepository.save(getClub);
         return "redirect:/clubs";
     }
+
 
 
 
@@ -142,7 +141,10 @@ public class ClubController {
 
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
+
+
         ClubDTO club = clubService.update(clubDTO, location, locationTitle,latitude, longitude,host);
+
         redirectAttributes.addAttribute("id", club.getId());
         return "redirect:/clubs/{id}";
     }

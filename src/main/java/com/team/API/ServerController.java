@@ -39,13 +39,14 @@ public class ServerController {
      * pqram query값으로 동적으로 지정된 검색어입력함
      * return 검색된 장소 목록들 보여줌
      * */
-    @GetMapping("/naver/{name}")
-    public List<Map<String, String>> naver(@PathVariable String name) {
-        return searchResult(name);
-    }
+//    @GetMapping("/naver/{name}")
+//    public List<Map<String, String>> naver(@PathVariable String name) {
+//        return searchResult(name);
+//    }
 
     @GetMapping("/naver")
-    public List<Map<String, String>> naverSearchDynamic(@RequestParam String query) {
+    public List<Map<String, String>> naverSearchDynamic(@RequestParam String query)
+    {
         return searchResult(query);
     }
 

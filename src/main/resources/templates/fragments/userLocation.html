@@ -22,9 +22,6 @@
     </section>
 
     <script th:inline="javascript">
-        // window.onload = function () {
-        //     alert("페이지가 완전히 로딩되었습니다!");
-        // };
         document.addEventListener('DOMContentLoaded', function () {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -101,7 +98,7 @@
                 icon: {url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'}
             });
             const userInfoWindow = new naver.maps.InfoWindow({
-                maxWidth: 300,
+                maxWidth: 400,
                 backgroundColor: "#eee",
                 borderColor: "#2db400",
                 borderWidth: 3,

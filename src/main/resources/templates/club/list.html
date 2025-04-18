@@ -34,6 +34,12 @@
 ></div>
 <div class="container my-5 shadow-lg p-4 rounded-3 w-80">
     <h1 class="my-5 text-center fw-bold">모락 크루 리스트 🍳</h1>
+    <div th:if="${query!=null}">
+        <p class="card-text"> 검색어 : <span
+                th:text="${query}">검색어</span>
+        </p>
+
+    </div>
     <!-- 클럽 목록 -->
     <div class="row mb-5 " th:unless="${#lists.isEmpty(clubList)}">
         <div class="col-lg-6 my-3 " th:each="club : ${clubList}">

@@ -42,14 +42,10 @@ public class HomeController {
    {
        double userLat = location.get("latitude");
        double userLng = location.get("longitude");
-
        List<ClubDTO> fullList = clubService.findNearByClubs(userLat, userLng);
        // 리스트를 랜덤하게 섞기
        Collections.shuffle(fullList);
        List<ClubDTO> nearbyClubs = fullList.size() > 4 ? fullList.subList(0, 4) : fullList;
-
-
-       System.out.println("Nearby clubs: " + nearbyClubs);
        return ResponseEntity.ok(nearbyClubs);
    }
 
@@ -223,7 +219,8 @@ public class HomeController {
                         userCreateForm.getBirthDay2(),
                         userCreateForm.getPhone(),
                         profileImage,
-                        userCreateForm.getIntroduction(), keywordNames
+                        userCreateForm.getIntroduction(),
+                        keywordNames
                 );
                 return "redirect:/login";
             } else {

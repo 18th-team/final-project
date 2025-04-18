@@ -75,7 +75,7 @@ public class Club extends BaseEntity {
     private ChatRoom chatRoom;
 
     // DTO -> Entity로 저장 (기본)
-    public static Club toSaveEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
+    public static Club toSaveEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords,Set<SiteUser> members) {
         return Club.builder()
                 .title(clubDTO.getTitle())
                 .content(clubDTO.getContent())
@@ -87,13 +87,14 @@ public class Club extends BaseEntity {
                 .locationTitle(clubDTO.getLocationTitle())
                 .latitude(clubDTO.getLatitude())
                 .longitude(clubDTO.getLongitude())
+                .members(members)
 
                 .build();
     }
 
 
     // 파일 포함 저장
-    public static Club toSaveFileEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords) {
+    public static Club toSaveFileEntity(ClubDTO clubDTO, SiteUser host, Set<Keyword> keywords,Set<SiteUser> members) {
         return Club.builder()
                 .title(clubDTO.getTitle())
                 .content(clubDTO.getContent())
@@ -105,13 +106,13 @@ public class Club extends BaseEntity {
                 .locationTitle(clubDTO.getLocationTitle())
                 .latitude(clubDTO.getLatitude())
                 .longitude(clubDTO.getLongitude())
-                .members(new HashSet<>()) // 초기화
+                .members(members) // 초기화
                 .build();
     }
 
     // 파일 포함 업데이트 (기존 clubFileEntityList 유지)
     public static Club toUpdateFileEntity(ClubDTO clubDTO, String location, String locationTitle,
-                                          Double latitude, Double longitude, SiteUser host, Club existingClub, Set<Keyword> keywords) {
+                                          Double latitude, Double longitude, SiteUser host, Club existingClub, Set<Keyword> keywords,Set<SiteUser> members) {
         return Club.builder()
                 .id(existingClub.getId())
                 .title(clubDTO.getTitle())
@@ -125,6 +126,7 @@ public class Club extends BaseEntity {
                 .locationTitle(locationTitle)
                 .latitude(latitude)
                 .longitude(longitude)
+                .members(members)
                 .build();
     }
 

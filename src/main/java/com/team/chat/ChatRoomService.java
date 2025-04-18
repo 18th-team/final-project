@@ -42,8 +42,30 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void updateChatRoom(ChatRoom chatRoom) {
-        chatRoomRepository.save(chatRoom);
+    public ChatRoom updateChatRoom(Long clubId, String name) {
+        Optional<Club> clubOptional = clubRepository.findById(clubId);
+        if (!clubOptional.isPresent()) {
+            throw new IllegalStateException("모임을 찾을 수 없습니다");
+        }
+        Club club = clubOptional.get();
+
+        ChatRoom chatRoom = club.getChatRoom();
+        if (chatRoom == null) {
+            // 새 ChatRoom 생성 (최초 생성 시)
+            chatRoom = ChatRoom.builder()
+                    .type("GROUP")
+                    .name(name != null && !name.isEmpty() ? name : club.getTitle() + " 채팅방")
+                    .participants(new ArrayList<>())
+                    .participantSettings(new ArrayList<>())
+                    .club(club)
+                    .status("ACTIVE")
+                    .build();
+        } else {
+            // 기존 ChatRoom 업데이트
+            chatRoom.setName(name != null && !name.isEmpty() ? name : club.getTitle() + " 채팅방");
+        }
+
+        return chatRoomRepository.save(chatRoom);
     }
 
     @Transactional
