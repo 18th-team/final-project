@@ -54,4 +54,9 @@ public class CommentService {
     public List<Comment> findByAuthor(SiteUser user) {
         return commentRepository.findByAuthor(user);
     }
+
+    public void deleteByPost(Post post) {
+        commentRepository.deleteByPost(post);
+    }
+
 }

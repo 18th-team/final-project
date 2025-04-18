@@ -10,33 +10,37 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    private static final String RELATIVE_UPLOAD_PATH = "src/main/resources/static/img/user/";
+    private static final String USER_UPLOAD_PATH = "src/main/resources/static/img/user/";
+    private static final String POST_UPLOAD_PATH = "src/main/resources/static/img/upload/";
 
-    public String saveImage(MultipartFile file) {
-        if (file.isEmpty()) {
-            return null;
-        }
+    // 프로필 이미지 저장
+    public String saveProfileImage(MultipartFile file) {
+        return saveImageTo(file, USER_UPLOAD_PATH, "/img/user/");
+    }
+
+    // 게시물 이미지 저장
+    public String savePostImage(MultipartFile file) {
+        return saveImageTo(file, POST_UPLOAD_PATH, "/img/upload/");
+    }
+
+    // 공통 저장 로직
+    private String saveImageTo(MultipartFile file, String saveDir, String returnPathPrefix) {
+        if (file.isEmpty()) return null;
 
         try {
-            // 저장 경로 객체화
-            Path uploadDir = Paths.get(RELATIVE_UPLOAD_PATH).toAbsolutePath();
+            Path uploadDir = Paths.get(saveDir).toAbsolutePath();
 
-            // 폴더 없으면 생성
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
 
-            // 고유한 파일 이름 생성
             String originalFileName = file.getOriginalFilename();
-            String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
             String newFileName = UUID.randomUUID() + "_" + originalFileName;
 
-            // 실제 저장 경로
             Path filePath = uploadDir.resolve(newFileName);
             file.transferTo(filePath.toFile());
 
-            // 웹에서 접근 가능한 경로 반환
-            return "/img/user/" + newFileName;
+            return returnPathPrefix + newFileName;
 
         } catch (IOException e) {
             throw new RuntimeException("이미지 저장 실패", e);
