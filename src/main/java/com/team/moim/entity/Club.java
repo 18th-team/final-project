@@ -87,6 +87,7 @@ public class Club extends BaseEntity {
                 .locationTitle(clubDTO.getLocationTitle())
                 .latitude(clubDTO.getLatitude())
                 .longitude(clubDTO.getLongitude())
+
                 .build();
     }
 

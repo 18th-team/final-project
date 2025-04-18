@@ -59,15 +59,21 @@ public class ClubController {
 
     //✅ 클럽생성
     @PostMapping("/insert")
-    public String createClub(@Valid @ModelAttribute ClubDTO clubDTO, BindingResult result, Authentication authentication) throws IOException {
-        if (result.hasErrors()) {
-            return "club/create";
-        }
-        if (!(authentication.getPrincipal() instanceof CustomSecurityUserDetails userDetails)) {
-            throw new SecurityException("인증된 사용자만 클럽 생성 가능");
-        }
+    public String createClub(@ModelAttribute ClubDTO clubDTO, Authentication authentication) throws IOException {
+
+        CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
-        clubService.save(clubDTO, host);
+        Club getClub  = clubService.save(clubDTO, host);
+
+
+        //모임 생성 시 채팅방 자동 생성
+        ChatRoom chatRoom =  chatRoomService.CreateMoimChatRoom(
+                getClub.getId(),
+                getClub.getTitle(),
+                host.getUuid()
+        );
+        getClub.setChatRoom(chatRoom);
+        clubRepository.save(getClub);
         return "redirect:/clubs";
     }
 

@@ -49,11 +49,16 @@ public class ClubService {
 
         // 첨부파일 여부에 따라 로직 분리
         Club clubEntity;
+        // 호스트를 멤버로 추가
 
         if (clubDTO.getClubFile() == null || clubDTO.getClubFile().isEmpty()) {
             clubEntity = Club.toSaveEntity(clubDTO, host, keywords);
+            clubEntity.getMembers().add(host);
+
         } else {
             clubEntity = Club.toSaveFileEntity(clubDTO, host, keywords);
+            clubEntity.getMembers().add(host);
+
             // 파일 처리
             for (MultipartFile clubFile : clubDTO.getClubFile()) {
                 if (!clubFile.isEmpty()) {
@@ -72,16 +77,9 @@ public class ClubService {
             }
         }
         Club savedClub = clubRepository.save(clubEntity);
-
-        // 채팅방
-        ChatRoom chatRoom = chatRoomService.CreateMoimChatRoom(
-                savedClub.getId(),
-                savedClub.getTitle(),
-                host.getUuid()
-        );
-        savedClub.setChatRoom(chatRoom);
         return savedClub;
     }
+
 
     // 2-1. 전체 목록 조회
 //note 엔티티->DTO stream().map(ClubDTO::toDTO) 필수?
