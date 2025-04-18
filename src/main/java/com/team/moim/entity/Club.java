@@ -87,6 +87,7 @@ public class Club extends BaseEntity {
                 .locationTitle(clubDTO.getLocationTitle())
                 .latitude(clubDTO.getLatitude())
                 .longitude(clubDTO.getLongitude())
+
                 .build();
     }
 
@@ -104,6 +105,7 @@ public class Club extends BaseEntity {
                 .locationTitle(clubDTO.getLocationTitle())
                 .latitude(clubDTO.getLatitude())
                 .longitude(clubDTO.getLongitude())
+                .members(new HashSet<>()) // 초기화
                 .build();
     }
 

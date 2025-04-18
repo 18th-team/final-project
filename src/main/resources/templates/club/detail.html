@@ -78,9 +78,11 @@
                               style="display: inline;">
                             <button type="submit" class="btn custom-button-danger btn-sm">삭제</button>
                         </form>
-                        <a th:href="@{/clubs}" class="btn custom-button-secondary btn-sm">목록으로</a>
-
                     </div>
+                        <a th:href="@{/clubs}" class="btn custom-button-secondary btn-sm"
+                        >목록으로</a>
+
+
                 </div>
             </div>
 
@@ -191,13 +193,15 @@
                 </div>
                 <div class="row mt-4">
                     <div class="col">
-                        <!--                            모임 참여 버튼추가 !! -->
+                        <!-- 모임 참여 버튼추가 !! -->
                         <!-- 참여하기 -->
-                        <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
+                        <form th:action="@{/clubs/join/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;"
+                              th:if="${#authentication.principal.siteUser.id != clubDTO.hostId}">
                             <button type="submit" class="btn custom-button-success">모임 참여하기</button>
                         </form>
                         <!-- 취소하기 -->
-                        <form th:action="@{/clubs/leave/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;">
+                        <form th:action="@{/clubs/leave/{clubId}(clubId=${clubDTO.id})}" method="post" style="display:inline;"
+                              th:if="${#authentication.principal.siteUser.id != clubDTO.hostId}">
                             <button type="submit" class="btn custom-button-info">참여 취소하기</button>
                         </form>
                         <!-- 모임 채팅 참여 ( 유저가 채팅방을 나간 경우 사용 합니다.) -->

@@ -40,7 +40,7 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers(
                                         new AntPathRequestMatcher("/"), // 메인 페이지는 비회원도 접근 가능
-                                        new AntPathRequestMatcher("/clubs/**"), // 크루 리스트 페이지는 비회원 접근 가능
+                                        new AntPathRequestMatcher("/clubs"), // 크루 리스트 페이지는 비회원 접근 가능
                                         new AntPathRequestMatcher("/api/**"), // 크루 리스트 페이지는 비회원 접근 가능
                                         new AntPathRequestMatcher("/error"),
                                         new AntPathRequestMatcher("/login"),

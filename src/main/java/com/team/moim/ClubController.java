@@ -13,11 +13,13 @@ import com.team.user.SiteUser;
 import com.team.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -55,15 +57,15 @@ public class ClubController {
         return "club/create";
     }
 
+    //✅ 클럽생성
     @PostMapping("/insert")
-    public String createClub(@ModelAttribute ClubDTO clubDTO,
-                             @RequestParam("location") String location, @RequestParam("locationTitle") String locationTitle,
-                             @RequestParam("latitude") Double latitude,
-                             @RequestParam("longitude") Double longitude,Authentication authentication) throws IOException {
+    public String createClub(@ModelAttribute ClubDTO clubDTO, Authentication authentication) throws IOException {
 
         CustomSecurityUserDetails userDetails = (CustomSecurityUserDetails) authentication.getPrincipal();
         SiteUser host = userDetails.getSiteUser();
-        Club getClub = clubService.save(clubDTO,location,locationTitle,latitude ,longitude,host);
+        Club getClub  = clubService.save(clubDTO, host);
+
+
         //모임 생성 시 채팅방 자동 생성
         ChatRoom chatRoom =  chatRoomService.CreateMoimChatRoom(
                 getClub.getId(),
@@ -75,15 +77,26 @@ public class ClubController {
         return "redirect:/clubs";
     }
 
+
+
     // ✅ 전체 클럽 리스트 조회
     @GetMapping()
     public String findAllClubs(Model model) {
-        List<Club> clubs = clubRepository.findAll();
-        List<ClubDTO> clubDTOList = clubs.stream()
-                .map(ClubDTO::toDTO)
-                .collect(Collectors.toList());
-        model.addAttribute("clubList", clubDTOList);
+        model.addAttribute("clubList", clubService.findAll());
+        if (clubService.findAll()== null) {
+            throw new IllegalArgumentException("클럽이 존재하지 않습니다. " + clubService.findAll());
+        }
         return "club/list";
+    }
+    //✅  상세보기
+    @GetMapping("/{id}")
+    public String getClubDetail(@PathVariable("id") Long id, Model model) {
+        ClubDTO clubDTO = clubService.getClubDetail(id);
+        if (clubDTO == null) {
+            throw new IllegalArgumentException("해당id를 가진 클럽이 없습니다. id: " + id);
+        }
+        model.addAttribute("clubDTO", clubDTO);
+        return "club/detail";
     }
 
     // 검색 처리
@@ -108,16 +121,7 @@ public class ClubController {
     }
 
 
-    //상세보기 (사용자정보 저장하기)
-    @GetMapping("/{id}")
-    public String getClubDetail(@PathVariable("id") Long id, Model model) {
-        ClubDTO clubDTO = clubService.getClubDetail(id);
-        if (clubDTO == null) {
-            throw new IllegalArgumentException("Club not found with id: " + id);
-        }
-        model.addAttribute("clubDTO", clubDTO);
-        return "club/detail";
-    }
+
 
     //수정하기
     //수정 컨트롤러
