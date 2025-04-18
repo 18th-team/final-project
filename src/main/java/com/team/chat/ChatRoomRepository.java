@@ -33,4 +33,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
          "WHERE cr.id = :id")
  Optional<ChatRoom> findByIdWithParticipantSettings(@Param("id") Long id);
 
+
+
 }

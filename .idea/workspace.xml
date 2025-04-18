@@ -4,28 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="모임create수정">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="모임수정시-&gt;채팅방도수정함">
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/fragments/userLocation.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/fragments/userLocation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/templates/layouts/main-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/API/ServerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/API/ServerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/ClubDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/entity/Club.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/service/ClubService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/club/list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/userLocation.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/userLocation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/layouts/main-layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/club/carousel04.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/club/carousel04.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/img/club/carousel05.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/img/club/carousel05.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -303,7 +295,7 @@
       <workItem from="1744759803559" duration="23715000" />
       <workItem from="1744806560777" duration="13000" />
       <workItem from="1744848420705" duration="14223000" />
-      <workItem from="1744937630911" duration="22086000" />
+      <workItem from="1744937630911" duration="25291000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -633,7 +625,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744939724764</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="모임수정시-&gt;채팅방도수정함">
+      <option name="closed" value="true" />
+      <created>1744963889287</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1744963889287</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -678,7 +678,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="개인 채팅 메시지 90% 완료&#10;차단 기능, 채팅 나가기 기능 남았음" />
     <MESSAGE value="." />
     <MESSAGE value="개인 채팅 나가기 및 입력창 비활성화, 채팅방 삭제&#10;&#10;- 개인 채팅창에서 나가기 기능 추가&#10;- 나가면 남은 사용자의 입력창 비활성화 ( 개인 채팅 )&#10;- 참여자가 0명일 때 채팅방 삭제" />
     <MESSAGE value="localStorage로 채팅창 닫을 때 마지막 채팅방 상태 저장" />
@@ -703,7 +702,8 @@
     <MESSAGE value="모임 Update,Delete 코드수정" />
     <MESSAGE value="파일경로수정" />
     <MESSAGE value="모임create수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="모임create수정" />
+    <MESSAGE value="모임수정시-&gt;채팅방도수정함" />
+    <option name="LAST_COMMIT_MESSAGE" value="모임수정시-&gt;채팅방도수정함" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

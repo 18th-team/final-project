@@ -156,20 +156,11 @@ public class ClubService {
         Club updatedClub = Club.toUpdateFileEntity(clubDTO, location, locationTitle, latitude, longitude, host, club, keywords,members);
 
         //모임 업데이트 시 채팅방 자동업데이트
-        ChatRoom chatRoom = updatedClub.getChatRoom();
-        if (chatRoom == null) {
-            chatRoom = chatRoomService.updateChatRoom(updatedClub.getId(), clubDTO.getTitle());
-            updatedClub.setChatRoom(chatRoom);
-        } else {
-            String oldTitle = club.getTitle();
-            String newTitle = clubDTO.getTitle();
-            if (!oldTitle.equals(newTitle)) {
-                chatRoom.setName(newTitle);
-                chatRoomRepository.save(chatRoom);
-                System.out.println("ChatRoom title updated for Club ID: {}"+updatedClub.getId());
-            }
-        }
-
+        ChatRoom chatRoom =  chatRoomService.updateChatRoom(
+                updatedClub.getId(),
+                updatedClub.getTitle()
+        );
+        updatedClub.setChatRoom(chatRoom);
         clubRepository.save(updatedClub);
         ClubDTO result = findById(updatedClub.getId());
         result.setMemberCount(updatedClub.getMembers().size());
