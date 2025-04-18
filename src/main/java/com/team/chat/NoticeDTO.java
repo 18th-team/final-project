@@ -14,7 +14,7 @@ public class NoticeDTO {
     private boolean expanded;
     private boolean isOwner; // 추가
 
-    public NoticeDTO(Long id, Long chatRoomId, String content, LocalDateTime createdAt, LocalDateTime updatedAt, boolean Expanded) {
+    public NoticeDTO(Long id, Long chatRoomId, String content, LocalDateTime createdAt, LocalDateTime updatedAt, boolean expanded) {
         this.id = id;
         this.chatRoomId = chatRoomId;
         this.content = content;
