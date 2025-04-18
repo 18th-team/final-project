@@ -33,11 +33,12 @@
                  data-masonry='{"percentPosition": true }'>
                 <div class="col" th:each="post : ${postList}">
                     <div class="post-card">
+                        <!-- 작성자 정보 -->
                         <div class="d-flex align-items-center">
-                            <img th:src="${post.author.profileImage != null ? post.author.profileImage : '/img/default-profile.png'}"
+                            <img th:src="${post.author != null and post.author.profileImage != null} ? ${post.author.profileImage} : '/img/default-profile.png'"
                                  class="rounded-circle me-2 img-fluid" style="width: 40px; height: 40px;">
                             <div>
-                                <div class="post-author" th:text="${post.author.name}">작성자</div>
+                                <div class="post-author" th:text="${post.author != null ? post.author.name : '탈퇴한 사용자'}">작성자</div>
                                 <div class="post-time" th:text="${#temporals.format(post.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>
                             </div>
                         </div>
@@ -69,11 +70,12 @@
                         </div>
 
                         <div class="mt-2 d-flex justify-content-end"
-                             th:if="${loginUser != null and loginUser.id == post.author.id}">
+                             th:if="${loginUser != null and post.author != null and loginUser.id == post.author.id}">
                             <a th:href="@{'/post/modify/' + ${post.postID}}" class="btn btn-sm btn-outline-secondary me-2">수정</a>
                             <a th:href="@{'/post/delete/' + ${post.postID}}" class="btn btn-sm btn-outline-danger"
                                onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -99,11 +101,11 @@
                             <div th:each="comment : ${commentMap[post.postID]}"
                                  th:id="'comment-' + ${comment.id}" class="mb-3">
 
-                                <!-- 프로필 및 작성자 -->
+                                <!-- 댓글 작성자 정보 -->
                                 <div>
-                                    <img th:src="${comment.author.profileImage != null ? comment.author.profileImage : '/img/default-profile.png'}"
+                                    <img th:src="${comment.author != null and comment.author.profileImage != null} ? ${comment.author.profileImage} : '/img/default-profile.png'}"
                                          class="rounded-circle me-2" style="width:30px; height:30px;">
-                                    <strong th:text="${comment.author.name}">작성자</strong>
+                                    <strong th:text="${comment.author != null ? comment.author.name : '탈퇴한 사용자'}">작성자</strong>
                                 </div>
 
                                 <!-- 댓글 본문 -->
@@ -132,9 +134,9 @@
                                      th:id="'comment-' + ${child.id}"
                                      class="ms-4 border-start ps-3 mt-3">
 
-                                    <img th:src="${child.author.profileImage != null ? child.author.profileImage : '/img/default-profile.png'}"
+                                    <img th:src="${child.author != null and child.author.profileImage != null} ? ${child.author.profileImage} : '/img/default-profile.png'}"
                                          class="rounded-circle me-2" style="width:30px; height:30px;">
-                                    <strong th:text="${child.author.name}">작성자</strong>
+                                    <strong th:text="${child.author != null ? child.author.name : '탈퇴한 사용자'}">작성자</strong>
 
                                     <div class="comment-content" th:text="${child.content}">답글 내용</div>
                                     <div class="text-muted small" th:text="${#temporals.format(child.createDate, 'yyyy-MM-dd HH:mm')}">작성일</div>

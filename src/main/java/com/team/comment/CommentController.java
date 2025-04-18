@@ -27,7 +27,7 @@ public class CommentController {
 
     @PostMapping
     public void create(@RequestParam Long postID, @RequestParam String content,
-                         Principal principal, HttpServletResponse response) {
+                       Principal principal, HttpServletResponse response) {
         if (principal == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;

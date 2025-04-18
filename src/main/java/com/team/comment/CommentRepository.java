@@ -10,4 +10,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPostOrderByCreateDateAsc(Post post);
 
     List<Comment> findByAuthor(SiteUser user);
+
+    void deleteByPost(Post post);
 }

@@ -15,5 +15,13 @@ public class WebConfig implements WebMvcConfigurer {
         //savePath 에서 찾아준다.
         registry.addResourceHandler(resourcePath).addResourceLocations(savePath);
         WebMvcConfigurer.super.addResourceHandlers(registry);
+
+        // 정적 이미지: 게시글
+        registry.addResourceHandler("/img/upload/**")
+                .addResourceLocations("classpath:/static/img/upload/");
+
+        // ✅ 정적 이미지: 프로필 (중요!)
+        registry.addResourceHandler("/img/user/**")
+                .addResourceLocations("classpath:/static/img/user/");
     }
 }
