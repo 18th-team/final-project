@@ -4,13 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="모임create수정">
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="커뮤니티 이미지 수정">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/comment/CommentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/comment/CommentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/comment/CommentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/comment/CommentRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/comment/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/comment/CommentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/moim/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/moim/config/WebConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/post_feed_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/post_feed_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/FileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/FileService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/mypage/MyPageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/mypage/MyPageController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,12 +71,12 @@
     &quot;assignee&quot;: &quot;kwix316&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/18th-team/final-project.git",
-    "accountId": "749e5678-8de4-40d3-8d83-d6e4db4f724e"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/18th-team/final-project.git&quot;,
+    &quot;accountId&quot;: &quot;749e5678-8de4-40d3-8d83-d6e4db4f724e&quot;
   }
-}]]></component>
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -89,48 +91,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Gradle.ApplicationTests.executor": "Run",
-    "Gradle.Build final-project.executor": "Run",
-    "Gradle.Build final-project2.executor": "Run",
-    "Gradle.final-project 빌드.executor": "Run",
-    "Gradle.final-project2 빌드.executor": "Run",
-    "JUnit.ApplicationTests.contextLoads.executor": "Run",
-    "JUnit.ApplicationTests.executor": "Run",
-    "Notification.DisplayName-DoNotAsk-Database detector": "Database detector",
-    "Notification.DoNotAsk-Database detector": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.Application.executor": "Run",
-    "com.codeium.enabled": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/GREEN/Desktop/backup-morak/final-project",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "모듈",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Gradle.ApplicationTests.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build final-project.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build final-project2.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.final-project 빌드.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.final-project2 빌드.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ApplicationTests.contextLoads.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ApplicationTests.executor&quot;: &quot;Run&quot;,
+    &quot;Notification.DisplayName-DoNotAsk-Database detector&quot;: &quot;Database detector&quot;,
+    &quot;Notification.DoNotAsk-Database detector&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/GREEN/Desktop/backup-morak/final-project&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "h2"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;h2&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -289,7 +291,8 @@
       <workItem from="1744806560777" duration="13000" />
       <workItem from="1744848420705" duration="14223000" />
       <workItem from="1744937630911" duration="22086000" />
-      <workItem from="1744964766889" duration="194000" />
+      <workItem from="1744964766889" duration="299000" />
+      <workItem from="1744965642510" duration="1243000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -619,7 +622,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744939724764</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="커뮤니티 이미지 수정">
+      <option name="closed" value="true" />
+      <created>1744965035213</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1744965035213</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -664,7 +675,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="개인 채팅 메시지 90% 완료&#10;차단 기능, 채팅 나가기 기능 남았음" />
     <MESSAGE value="." />
     <MESSAGE value="개인 채팅 나가기 및 입력창 비활성화, 채팅방 삭제&#10;&#10;- 개인 채팅창에서 나가기 기능 추가&#10;- 나가면 남은 사용자의 입력창 비활성화 ( 개인 채팅 )&#10;- 참여자가 0명일 때 채팅방 삭제" />
     <MESSAGE value="localStorage로 채팅창 닫을 때 마지막 채팅방 상태 저장" />
@@ -689,7 +699,8 @@
     <MESSAGE value="모임 Update,Delete 코드수정" />
     <MESSAGE value="파일경로수정" />
     <MESSAGE value="모임create수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="모임create수정" />
+    <MESSAGE value="커뮤니티 이미지 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="커뮤니티 이미지 수정" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

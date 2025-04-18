@@ -66,7 +66,7 @@ public class MyPageController {
         currentUser.setIntroduction(introduction);
 
         if (profileImage != null && !profileImage.isEmpty()) {
-            String imagePath = fileService.saveImage(profileImage);
+            String imagePath = fileService.saveProfileImage(profileImage);
             currentUser.setProfileImage(imagePath);
         }
 
