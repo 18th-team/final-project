@@ -369,37 +369,36 @@
     })
 
     $(document).ready(function () {
-        const $checkboxes = $('input[name="theme[]"]');
-        const $form = $('form');
-        const $keywordContainer = $('.keywordVal');
-        const $errorMessage = $('<div>', {
+        const checkboxes = $('input[name="theme[]"]');
+        const form = $('form');
+        const keywordContainer = $('.keywordVal');
+        const errorMessage = $('<div>', {
             id: 'keyword-error',
             class: 'text-danger mt-2',
             css: { display: 'none', fontSize: '0.875rem', color: 'red' }
         });
+        keywordContainer.append(errorMessage);
 
-        $keywordContainer.append($errorMessage);
-        console.log('Error message element added:', $errorMessage[0]);
 
-        $checkboxes.on('change', function () {
+        checkboxes.on('change', function () {
             const checkedCount = $('input[name="theme[]"]:checked').length;
             if (checkedCount > 3) {
                 $(this).prop('checked', false);
-                $errorMessage.text('최대 3개까지 선택할 수 있습니다.').show();
+                errorMessage.text('최대 3개까지 선택할 수 있습니다.').show();
             } else if (checkedCount === 0) {
-                $errorMessage.text('최소 1개를 선택해야 합니다.').show();
+                errorMessage.text('최소 1개를 선택해야 합니다.').show();
             } else {
-                $errorMessage.hide();
+                errorMessage.hide();
             }
         });
 
-        $form.on('submit', function (e) {
+        form.on('submit', function (e) {
             const checkedCount = $('input[name="theme[]"]:checked').length;
             if (checkedCount < 1 || checkedCount > 3) {
                 e.preventDefault();
-                $errorMessage.text(checkedCount < 1 ? '최소 1개를 선택해야 합니다.' : '최대 3개까지 선택할 수 있습니다.').show();
+                errorMessage.text(checkedCount < 1 ? '최소 1개를 선택해야 합니다.' : '최대 3개까지 선택할 수 있습니다.').show();
             } else {
-                $errorMessage.hide();
+                errorMessage.hide();
             }
         });
     });
