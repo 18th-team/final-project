@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main-layout}" layout:fragment="content"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+      layout:decorate="~{layouts/main-layout}" >
 <head>
     <title>Club List</title>
     <link th:href="@{/css/custom_category_badge.css}" rel="stylesheet" type="text/css"/>
@@ -24,15 +23,19 @@
 
         }
 
+        .list-container{
+            height: 100%;
+        }
+
     </style>
 
 </head>
-<body>
+<body layout:fragment="content" >
 
 <!-- /clubs, /clubs/category/**, / 일 때만 카테고리 표시 -->
 <div th:replace="~{fragments/category_menu :: category}"
 ></div>
-<div class="container my-5 shadow-lg p-4 rounded-3 w-80">
+<div class="container list-container  my-5 shadow-lg p-4 rounded-3 w-80 h-100 border border-2" style="min-height: 500px">
     <h1 class="my-5 text-center fw-bold">모락 크루 리스트 🍳</h1>
     <div th:if="${query!=null}">
         <p class="card-text"> 검색어 : <span
@@ -94,7 +97,7 @@
     </div>
 
     <!-- 목록이 비었을 때 -->
-    <div th:if="${#lists.isEmpty(clubList)}" class="alert alert-info text-center">
+    <div th:if="${#lists.isEmpty(clubList)}" class="alert alert-info text-center ">
         등록된 모임이 없습니다. 새 모임을 만들어 보세요! 😢
     </div>
 

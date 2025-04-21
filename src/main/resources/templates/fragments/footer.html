@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" >
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+>
 <body>
 
 <footer th:fragment="footer"  class="footer container-fluid  text-light py-5" role="contentinfo" style="background-color: #e36d1d;">
@@ -19,16 +20,13 @@
             <!-- 소셜 링크 -->
             <div class="col-md-6 d-flex justify-content-md-end justify-content-center mt-3">
                 <nav class="social-links d-flex gap-3" aria-label="Social media links">
-                    <a  class="social-icon btn btn-outline-light btn-lg rounded-circle">
-                        <i class="bi bi-facebook"></i>
+                    <a th:href="@{http://www.instagram.com}" class="social-icon btn btn-outline-light btn-lg rounded-circle">
+                        <i class="bi bi-house-door"></i>
                     </a>
-                    <a  class="social-icon btn btn-outline-light btn-lg rounded-circle">
-                        <i class="bi bi-linkedin"></i>
+                    <a th:href="@{http://blog.naver.com/themunto}" class="social-icon btn btn-outline-light btn-lg rounded-circle">
+                        <i class="bi bi-bootstrap"></i>
                     </a>
-                    <a  class="social-icon btn btn-outline-light btn-lg rounded-circle">
-                        <i class="bi bi-youtube"></i>
-                    </a>
-                    <a  class="social-icon btn btn-outline-light btn-lg rounded-circle">
+                    <a th:href="@{http://www.instagram.com/munto_official}" class="social-icon btn btn-outline-light btn-lg rounded-circle">
                         <i class="bi bi-instagram"></i>
                     </a>
                 </nav>
