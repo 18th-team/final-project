@@ -64,8 +64,10 @@ public class ChatRoomService {
             // 기존 ChatRoom 업데이트
             chatRoom.setName(name != null && !name.isEmpty() ? name : club.getTitle() + " 채팅방");
         }
-
-        return chatRoomRepository.save(chatRoom);
+        ChatRoom saveChatRoom = chatRoomRepository.save(chatRoom);
+        // 채팅방 목록 업데이트 트리거
+        updateChatRoomForParticipants(chatRoom);
+        return saveChatRoom;
     }
 
     @Transactional
