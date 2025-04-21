@@ -23,6 +23,8 @@ class ApplicationTests {
 
     @Autowired
     private UserRepository userRepository;
+	@Autowired
+    private ClubRepository clubRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired

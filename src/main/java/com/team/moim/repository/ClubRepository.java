@@ -35,5 +35,4 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     List<Club> findByMembersContaining(SiteUser user);
     Optional<Club> findById(Long id);
 
-
 }

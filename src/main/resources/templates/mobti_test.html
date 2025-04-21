@@ -1,17 +1,17 @@
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main-layout}">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/main-layout}">
+
 <head>
-    <title>모락모락 | 나의 MoBTI는?</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link th:href="@{/css/mobti.css?v=1}" rel="stylesheet">
+    <title>나의 MoBTI는?</title>
+    <link th:href="@{/css/mobti.css}" rel="stylesheet">
 </head>
 <body>
-<div class="container" layout:fragment="content">
+<div class="container-fluid" layout:fragment="content">
+
     <!-- 테스트 시작 페이지 -->
     <div id="start-container">
         <h1>소모임 성향 테스트</h1>
         <p>내 성향에 딱 맞는 소모임을 찾아보자! 🎯</p>
-        <img width="350px" th:src="@{/img/test_main.png}" alt="mobti test">
+        <img width="350px" th:src="@{/img/test_main.png}" alt="mobti test" class="img-fluid">
         <button id="start-button">테스트 시작하기 🚀</button>
     </div>
 
@@ -33,121 +33,181 @@
         <button id="restart-button">다시 테스트하기 🔄</button>
     </div>
 
-</div>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script layout:fragment="script">
-    $(document).ready(function () {
-        // "테스트 시작하기" 버튼 클릭 시
-        $("#start-button").on("click", function () {
-            $("#start-container").hide();
-            $("#question-container").show();
-            showQuestion();
+
+    <script layout:fragment="script">
+        $(document).ready(function () {
+            // "테스트 시작하기" 버튼 클릭 시
+            $("#start-button").on("click", function () {
+                $("#start-container").hide();
+                $("#question-container").show();
+                showQuestion();
+            });
+
+            // 선택지 클릭 시 (선택지 두 개 모두 class="option"이므로)
+            $(".option").on("click", function () {
+                const choice = parseInt($(this).data("choice"));
+                const category = questions[currentQuestionIndex].category;
+                scores[questions[currentQuestionIndex].scores[choice]]++;
+                currentQuestionIndex++;
+                showQuestion();
+            });
+
+            // "다시 테스트하기" 버튼
+            $("#restart-button").on("click", function () {
+                scores = {L: 0, F: 0, A: 0, T: 0, S: 0, I: 0, E: 0, D: 0};
+                currentQuestionIndex = 0;
+                $("#result-container").hide();
+                $("#start-container").show();
+            });
         });
 
-        // 선택지 클릭 시 (선택지 두 개 모두 class="option"이므로)
-        $(".option").on("click", function () {
-            const choice = parseInt($(this).data("choice"));
-            const category = questions[currentQuestionIndex].category;
-            scores[questions[currentQuestionIndex].scores[choice]]++;
-            currentQuestionIndex++;
-            showQuestion();
-        });
+        const questions = [
+            {
+                category: "L/F",
+                text: "심심한데… 소모임을 찾아볼까?",
+                options: ["이거 내가 하면 더 잘 만들겠는데? 🤔", "이미 누가 잘 만들어놨겠지~ 🤭"],
+                scores: ["L", "F"]
+            },
+            {
+                category: "L/F",
+                text: "모임에 나오긴 했는데… 분위기가 생각이랑 다르다. 어떡하지?",
+                options: ["이건 좀 바꾸는 게 어때요? ✋", "뭐, 좋은 게 좋은 거지~ 적당히 맞춰준다! 👌"],
+                scores: ["L", "F"]
+            },
+            {
+                category: "L/F",
+                text: "소모임에서 새로운 활동을 한다. 이 때 나는?",
+                options: ["적극적으로 아이디어를 떠올려보자! 💡", "누가 알아서 해주겠지… 난 그냥 참여할래~ 💤"],
+                scores: ["L", "F"]
+            },
 
-        // "다시 테스트하기" 버튼
-        $("#restart-button").on("click", function () {
-            scores = { L: 0, F: 0, A: 0, T: 0, S: 0, I: 0, E: 0, D: 0 };
-            currentQuestionIndex = 0;
-            $("#result-container").hide();
-            $("#start-container").show();
-        });
-    });
+            // 3️⃣ 활동 성향 (A/T) - 기존 2️⃣을 3️⃣으로 이동
+            {
+                category: "A/T",
+                text: "이번 주말에는 뭐하지?",
+                options: ["뭐라도 해야지! 친구들에게 연락 📞", "이불 밖은 위험해. 집에서 쉴래~ 🛏"],
+                scores: ["A", "T"]
+            },
+            {
+                category: "A/T",
+                text: "참여할 소모임을 골라보자. 내가 끌리는 소모임은?",
+                options: ["나가서 몸 좀 써야 제맛이지! 🏃‍", "앉아서 하는 게 좋아~ 🧎‍♀️"],
+                scores: ["A", "T"]
+            },
+            {
+                category: "A/T",
+                text: "오늘도 힘든 하루였다. 나의 힐링은?",
+                options: ["얘들아 뭐해? 나와! 친구들과 스트레스 해소 🎉", "집에 가서 혼자 영화나 볼까? 조용히 힐링 📺"],
+                scores: ["A", "T"]
+            },
 
-    const questions = [
-        { category: "L/F", text: "심심한데… 소모임을 찾아볼까?", options: ["이거 내가 하면 더 잘 만들겠는데? 🤔", "이미 누가 잘 만들어놨겠지~ 🤭"], scores: ["L", "F"] },
-        { category: "L/F", text: "모임에 나오긴 했는데… 분위기가 생각이랑 다르다. 어떡하지?", options: ["이건 좀 바꾸는 게 어때요? ✋", "뭐, 좋은 게 좋은 거지~ 적당히 맞춰준다! 👌"], scores: ["L", "F"] },
-        { category: "L/F", text: "소모임에서 새로운 활동을 한다. 이 때 나는?", options: ["적극적으로 아이디어를 떠올려보자! 💡", "누가 알아서 해주겠지… 난 그냥 참여할래~ 💤"], scores: ["L", "F"] },
+            // 2️⃣ 소통 스타일 (S/I) - 기존 3️⃣을 2️⃣로 이동
+            {
+                category: "S/I",
+                text: "소모임 첫 날! 모임 장소에 도착한 나는…",
+                options: ["먼저 말 걸어야지! 😄", "일단 눈치 좀 보자… 🙄"],
+                scores: ["S", "I"]
+            },
+            {
+                category: "S/I",
+                text: "옆 사람이 말을 걸어온다! 어떻게 대답할까?",
+                options: ["적극적으로 대화 시작! 😉", "어색하게 대답해본다 😐"],
+                scores: ["S", "I"]
+            },
+            {
+                category: "S/I",
+                text: "집에 가는 길. 오늘은 이 때가 제일 재밌었지…",
+                options: ["다 같이 떠들면서 웃고 마셨던 순간 🍻", "소수끼리 깊은 얘기를 나눴던 순간 ☕"],
+                scores: ["S", "I"]
+            },
 
-        // 3️⃣ 활동 성향 (A/T) - 기존 2️⃣을 3️⃣으로 이동
-        { category: "A/T", text: "이번 주말에는 뭐하지?", options: ["뭐라도 해야지! 친구들에게 연락 📞", "이불 밖은 위험해. 집에서 쉴래~ 🛏"], scores: ["A", "T"] },
-        { category: "A/T", text: "참여할 소모임을 골라보자. 내가 끌리는 소모임은?", options: ["나가서 몸 좀 써야 제맛이지! 🏃‍", "앉아서 하는 게 좋아~ 🧎‍♀️"], scores: ["A", "T"] },
-        { category: "A/T", text: "오늘도 힘든 하루였다. 나의 힐링은?", options: ["얘들아 뭐해? 나와! 친구들과 스트레스 해소 🎉", "집에 가서 혼자 영화나 볼까? 조용히 힐링 📺"], scores: ["A", "T"] },
+            // 4️⃣ 모임 목표 (E/D)
+            {
+                category: "E/D",
+                text: "내가 소모임에서 가장 얻고 싶은 건?",
+                options: ["새로운 경험! 인맥과 추억 🔥", "배움과 성장, 깊이 있는 활동 📚"],
+                scores: ["E", "D"]
+            },
+            {
+                category: "E/D",
+                text: "내가 취미를 정할 때 가장 중요하게 생각하는 것은?",
+                options: ["이것저것 시도해보자! 🎨", "하나를 제대로 마스터하자! 🔬"],
+                scores: ["E", "D"]
+            },
+            {
+                category: "E/D",
+                text: "소모임 활동이 끝났다. 이제 나는…",
+                options: ["다음엔 또 뭘 해볼까? 🏄‍♀️", "오늘 경험을 정리하며 깊이 생각 🤓"],
+                scores: ["E", "D"]
+            }
+        ];
 
-        // 2️⃣ 소통 스타일 (S/I) - 기존 3️⃣을 2️⃣로 이동
-        { category: "S/I", text: "소모임 첫 날! 모임 장소에 도착한 나는…", options: ["먼저 말 걸어야지! 😄", "일단 눈치 좀 보자… 🙄"], scores: ["S", "I"] },
-        { category: "S/I", text: "옆 사람이 말을 걸어온다! 어떻게 대답할까?", options: ["적극적으로 대화 시작! 😉", "어색하게 대답해본다 😐"], scores: ["S", "I"] },
-        { category: "S/I", text: "집에 가는 길. 오늘은 이 때가 제일 재밌었지…", options: ["다 같이 떠들면서 웃고 마셨던 순간 🍻", "소수끼리 깊은 얘기를 나눴던 순간 ☕"], scores: ["S", "I"] },
+        const mobtiTypes = {
+            "LASE": "🎪 파티 플래너",
+            "LASD": "⚡ 분위기 센터",
+            "LTSE": "🎤 소셜 큐레이터",
+            "LTSD": "📚 지식 탐험가",
+            "LAIE": "🏕 챌린저",
+            "LAID": "🏗 운영의 달인",
+            "LTIE": "🎨 스토리텔러",
+            "LTID": "💡 지식 다이버",
+            "FASE": "🏄 자유로운 영혼",
+            "FASD": "🎭 무드메이커",
+            "FTSE": "☕ 수다쟁이",
+            "FTSD": "📖 북 소믈리에",
+            "FAIE": "🚶‍♀️ 방랑자",
+            "FAID": "🎮 혼놀 마스터",
+            "FTIE": "🖌 감성 크리에이터",
+            "FTID": "🏡 힐링 메이트"
+        };
 
-        // 4️⃣ 모임 목표 (E/D)
-        { category: "E/D", text: "내가 소모임에서 가장 얻고 싶은 건?", options: ["새로운 경험! 인맥과 추억 🔥", "배움과 성장, 깊이 있는 활동 📚"], scores: ["E", "D"] },
-        { category: "E/D", text: "내가 취미를 정할 때 가장 중요하게 생각하는 것은?", options: ["이것저것 시도해보자! 🎨", "하나를 제대로 마스터하자! 🔬"], scores: ["E", "D"] },
-        { category: "E/D", text: "소모임 활동이 끝났다. 이제 나는…", options: ["다음엔 또 뭘 해볼까? 🏄‍♀️", "오늘 경험을 정리하며 깊이 생각 🤓"], scores: ["E", "D"] }
-    ];
+        const mobtiImages = {
+            "LASE": "/img/mobti/LASE.png",
+            "LASD": "/img/mobti/LASD.png",
+            "LTSE": "/img/mobti/LTSE.png",
+            "LTSD": "/img/mobti/LTSD.png",
+            "LAIE": "/img/mobti/LAIE.png",
+            "LAID": "/img/mobti/LAID.png",
+            "LTIE": "/img/mobti/LTIE.png",
+            "LTID": "/img/mobti/LTID.png",
+            "FASE": "/img/mobti/FASE.png",
+            "FASD": "/img/mobti/FASD.png",
+            "FTSE": "/img/mobti/FTSE.png",
+            "FTSD": "/img/mobti/FTSD.png",
+            "FAIE": "/img/mobti/FAIE.png",
+            "FAID": "/img/mobti/FAID.png",
+            "FTIE": "/img/mobti/FTIE.png",
+            "FTID": "/img/mobti/FTID.png"
+        };
 
-    const mobtiTypes = {
-        "LASE": "🎪 파티 플래너",
-        "LASD": "⚡ 분위기 센터",
-        "LTSE": "🎤 소셜 큐레이터",
-        "LTSD": "📚 지식 탐험가",
-        "LAIE": "🏕 챌린저",
-        "LAID": "🏗 운영의 달인",
-        "LTIE": "🎨 스토리텔러",
-        "LTID": "💡 지식 다이버",
-        "FASE": "🏄 자유로운 영혼",
-        "FASD": "🎭 무드메이커",
-        "FTSE": "☕ 수다쟁이",
-        "FTSD": "📖 북 소믈리에",
-        "FAIE": "🚶‍♀️ 방랑자",
-        "FAID": "🎮 혼놀 마스터",
-        "FTIE": "🖌 감성 크리에이터",
-        "FTID": "🏡 힐링 메이트"
-    };
+        let scores = {L: 0, F: 0, A: 0, T: 0, S: 0, I: 0, E: 0, D: 0};
+        let currentQuestionIndex = 0;
 
-    const mobtiImages = {
-        "LASE": "/img/mobti/LASE.png",
-        "LASD": "/img/mobti/LASD.png",
-        "LTSE": "/img/mobti/LTSE.png",
-        "LTSD": "/img/mobti/LTSD.png",
-        "LAIE": "/img/mobti/LAIE.png",
-        "LAID": "/img/mobti/LAID.png",
-        "LTIE": "/img/mobti/LTIE.png",
-        "LTID": "/img/mobti/LTID.png",
-        "FASE": "/img/mobti/FASE.png",
-        "FASD": "/img/mobti/FASD.png",
-        "FTSE": "/img/mobti/FTSE.png",
-        "FTSD": "/img/mobti/FTSD.png",
-        "FAIE": "/img/mobti/FAIE.png",
-        "FAID": "/img/mobti/FAID.png",
-        "FTIE": "/img/mobti/FTIE.png",
-        "FTID": "/img/mobti/FTID.png"
-    };
-
-    let scores = { L: 0, F: 0, A: 0, T: 0, S: 0, I: 0, E: 0, D: 0 };
-    let currentQuestionIndex = 0;
-
-    function showQuestion() {
-        if (currentQuestionIndex >= questions.length) {
-            showResult();
-            return;
+        function showQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showResult();
+                return;
+            }
+            const question = questions[currentQuestionIndex];
+            $("#question-text").text(question.text);
+            const options = $(".option");
+            options.eq(0).text(question.options[0]);
+            options.eq(1).text(question.options[1]);
+            $("#progress").text(`${currentQuestionIndex + 1} / ${questions.length}`);
         }
-        const question = questions[currentQuestionIndex];
-        $("#question-text").text(question.text);
-        const options = $(".option");
-        options.eq(0).text(question.options[0]);
-        options.eq(1).text(question.options[1]);
-        $("#progress").text(`${currentQuestionIndex + 1} / ${questions.length}`);
-    }
 
-    function showResult() {
-        $("#question-container").hide();
-        $("#result-container").show();
+        function showResult() {
+            $("#question-container").hide();
+            $("#result-container").show();
 
-        let resultType = `${scores.L > scores.F ? "L" : "F"}${scores.A > scores.T ? "A" : "T"}${scores.S > scores.I ? "S" : "I"}${scores.E > scores.D ? "E" : "D"}`;
-        let resultName = mobtiTypes[resultType] || "알 수 없는 유형";
-        let resultImage = mobtiImages[resultType] || "/img/mobti/default.png";
+            let resultType = `${scores.L > scores.F ? "L" : "F"}${scores.A > scores.T ? "A" : "T"}${scores.S > scores.I ? "S" : "I"}${scores.E > scores.D ? "E" : "D"}`;
+            let resultName = mobtiTypes[resultType] || "알 수 없는 유형";
+            let resultImage = mobtiImages[resultType] || "/img/mobti/default.png";
 
-        $("#result-text").text(`당신의 MoBTI 유형: ${resultType} (${resultName})`);
-        $("#result-img").attr("src", resultImage).attr("alt", resultName);
-    }
-</script>
+            $("#result-text").text(`당신의 MoBTI 유형: ${resultType} (${resultName})`);
+            $("#result-img").attr("src", resultImage).attr("alt", resultName);
+        }
+    </script>
+</div>
 </body>
 </html>

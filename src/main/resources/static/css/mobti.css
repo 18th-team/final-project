@@ -15,11 +15,10 @@
 body {
     font-family: 'Pretendard-Regular', sans-serif;
     text-align: center;
-    margin: 50px;
 }
 
-#start-container, #question-container {
-    margin-top: 130px;
+#start-container, #question-container,#result-container{
+    height: 700px;padding: 150px;
 }
 
 #start-container h1, #question-container h3 {
