@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="커뮤니티 이미지 수정">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.12.1/fileHashes/fileHashes.lock" afterDir="false" />
+    <list default="true" id="15f66eb0-fcde-4668-9d86-0ee631e64485" name="Changes" comment="이미지 등록 경로 수정">
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/team/FileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/FileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/mypage/MyPageController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/mypage/MyPageController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/team/post/PostController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -292,7 +287,8 @@
       <workItem from="1744848420705" duration="14223000" />
       <workItem from="1744937630911" duration="22086000" />
       <workItem from="1744964766889" duration="299000" />
-      <workItem from="1744965642510" duration="1243000" />
+      <workItem from="1744965642510" duration="1417000" />
+      <workItem from="1745194897310" duration="2802000" />
     </task>
     <task id="LOCAL-00001" summary="본인 인증 작업중">
       <option name="closed" value="true" />
@@ -630,7 +626,23 @@
       <option name="project" value="LOCAL" />
       <updated>1744965035213</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="이미지 등록 경로 분리">
+      <option name="closed" value="true" />
+      <created>1744966933731</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1744966933731</updated>
+    </task>
+    <task id="LOCAL-00044" summary="이미지 등록 경로 수정">
+      <option name="closed" value="true" />
+      <created>1745195845115</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1745195845115</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -675,8 +687,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="." />
-    <MESSAGE value="개인 채팅 나가기 및 입력창 비활성화, 채팅방 삭제&#10;&#10;- 개인 채팅창에서 나가기 기능 추가&#10;- 나가면 남은 사용자의 입력창 비활성화 ( 개인 채팅 )&#10;- 참여자가 0명일 때 채팅방 삭제" />
     <MESSAGE value="localStorage로 채팅창 닫을 때 마지막 채팅방 상태 저장" />
     <MESSAGE value="채팅 스타일 수정" />
     <MESSAGE value="개인 채팅 차단 기능 추가" />
@@ -700,7 +710,9 @@
     <MESSAGE value="파일경로수정" />
     <MESSAGE value="모임create수정" />
     <MESSAGE value="커뮤니티 이미지 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="커뮤니티 이미지 수정" />
+    <MESSAGE value="이미지 등록 경로 분리" />
+    <MESSAGE value="이미지 등록 경로 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="이미지 등록 경로 수정" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -717,6 +729,12 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/team/chat/ChatRoomService.java</url>
           <line>164</line>
           <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-field">
+          <url>file://$PROJECT_DIR$/src/main/java/com/team/mypage/MyPageController.java</url>
+          <line>30</line>
+          <properties field="fileService" class="com.team.mypage.MyPageController" />
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

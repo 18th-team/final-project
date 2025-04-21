@@ -10,17 +10,17 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    private static final String USER_UPLOAD_PATH = "src/main/resources/static/img/user/";
-    private static final String POST_UPLOAD_PATH = "src/main/resources/static/img/upload/";
+    private static final String USER_UPLOAD_PATH = "C:/springBoot_img/";
+    private static final String POST_UPLOAD_PATH = "C:/springBoot_img/";
 
     // 프로필 이미지 저장
     public String saveProfileImage(MultipartFile file) {
-        return saveImageTo(file, USER_UPLOAD_PATH, "/img/user/");
+        return saveImageTo(file, USER_UPLOAD_PATH, "/user/");
     }
 
     // 게시물 이미지 저장
     public String savePostImage(MultipartFile file) {
-        return saveImageTo(file, POST_UPLOAD_PATH, "/img/upload/");
+        return saveImageTo(file, "C:/springBoot_img/", "/upload/");
     }
 
     // 공통 저장 로직
@@ -40,7 +40,7 @@ public class FileService {
             Path filePath = uploadDir.resolve(newFileName);
             file.transferTo(filePath.toFile());
 
-            return returnPathPrefix + newFileName;
+            return "/upload/" + newFileName;
 
         } catch (IOException e) {
             throw new RuntimeException("이미지 저장 실패", e);
