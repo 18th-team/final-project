@@ -108,9 +108,9 @@
 
             <!-- 관심 키워드 선택 -->
             <!-- 관심 키워드 선택 -->
-            <div class="mb-4 text-start">
+            <div class="mb-4 text-start keywordVal">
                 <label class="form-label create-name text-dark">나의 관심 키워드(최대3개 선택가능)</label>
-                <div class="row row-cols-3 row-cols-lg-6 g-2">
+                <div class="row row-cols-3 row-cols-lg-6 g-2 form">
                     <div class="col">
                         <div class="form-check">
                             <input class="form-check-input custom-check shadow-sm" type="checkbox" name="theme[]" value="액티비티"
@@ -366,18 +366,43 @@
                 }
             });
         });
-
-        document.querySelectorAll('.custom-check').forEach(check => {
-            check.addEventListener('change', () => {
-                const checkedCount = document.querySelectorAll('.custom-check:checked').length;
-                if (checkedCount > 3) { // 최대 3개 제한 예시
-                    check.checked = false;
-                    alert('최대 3개까지 선택 가능합니다!');
-                }
-            });
-        });
     })
 
+    $(document).ready(function () {
+        const $checkboxes = $('input[name="theme[]"]');
+        const $form = $('form');
+        const $keywordContainer = $('.keywordVal');
+        const $errorMessage = $('<div>', {
+            id: 'keyword-error',
+            class: 'text-danger mt-2',
+            css: { display: 'none', fontSize: '0.875rem', color: 'red' }
+        });
+
+        $keywordContainer.append($errorMessage);
+        console.log('Error message element added:', $errorMessage[0]);
+
+        $checkboxes.on('change', function () {
+            const checkedCount = $('input[name="theme[]"]:checked').length;
+            if (checkedCount > 3) {
+                $(this).prop('checked', false);
+                $errorMessage.text('최대 3개까지 선택할 수 있습니다.').show();
+            } else if (checkedCount === 0) {
+                $errorMessage.text('최소 1개를 선택해야 합니다.').show();
+            } else {
+                $errorMessage.hide();
+            }
+        });
+
+        $form.on('submit', function (e) {
+            const checkedCount = $('input[name="theme[]"]:checked').length;
+            if (checkedCount < 1 || checkedCount > 3) {
+                e.preventDefault();
+                $errorMessage.text(checkedCount < 1 ? '최소 1개를 선택해야 합니다.' : '최대 3개까지 선택할 수 있습니다.').show();
+            } else {
+                $errorMessage.hide();
+            }
+        });
+    });
 </script>
 
 </body>

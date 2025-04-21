@@ -40,5 +40,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket:3.4.4'
 	implementation 'org.springframework.security:spring-security-messaging:6.4.4'
 	implementation 'org.apache.commons:commons-text:1.13.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0' // 버전은 프로젝트에 맞게
 }
 
+test {
+	useJUnitPlatform()
+}

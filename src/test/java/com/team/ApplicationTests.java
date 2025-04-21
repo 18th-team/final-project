@@ -27,6 +27,7 @@ class ApplicationTests {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private KeywordRepository keywordRepository;
+    @Autowired private ChatRoomService chatRoomService;
 
 	@Test
 	void contextLoads() {
@@ -97,7 +98,7 @@ class ApplicationTests {
 				.lastOnline(null)
 				.build();
 		userRepository.save(user3);
-/*        chatRoomService.CreateMoimChatRoom("모임이름", "7cd06dce-2e70-497a-8fec-cb7482c06258");*/
+
 	}
 
 }

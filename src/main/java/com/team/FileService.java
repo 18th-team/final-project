@@ -11,7 +11,7 @@ import java.util.UUID;
 public class FileService {
 
     private static final String USER_UPLOAD_PATH = "C:/springBoot_img/";
-    private static final String POST_UPLOAD_PATH = "C:/springBoot_img/";
+
 
     // 프로필 이미지 저장
     public String saveProfileImage(MultipartFile file) {
