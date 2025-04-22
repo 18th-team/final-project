@@ -11,4 +11,7 @@ public interface ClubFileRepository extends JpaRepository<ClubFileEntity, Long> 
     List<ClubFileEntity> findByClub(Club existingClub);
 
     Optional<ClubFileEntity> findByClubId(Long id);
+
+    Optional<ClubFileEntity> findFirstByClubId(Long clubId);
+
 }

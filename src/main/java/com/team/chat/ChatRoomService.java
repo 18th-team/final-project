@@ -294,7 +294,7 @@ public class ChatRoomService {
         if ("GROUP".equals(chatRoom.getType()) && chatRoom.getClub() != null) {
             Club club = chatRoom.getClub();
             if (club.getFileAttached() == 1) {
-                Optional<ClubFileEntity> clubFile = clubFileRepository.findByClubId(club.getId());
+                Optional<ClubFileEntity> clubFile = clubFileRepository.findFirstByClubId(club.getId());
                 clubFile.ifPresent(file -> dto.setClubImage(file.getStoredFileName()));
             }
         }
