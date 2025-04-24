@@ -10,7 +10,7 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    private static final String USER_UPLOAD_PATH = "C:/springBoot_img/";
+    private static final String USER_UPLOAD_PATH = "/home/ubuntu/upload/";
 
 
     // 프로필 이미지 저장
@@ -20,7 +20,7 @@ public class FileService {
 
     // 게시물 이미지 저장
     public String savePostImage(MultipartFile file) {
-        return saveImageTo(file, "C:/springBoot_img/", "/upload/");
+        return saveImageTo(file, "/home/ubuntu/upload/", "/upload/");
     }
 
     // 공통 저장 로직

@@ -68,7 +68,7 @@ public class ClubService {
                 if (!clubFile.isEmpty()) {
                     String originalFilename = clubFile.getOriginalFilename();
                     String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
-                    String directoryPath = "C:/springBoot_img/";
+                    String directoryPath = "/home/ubuntu/upload/";
                     String savePath = directoryPath + storedFilename;
                     File directory = new File(directoryPath);
                     if (!directory.exists()) {
@@ -133,7 +133,7 @@ public class ClubService {
             if (club.getFileAttached() == 1) {
                 List<ClubFileEntity> existingFiles = clubFileRepository.findByClub(club);
                 for (ClubFileEntity file : existingFiles) {
-                    File storedFile = new File("C:/springBoot_img/" + file.getStoredFileName());
+                    File storedFile = new File("/home/ubuntu/upload/" + file.getStoredFileName());
                     if (storedFile.exists()) storedFile.delete();
                     clubFileRepository.delete(file);
                 }
@@ -144,7 +144,7 @@ public class ClubService {
                 if (!clubFile.isEmpty()) {
                     String originalFilename = clubFile.getOriginalFilename();
                     String storedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
-                    String savePath = "C:/springBoot_img/" + storedFilename;
+                    String savePath = "/home/ubuntu/upload/" + storedFilename;
                     clubFile.transferTo(new File(savePath));
                     ClubFileEntity clubFileEntity = ClubFileEntity.toClubFileEntity(club, originalFilename, storedFilename);
                     club.getClubFileEntityList().add(clubFileEntity); // 새 파일 추가
@@ -175,7 +175,7 @@ public class ClubService {
         if (club.getFileAttached() == 1) {
             List<ClubFileEntity> files = clubFileRepository.findByClub(club);
             for (ClubFileEntity file : files) {
-                File storedFile = new File("C:/springBoot_img/" + file.getStoredFileName());
+                File storedFile = new File("/home/ubuntu/upload/" + file.getStoredFileName());
                 if (storedFile.exists()) storedFile.delete();
                 clubFileRepository.delete(file);
             }

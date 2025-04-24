@@ -13,6 +13,10 @@ java {
 	}
 }
 
+bootJar {
+	archiveFileName = 'morak.jar'
+}
+
 repositories {
 	mavenCentral()
 }
